@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  VITE_GEMINI_API_KEY = "AIzaSyD6hTyGbMDGwsdfJ31KRSu3mCQl3S1DS6Y"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
