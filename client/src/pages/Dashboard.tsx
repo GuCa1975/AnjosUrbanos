@@ -41,7 +41,7 @@ export default function Dashboard() {
   const recordUsageMutation = trpc.simulation.recordUsage.useMutation({
     onSuccess: () => {
       simulationStatusQuery.refetch();
-      window.open("https://anjosurbanosvirtual.com", "_blank");
+      window.open("https://anjos-urbanos-virtual.netlify.app", "_blank");
     },
     onError: (err) => {
       if (err.data?.code === "FORBIDDEN") {
@@ -96,7 +96,7 @@ export default function Dashboard() {
   const handleOpenTool = () => {
     // Admin tem sempre acesso ilimitado
     if (user?.role === "admin") {
-      window.open("https://anjosurbanosvirtual.com", "_blank");
+      window.open("https://anjos-urbanos-virtual.netlify.app", "_blank");
       return;
     }
 
@@ -104,7 +104,7 @@ export default function Dashboard() {
     if (!simStatus) return;
 
     if (simStatus.hasSubscription) {
-      window.open("https://anjosurbanosvirtual.com", "_blank");
+      window.open("https://anjos-urbanos-virtual.netlify.app", "_blank");
       return;
     }
 
