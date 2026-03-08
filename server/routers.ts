@@ -45,7 +45,7 @@ export const appRouter = router({
 
   salon: router({
     get: protectedProcedure.query(async ({ ctx }) => {
-      return getSalonByUserId(ctx.user.id);
+      return (await getSalonByUserId(ctx.user.id)) ?? null;
     }),
     create: protectedProcedure
       .input(z.object({

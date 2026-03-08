@@ -41,79 +41,87 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --font-sans: 'Inter', sans-serif;
-  --font-display: 'Playfair Display', serif;
+  --font-display: 'Inter', sans-serif;
 }
 
+/* Anjos Urbanos brand: dark background + neon green accent */
 :root {
-  /* Rose gold / luxury salon palette */
-  --primary: oklch(0.52 0.14 15);
-  --primary-foreground: oklch(0.98 0.005 15);
-  --sidebar-primary: oklch(0.52 0.14 15);
-  --sidebar-primary-foreground: oklch(0.98 0.005 15);
-  --chart-1: oklch(0.72 0.12 15);
-  --chart-2: oklch(0.62 0.13 15);
-  --chart-3: oklch(0.52 0.14 15);
-  --chart-4: oklch(0.42 0.12 15);
-  --chart-5: oklch(0.32 0.10 15);
-  --radius: 0.65rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.2 0.01 60);
-  --card: oklch(0.99 0.002 60);
-  --card-foreground: oklch(0.2 0.01 60);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.01 60);
-  --secondary: oklch(0.97 0.005 15);
-  --secondary-foreground: oklch(0.4 0.01 60);
-  --muted: oklch(0.96 0.003 60);
-  --muted-foreground: oklch(0.55 0.015 60);
-  --accent: oklch(0.95 0.015 15);
-  --accent-foreground: oklch(0.3 0.01 60);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.91 0.005 60);
-  --input: oklch(0.91 0.005 60);
-  --ring: oklch(0.52 0.14 15);
-  --sidebar: oklch(0.99 0.002 60);
-  --sidebar-foreground: oklch(0.2 0.01 60);
-  --sidebar-accent: oklch(0.95 0.015 15);
-  --sidebar-accent-foreground: oklch(0.3 0.01 60);
-  --sidebar-border: oklch(0.91 0.005 60);
-  --sidebar-ring: oklch(0.52 0.14 15);
-}
+  --radius: 0.4rem;
 
-.dark {
-  --primary: oklch(0.72 0.12 15);
-  --primary-foreground: oklch(0.98 0.005 15);
-  --sidebar-primary: oklch(0.72 0.12 15);
-  --sidebar-primary-foreground: oklch(0.98 0.005 15);
-  --background: oklch(0.14 0.005 60);
-  --foreground: oklch(0.92 0.005 60);
-  --card: oklch(0.19 0.006 60);
-  --card-foreground: oklch(0.92 0.005 60);
-  --popover: oklch(0.19 0.006 60);
-  --popover-foreground: oklch(0.92 0.005 60);
-  --secondary: oklch(0.24 0.006 60);
-  --secondary-foreground: oklch(0.7 0.005 60);
-  --muted: oklch(0.27 0.006 60);
-  --muted-foreground: oklch(0.70 0.015 60);
-  --accent: oklch(0.28 0.02 15);
-  --accent-foreground: oklch(0.92 0.005 60);
+  /* Dark theme as default (matches anjosurbanos.pt) */
+  --background: oklch(0.09 0 0);
+  --foreground: oklch(0.97 0 0);
+  --card: oklch(0.13 0 0);
+  --card-foreground: oklch(0.97 0 0);
+  --popover: oklch(0.13 0 0);
+  --popover-foreground: oklch(0.97 0 0);
+
+  /* Neon green primary — #39FF14 */
+  --primary: oklch(0.86 0.29 140);
+  --primary-foreground: oklch(0.09 0 0);
+
+  --secondary: oklch(0.18 0 0);
+  --secondary-foreground: oklch(0.97 0 0);
+  --muted: oklch(0.18 0 0);
+  --muted-foreground: oklch(0.60 0 0);
+  --accent: oklch(0.18 0.02 140);
+  --accent-foreground: oklch(0.86 0.29 140);
   --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.72 0.12 15);
-  --chart-1: oklch(0.82 0.10 15);
-  --chart-2: oklch(0.72 0.12 15);
-  --chart-3: oklch(0.62 0.13 15);
-  --chart-4: oklch(0.52 0.14 15);
-  --chart-5: oklch(0.42 0.12 15);
-  --sidebar: oklch(0.19 0.006 60);
-  --sidebar-foreground: oklch(0.92 0.005 60);
-  --sidebar-accent: oklch(0.28 0.02 15);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.86 0.29 140);
+
+  --chart-1: oklch(0.86 0.29 140);
+  --chart-2: oklch(0.76 0.25 140);
+  --chart-3: oklch(0.66 0.20 140);
+  --chart-4: oklch(0.56 0.15 140);
+  --chart-5: oklch(0.46 0.10 140);
+
+  --sidebar: oklch(0.11 0 0);
+  --sidebar-foreground: oklch(0.97 0 0);
+  --sidebar-primary: oklch(0.86 0.29 140);
+  --sidebar-primary-foreground: oklch(0.09 0 0);
+  --sidebar-accent: oklch(0.18 0.02 140);
+  --sidebar-accent-foreground: oklch(0.86 0.29 140);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.72 0.12 15);
+  --sidebar-ring: oklch(0.86 0.29 140);
+}
+
+/* Keep .dark in sync (same palette) */
+.dark {
+  --background: oklch(0.09 0 0);
+  --foreground: oklch(0.97 0 0);
+  --card: oklch(0.13 0 0);
+  --card-foreground: oklch(0.97 0 0);
+  --popover: oklch(0.13 0 0);
+  --popover-foreground: oklch(0.97 0 0);
+  --primary: oklch(0.86 0.29 140);
+  --primary-foreground: oklch(0.09 0 0);
+  --secondary: oklch(0.18 0 0);
+  --secondary-foreground: oklch(0.97 0 0);
+  --muted: oklch(0.18 0 0);
+  --muted-foreground: oklch(0.60 0 0);
+  --accent: oklch(0.18 0.02 140);
+  --accent-foreground: oklch(0.86 0.29 140);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.86 0.29 140);
+  --chart-1: oklch(0.86 0.29 140);
+  --chart-2: oklch(0.76 0.25 140);
+  --chart-3: oklch(0.66 0.20 140);
+  --chart-4: oklch(0.56 0.15 140);
+  --chart-5: oklch(0.46 0.10 140);
+  --sidebar: oklch(0.11 0 0);
+  --sidebar-foreground: oklch(0.97 0 0);
+  --sidebar-primary: oklch(0.86 0.29 140);
+  --sidebar-primary-foreground: oklch(0.09 0 0);
+  --sidebar-accent: oklch(0.18 0.02 140);
+  --sidebar-accent-foreground: oklch(0.86 0.29 140);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.86 0.29 140);
 }
 
 @layer base {
@@ -123,9 +131,6 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
-  }
-  h1, h2, h3 {
-    font-family: 'Playfair Display', serif;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),

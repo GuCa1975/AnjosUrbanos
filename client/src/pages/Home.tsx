@@ -8,7 +8,7 @@ import { useLocation } from "wouter";
 import { Scissors, Sparkles, Shield, BarChart3, CheckCircle, ArrowRight, Star } from "lucide-react";
 
 export default function Home() {
-  const { user, isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const [, setLocation] = useLocation();
   const hasAccessQuery = trpc.subscription.hasAccess.useQuery(undefined, {
     enabled: isAuthenticated,
@@ -55,15 +55,18 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Navigation */}
-      <nav className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <nav className="border-b border-border/50 bg-background/90 backdrop-blur-sm sticky top-0 z-50">
         <div className="container flex items-center justify-between h-16">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+            <div className="w-8 h-8 rounded-sm bg-primary flex items-center justify-center">
               <Scissors className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-display font-semibold text-lg text-foreground">Anjos Urbanos Virtual</span>
+            <div>
+              <span className="font-bold text-sm tracking-widest uppercase text-foreground">Anjos Urbanos</span>
+              <span className="block text-xs tracking-widest text-muted-foreground uppercase">Virtual</span>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             {loading ? null : isAuthenticated ? (
@@ -71,11 +74,11 @@ export default function Home() {
                 onClick={() => setLocation(hasAccessQuery.data ? "/dashboard" : "/subscribe")}
                 size="sm"
               >
-                {hasAccessQuery.data ? "Ir para o Dashboard" : "Activar Subscrição"}
+                {hasAccessQuery.data ? "Dashboard" : "Activar Subscrição"}
               </Button>
             ) : (
               <>
-                <Button variant="ghost" size="sm" onClick={() => window.location.href = getLoginUrl()}>
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" onClick={() => window.location.href = getLoginUrl()}>
                   Entrar
                 </Button>
                 <Button size="sm" onClick={() => window.location.href = getLoginUrl()}>
@@ -88,28 +91,28 @@ export default function Home() {
       </nav>
 
       {/* Hero */}
-      <section className="relative overflow-hidden py-20 md:py-32">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/20 pointer-events-none" />
+      <section className="relative overflow-hidden py-24 md:py-36">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background pointer-events-none" />
         <div className="container relative">
           <div className="max-w-3xl mx-auto text-center">
-            <Badge variant="secondary" className="mb-6 text-primary border-primary/20 bg-primary/5">
+            <Badge variant="outline" className="mb-6 border-primary/40 text-primary bg-primary/5 uppercase tracking-widest text-xs">
               <Sparkles className="h-3 w-3 mr-1" />
-              Inteligência Artificial para Cabeleireiros
+              Powered by Gemini AI
             </Badge>
-            <h1 className="font-display text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
-              Transforme o Seu Salão com{" "}
-              <span className="text-primary">Simulação de Penteados</span>
+            <h1 className="text-4xl md:text-6xl font-black text-foreground mb-6 leading-tight tracking-tight uppercase">
+              More Than<br />
+              <span className="text-primary">Hairstyle</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-10 leading-relaxed max-w-2xl mx-auto">
               Mostre aos seus clientes o resultado final antes de qualquer corte ou coloração.
-              Aumente a confiança, reduza devoluções e eleve a experiência do seu salão.
+              Aumente a confiança e eleve a experiência do seu salão.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" onClick={handleGetStarted} className="text-base px-8 shadow-lg hover:shadow-xl transition-all">
+              <Button size="lg" onClick={handleGetStarted} className="text-base px-8 font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)] transition-all">
                 Experimentar Agora
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button size="lg" variant="outline" onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })} className="text-base px-8">
+              <Button size="lg" variant="outline" onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })} className="text-base px-8 uppercase tracking-wider border-border/50 hover:border-primary/50">
                 Ver Preços
               </Button>
             </div>
@@ -122,23 +125,23 @@ export default function Home() {
       <section className="py-20 bg-secondary/30">
         <div className="container">
           <div className="text-center mb-12">
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">
               Tudo o que o seu salão precisa
             </h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+            <p className="text-muted-foreground text-base max-w-xl mx-auto">
               Uma plataforma completa desenvolvida especialmente para profissionais de cabeleireiro em Portugal.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
             {features.map((feature) => (
-              <Card key={feature.title} className="border-0 shadow-sm hover:shadow-md transition-shadow bg-background">
+              <Card key={feature.title} className="border-border/50 bg-card hover:border-primary/30 transition-colors">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <div className="w-10 h-10 rounded-sm bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
                       <feature.icon className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-foreground mb-2">{feature.title}</h3>
+                      <h3 className="font-bold text-foreground mb-2 uppercase tracking-wide text-sm">{feature.title}</h3>
                       <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
                     </div>
                   </div>
@@ -153,21 +156,21 @@ export default function Home() {
       <section id="pricing" className="py-20">
         <div className="container">
           <div className="text-center mb-12">
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">
               Preço simples e transparente
             </h2>
-            <p className="text-muted-foreground text-lg">Um único plano com tudo incluído. Sem surpresas.</p>
+            <p className="text-muted-foreground text-base">Um único plano com tudo incluído. Sem surpresas.</p>
           </div>
           <div className="max-w-md mx-auto">
-            <Card className="border-2 border-primary shadow-xl relative overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-1 bg-primary" />
+            <Card className="border border-primary/40 bg-card shadow-[0_0_40px_rgba(57,255,20,0.1)] relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary" />
               <CardContent className="p-8">
                 <div className="text-center mb-6">
-                  <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 hover:bg-primary/10">
+                  <Badge className="mb-4 bg-primary/10 text-primary border-primary/30 hover:bg-primary/10 uppercase tracking-widest text-xs">
                     Plano Profissional
                   </Badge>
                   <div className="flex items-baseline justify-center gap-1 mb-2">
-                    <span className="text-5xl font-bold text-foreground font-display">29€</span>
+                    <span className="text-5xl font-black text-foreground">29€</span>
                     <span className="text-muted-foreground">/mês</span>
                   </div>
                   <p className="text-sm text-muted-foreground">por salão · faturação mensal</p>
@@ -187,7 +190,7 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full text-base" size="lg" onClick={handleGetStarted}>
+                <Button className="w-full text-base font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]" size="lg" onClick={handleGetStarted}>
                   Começar Agora — 29€/mês
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -204,13 +207,13 @@ export default function Home() {
       <section className="py-20 bg-secondary/30">
         <div className="container">
           <div className="text-center mb-12">
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">
               O que dizem os nossos clientes
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
             {testimonials.map((t) => (
-              <Card key={t.name} className="border-0 shadow-sm bg-background">
+              <Card key={t.name} className="border-border/50 bg-card hover:border-primary/20 transition-colors">
                 <CardContent className="p-6">
                   <div className="flex gap-1 mb-4">
                     {[...Array(5)].map((_, i) => (
@@ -219,7 +222,7 @@ export default function Home() {
                   </div>
                   <p className="text-sm text-muted-foreground mb-4 leading-relaxed italic">"{t.text}"</p>
                   <div>
-                    <p className="font-semibold text-sm text-foreground">{t.name}</p>
+                    <p className="font-bold text-sm text-foreground uppercase tracking-wide">{t.name}</p>
                     <p className="text-xs text-muted-foreground">{t.salon}</p>
                   </div>
                 </CardContent>
@@ -233,13 +236,13 @@ export default function Home() {
       <section className="py-20">
         <div className="container">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">
               Pronto para transformar o seu salão?
             </h2>
-            <p className="text-muted-foreground text-lg mb-8">
+            <p className="text-muted-foreground text-base mb-8">
               Junte-se a centenas de cabeleireiros que já usam a IA para impressionar os seus clientes.
             </p>
-            <Button size="lg" onClick={handleGetStarted} className="text-base px-10 shadow-lg">
+            <Button size="lg" onClick={handleGetStarted} className="text-base px-10 font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]">
               Começar Hoje
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -248,13 +251,16 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-8">
+      <footer className="border-t border-border/50 py-8">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+            <div className="w-6 h-6 rounded-sm bg-primary flex items-center justify-center">
               <Scissors className="h-3 w-3 text-primary-foreground" />
             </div>
-            <span className="font-display font-semibold text-sm text-foreground">Anjos Urbanos Virtual</span>
+            <div>
+              <span className="font-bold text-xs tracking-widest uppercase text-foreground">Anjos Urbanos</span>
+              <span className="text-xs tracking-widest text-muted-foreground uppercase ml-1">Virtual</span>
+            </div>
           </div>
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} Anjos Urbanos Virtual. Todos os direitos reservados.

@@ -30,7 +30,6 @@ export default function Subscribe() {
     },
   });
 
-  // Check URL params for success/cancel
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("canceled") === "true") {
@@ -38,7 +37,6 @@ export default function Subscribe() {
     }
   }, []);
 
-  // Redirect if already has access
   useEffect(() => {
     if (hasAccessQuery.data === true) {
       setLocation("/dashboard");
@@ -55,22 +53,25 @@ export default function Subscribe() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Navigation */}
-      <nav className="border-b bg-white/80 backdrop-blur-sm">
+      <nav className="border-b border-border/50 bg-background/90 backdrop-blur-sm">
         <div className="container flex items-center justify-between h-16">
           <button onClick={() => setLocation("/")} className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+            <div className="w-8 h-8 rounded-sm bg-primary flex items-center justify-center">
               <Scissors className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="font-display font-semibold text-lg text-foreground">Anjos Urbanos Virtual</span>
+            <div>
+              <span className="font-bold text-xs tracking-widest uppercase text-foreground">Anjos Urbanos</span>
+              <span className="block text-xs tracking-widest text-muted-foreground uppercase">Virtual</span>
+            </div>
           </button>
         </div>
       </nav>
@@ -78,7 +79,7 @@ export default function Subscribe() {
       <div className="container py-16">
         <div className="max-w-lg mx-auto">
           <div className="text-center mb-8">
-            <h1 className="font-display text-3xl font-bold text-foreground mb-3">
+            <h1 className="text-3xl font-black text-foreground mb-3 uppercase tracking-tight">
               Activar Subscrição
             </h1>
             <p className="text-muted-foreground">
@@ -87,15 +88,15 @@ export default function Subscribe() {
           </div>
 
           {!isAuthenticated && (
-            <Card className="border-amber-200 bg-amber-50 mb-6">
+            <Card className="border-amber-500/30 bg-amber-500/5 mb-6">
               <CardContent className="p-4 flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                <AlertCircle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-amber-800">Precisa de iniciar sessão</p>
-                  <p className="text-xs text-amber-700 mt-1">
+                  <p className="text-sm font-bold text-foreground uppercase tracking-wide">Precisa de iniciar sessão</p>
+                  <p className="text-xs text-muted-foreground mt-1">
                     Para subscrever, precisa primeiro de criar uma conta ou iniciar sessão.
                   </p>
-                  <Button size="sm" className="mt-3" onClick={() => window.location.href = getLoginUrl()}>
+                  <Button size="sm" className="mt-3 uppercase text-xs tracking-wider" onClick={() => window.location.href = getLoginUrl()}>
                     Iniciar Sessão
                   </Button>
                 </div>
@@ -103,15 +104,15 @@ export default function Subscribe() {
             </Card>
           )}
 
-          <Card className="border-2 border-primary shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-1 bg-primary" />
+          <Card className="border border-primary/40 bg-card shadow-[0_0_40px_rgba(57,255,20,0.1)] relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary" />
             <CardContent className="p-8">
               <div className="text-center mb-6">
-                <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 hover:bg-primary/10">
+                <Badge className="mb-4 bg-primary/10 text-primary border-primary/30 hover:bg-primary/10 uppercase tracking-widest text-xs">
                   Plano Profissional
                 </Badge>
                 <div className="flex items-baseline justify-center gap-1 mb-2">
-                  <span className="text-5xl font-bold text-foreground font-display">29€</span>
+                  <span className="text-5xl font-black text-foreground">29€</span>
                   <span className="text-muted-foreground">/mês</span>
                 </div>
                 <p className="text-sm text-muted-foreground">por salão · faturação mensal</p>
@@ -134,7 +135,7 @@ export default function Subscribe() {
               </ul>
 
               <Button
-                className="w-full text-base"
+                className="w-full text-base font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]"
                 size="lg"
                 onClick={handleSubscribe}
                 disabled={checkoutMutation.isPending || !isAuthenticated}
@@ -157,7 +158,7 @@ export default function Subscribe() {
                   Pagamento seguro processado pela Stripe
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Para testar, use o cartão: <span className="font-mono font-medium">4242 4242 4242 4242</span>
+                  Para testar, use o cartão: <span className="font-mono font-medium text-foreground">4242 4242 4242 4242</span>
                 </p>
               </div>
             </CardContent>

@@ -24,7 +24,6 @@ export default function Admin() {
     retry: false,
   });
 
-  // Redirect if not admin
   useEffect(() => {
     if (!loading && user && user.role !== "admin") {
       setLocation("/dashboard");
@@ -36,7 +35,7 @@ export default function Admin() {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -50,15 +49,15 @@ export default function Admin() {
   const getStatusBadge = (status: string | null | undefined) => {
     switch (status) {
       case "active":
-        return <Badge className="bg-green-100 text-green-700 border-green-200 hover:bg-green-100"><CheckCircle2 className="h-3 w-3 mr-1" />Activa</Badge>;
+        return <Badge className="bg-primary/10 text-primary border-primary/30 hover:bg-primary/10 uppercase text-xs tracking-wider"><CheckCircle2 className="h-3 w-3 mr-1" />Activa</Badge>;
       case "canceled":
-        return <Badge className="bg-red-100 text-red-700 border-red-200 hover:bg-red-100"><XCircle className="h-3 w-3 mr-1" />Cancelada</Badge>;
+        return <Badge className="bg-red-500/10 text-red-400 border-red-500/30 hover:bg-red-500/10 uppercase text-xs tracking-wider"><XCircle className="h-3 w-3 mr-1" />Cancelada</Badge>;
       case "past_due":
-        return <Badge className="bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-100"><AlertCircle className="h-3 w-3 mr-1" />Em atraso</Badge>;
+        return <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/10 uppercase text-xs tracking-wider"><AlertCircle className="h-3 w-3 mr-1" />Em atraso</Badge>;
       case "trialing":
-        return <Badge className="bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-100">Trial</Badge>;
+        return <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/30 uppercase text-xs tracking-wider">Trial</Badge>;
       default:
-        return <Badge variant="secondary">Sem subscrição</Badge>;
+        return <Badge variant="secondary" className="uppercase text-xs tracking-wider">Sem sub.</Badge>;
     }
   };
 
@@ -70,33 +69,33 @@ export default function Admin() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <header className="border-b border-border/50 bg-background/90 backdrop-blur-sm sticky top-0 z-50">
         <div className="container flex items-center justify-between h-16">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => setLocation("/dashboard")}>
+            <Button variant="ghost" size="sm" onClick={() => setLocation("/dashboard")} className="text-muted-foreground hover:text-foreground uppercase text-xs tracking-wider">
               <ArrowLeft className="h-4 w-4 mr-1" />
               Dashboard
             </Button>
-            <div className="h-4 w-px bg-border" />
+            <div className="h-4 w-px bg-border/50" />
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center">
+              <div className="w-7 h-7 rounded-sm bg-primary flex items-center justify-center">
                 <Scissors className="h-3.5 w-3.5 text-primary-foreground" />
               </div>
-              <span className="font-display font-semibold text-base text-foreground">Painel de Administração</span>
+              <span className="font-bold text-sm tracking-widest uppercase text-foreground">Painel de Administração</span>
             </div>
           </div>
-          <Badge className="bg-primary/10 text-primary border-primary/20">Admin</Badge>
+          <Badge className="bg-primary/10 text-primary border-primary/30 uppercase text-xs tracking-wider">Admin</Badge>
         </div>
       </header>
 
       <div className="container py-8">
         <div className="mb-8">
-          <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-1">
+          <h1 className="text-2xl md:text-3xl font-black text-foreground mb-1 uppercase tracking-tight">
             Visão Geral
           </h1>
-          <p className="text-muted-foreground">Gestão de clientes e subscrições</p>
+          <p className="text-muted-foreground text-sm">Gestão de clientes e subscrições</p>
         </div>
 
         {/* Stats */}
@@ -106,60 +105,60 @@ export default function Admin() {
           </div>
         ) : stats ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <Card>
+            <Card className="border-border/50 bg-card">
               <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
                   <Users className="h-3.5 w-3.5" />
-                  Total Utilizadores
+                  Utilizadores
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-foreground font-display">{stats.totalUsers}</p>
+                <p className="text-3xl font-black text-foreground">{stats.totalUsers}</p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-border/50 bg-card">
               <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
                   <Scissors className="h-3.5 w-3.5" />
-                  Total Salões
+                  Salões
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-foreground font-display">{stats.totalSalons}</p>
+                <p className="text-3xl font-black text-foreground">{stats.totalSalons}</p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-border/50 bg-card">
               <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
                   <CreditCard className="h-3.5 w-3.5" />
-                  Subscrições Activas
+                  Subscrições
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-green-600 font-display">{stats.activeSubscriptions}</p>
+                <p className="text-3xl font-black text-primary">{stats.activeSubscriptions}</p>
               </CardContent>
             </Card>
 
-            <Card className="border-primary/20 bg-primary/5">
+            <Card className="border border-primary/30 bg-primary/5">
               <CardHeader className="pb-2">
-                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
                   <Euro className="h-3.5 w-3.5" />
-                  Receita Mensal
+                  Receita/mês
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-primary font-display">{stats.monthlyRevenue}€</p>
+                <p className="text-3xl font-black text-primary">{stats.monthlyRevenue}€</p>
               </CardContent>
             </Card>
           </div>
         ) : null}
 
         {/* Clients Table */}
-        <Card>
+        <Card className="border-border/50 bg-card">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
+            <CardTitle className="flex items-center gap-2 text-sm uppercase tracking-wider font-bold">
               <TrendingUp className="h-4 w-4 text-primary" />
               Clientes e Subscrições
             </CardTitle>
@@ -171,40 +170,40 @@ export default function Admin() {
               </div>
             ) : clients.length === 0 ? (
               <div className="text-center py-12">
-                <Users className="h-12 w-12 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-muted-foreground">Nenhum cliente registado ainda.</p>
+                <Users className="h-12 w-12 text-muted-foreground/20 mx-auto mb-3" />
+                <p className="text-muted-foreground text-sm uppercase tracking-wider">Nenhum cliente registado ainda.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-3 px-2 font-medium text-muted-foreground">Utilizador</th>
-                      <th className="text-left py-3 px-2 font-medium text-muted-foreground">Salão</th>
-                      <th className="text-left py-3 px-2 font-medium text-muted-foreground">Subscrição</th>
-                      <th className="text-left py-3 px-2 font-medium text-muted-foreground">Renovação</th>
-                      <th className="text-left py-3 px-2 font-medium text-muted-foreground">Registado em</th>
+                    <tr className="border-b border-border/50">
+                      <th className="text-left py-3 px-2 font-medium text-muted-foreground uppercase text-xs tracking-wider">Utilizador</th>
+                      <th className="text-left py-3 px-2 font-medium text-muted-foreground uppercase text-xs tracking-wider">Salão</th>
+                      <th className="text-left py-3 px-2 font-medium text-muted-foreground uppercase text-xs tracking-wider">Subscrição</th>
+                      <th className="text-left py-3 px-2 font-medium text-muted-foreground uppercase text-xs tracking-wider">Renovação</th>
+                      <th className="text-left py-3 px-2 font-medium text-muted-foreground uppercase text-xs tracking-wider">Registado</th>
                     </tr>
                   </thead>
                   <tbody>
                     {clients.map(({ user: u, salon, subscription }) => (
-                      <tr key={u.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                      <tr key={u.id} className="border-b border-border/30 last:border-0 hover:bg-muted/20 transition-colors">
                         <td className="py-3 px-2">
                           <div>
-                            <p className="font-medium text-foreground">{u.name || "—"}</p>
+                            <p className="font-bold text-foreground uppercase text-xs tracking-wide">{u.name || "—"}</p>
                             <p className="text-xs text-muted-foreground">{u.email || "—"}</p>
                           </div>
                         </td>
                         <td className="py-3 px-2">
-                          <span className="text-foreground">{salon?.name || <span className="text-muted-foreground italic">Sem salão</span>}</span>
+                          <span className="text-foreground text-xs">{salon?.name || <span className="text-muted-foreground italic">Sem salão</span>}</span>
                         </td>
                         <td className="py-3 px-2">
                           {getStatusBadge(subscription?.status)}
                         </td>
-                        <td className="py-3 px-2 text-muted-foreground">
+                        <td className="py-3 px-2 text-muted-foreground text-xs">
                           {formatDate(subscription?.currentPeriodEnd)}
                         </td>
-                        <td className="py-3 px-2 text-muted-foreground">
+                        <td className="py-3 px-2 text-muted-foreground text-xs">
                           {formatDate(u.createdAt)}
                         </td>
                       </tr>
