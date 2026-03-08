@@ -131,6 +131,21 @@ export async function updateSubscriptionByStripeId(stripeSubscriptionId: string,
   await db.update(subscriptions).set(data).where(eq(subscriptions.stripeSubscriptionId, stripeSubscriptionId));
 }
 
+export async function incrementFreeSimulations(userId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.execute(`UPDATE users SET freeSimulations = freeSimulations + 1 WHERE id = ${userId}`);
+  const result = await db.select({ freeSimulations: users.freeSimulations }).from(users).where(eq(users.id, userId)).limit(1);
+  return result[0]?.freeSimulations ?? 0;
+}
+
+export async function getFreeSimulationsCount(userId: number): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+  const result = await db.select({ freeSimulations: users.freeSimulations }).from(users).where(eq(users.id, userId)).limit(1);
+  return result[0]?.freeSimulations ?? 0;
+}
+
 export async function getAllSubscriptions() {
   const db = await getDb();
   if (!db) return [];

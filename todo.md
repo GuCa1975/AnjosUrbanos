@@ -34,4 +34,5 @@
 - [x] Redesign com cores da marca anjosurbanos.pt (dark + verde neon)
 - [x] Corrigir salon.get para retornar null em vez de undefined
 - [x] Redirecionar para /dashboard apos login OAuth
-- [ ] Ligar dominio personalizado (ex: virtual.anjosurbanos.pt)
+- [x] Ligar dominio personalizado (anjosurbanosvirtual.com)
+- [x] Sistema de 2 simulações gratuitas por utilizador com modal de upgrade

@@ -13,8 +13,10 @@ import {
   getAllSalons,
   getAllSubscriptions,
   getAllUsers,
+  getFreeSimulationsCount,
   getSalonByUserId,
   getSubscriptionByUserId,
+  incrementFreeSimulations,
   updateSalon,
   updateSubscriptionByStripeId,
 } from "./db";
@@ -144,6 +146,30 @@ export const appRouter = router({
         });
         return { url: session.url };
       }),
+  }),
+
+  simulation: router({
+    getStatus: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role === 'admin') return { canSimulate: true, freeUsed: 0, freeLimit: 2, hasSubscription: true };
+      const [sub, freeUsed] = await Promise.all([
+        getActiveSubscriptionByUserId(ctx.user.id),
+        getFreeSimulationsCount(ctx.user.id),
+      ]);
+      const hasSubscription = !!sub;
+      const canSimulate = hasSubscription || freeUsed < 2;
+      return { canSimulate, freeUsed, freeLimit: 2, hasSubscription };
+    }),
+    recordUsage: protectedProcedure.mutation(async ({ ctx }) => {
+      if (ctx.user.role === 'admin') return { freeUsed: 0, freeLimit: 2, hasSubscription: true };
+      const sub = await getActiveSubscriptionByUserId(ctx.user.id);
+      if (sub) return { freeUsed: 0, freeLimit: 2, hasSubscription: true };
+      const freeUsed = await getFreeSimulationsCount(ctx.user.id);
+      if (freeUsed >= 2) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Limite de simulações gratuitas atingido. Subscreva para continuar.' });
+      }
+      const newCount = await incrementFreeSimulations(ctx.user.id);
+      return { freeUsed: newCount, freeLimit: 2, hasSubscription: false };
+    }),
   }),
 
   admin: router({

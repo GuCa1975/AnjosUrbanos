@@ -15,6 +15,13 @@
       "when": 1772964991902,
       "tag": "0001_futuristic_rattler",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1772990726554,
+      "tag": "0002_superb_black_queen",
+      "breakpoints": true
     }
   ]
 }

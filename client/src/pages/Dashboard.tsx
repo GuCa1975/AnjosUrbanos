@@ -2,18 +2,21 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import {
   Scissors, Sparkles, Settings, LogOut, ExternalLink,
-  Loader2, AlertCircle, CreditCard, Calendar, CheckCircle2
+  Loader2, AlertCircle, CreditCard, Calendar, CheckCircle2,
+  Zap, Lock, CheckCircle, ArrowRight
 } from "lucide-react";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Dashboard() {
   const { user, loading, logout } = useAuth();
   const [, setLocation] = useLocation();
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const hasAccessQuery = trpc.subscription.hasAccess.useQuery(undefined, {
     enabled: !!user,
@@ -30,6 +33,25 @@ export default function Dashboard() {
     retry: false,
   });
 
+  const simulationStatusQuery = trpc.simulation.getStatus.useQuery(undefined, {
+    enabled: !!user,
+    retry: false,
+  });
+
+  const recordUsageMutation = trpc.simulation.recordUsage.useMutation({
+    onSuccess: () => {
+      simulationStatusQuery.refetch();
+      window.open("https://anjosurbanosvirtual.com", "_blank");
+    },
+    onError: (err) => {
+      if (err.data?.code === "FORBIDDEN") {
+        setShowUpgradeModal(true);
+      } else {
+        toast.error("Erro ao registar simulação.");
+      }
+    },
+  });
+
   const portalMutation = trpc.subscription.createPortal.useMutation({
     onSuccess: (data) => {
       if (data.url) {
@@ -42,6 +64,18 @@ export default function Dashboard() {
     },
   });
 
+  const checkoutMutation = trpc.subscription.createCheckout.useMutation({
+    onSuccess: (data) => {
+      if (data.url) {
+        toast.info("A redirecionar para o pagamento...");
+        window.open(data.url, "_blank");
+      }
+    },
+    onError: (err) => {
+      toast.error("Erro ao criar sessão de pagamento: " + err.message);
+    },
+  });
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("subscription") === "success") {
@@ -49,19 +83,35 @@ export default function Dashboard() {
       window.history.replaceState({}, "", "/dashboard");
       hasAccessQuery.refetch();
       subscriptionQuery.refetch();
+      simulationStatusQuery.refetch();
     }
   }, []);
 
   useEffect(() => {
-    if (!loading && user && hasAccessQuery.data === false) {
-      setLocation("/subscribe");
-    }
     if (!loading && !user) {
       setLocation("/");
     }
-  }, [loading, user, hasAccessQuery.data, setLocation]);
+  }, [loading, user, setLocation]);
 
-  if (loading || hasAccessQuery.isLoading) {
+  const handleOpenTool = () => {
+    const simStatus = simulationStatusQuery.data;
+    if (!simStatus) return;
+
+    if (simStatus.hasSubscription || user?.role === "admin") {
+      window.open("https://anjosurbanosvirtual.com", "_blank");
+      return;
+    }
+
+    if (simStatus.freeUsed >= simStatus.freeLimit) {
+      setShowUpgradeModal(true);
+      return;
+    }
+
+    // Regista a simulação gratuita e abre a ferramenta
+    recordUsageMutation.mutate();
+  };
+
+  if (loading || hasAccessQuery.isLoading || simulationStatusQuery.isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -72,6 +122,12 @@ export default function Dashboard() {
   const sub = subscriptionQuery.data as any;
   const isAdmin = user?.role === "admin";
   const salonName = salonQuery.data?.name || user?.name || "O meu Salão";
+  const simStatus = simulationStatusQuery.data;
+  const freeUsed = simStatus?.freeUsed ?? 0;
+  const freeLimit = simStatus?.freeLimit ?? 2;
+  const hasSubscription = simStatus?.hasSubscription ?? false;
+  const canSimulate = simStatus?.canSimulate ?? false;
+  const freeRemaining = Math.max(0, freeLimit - freeUsed);
 
   const formatDate = (date: Date | string | null | undefined) => {
     if (!date) return "—";
@@ -142,19 +198,72 @@ export default function Dashboard() {
                   <p className="text-muted-foreground text-sm max-w-md">
                     Simule penteados para os seus clientes em tempo real. Carregue uma foto e explore diferentes estilos com inteligência artificial.
                   </p>
+
+                  {/* Contador de simulações gratuitas */}
+                  {!isAdmin && !hasSubscription && (
+                    <div className="mt-3 flex items-center gap-2">
+                      <div className="flex gap-1">
+                        {Array.from({ length: freeLimit }).map((_, i) => (
+                          <div
+                            key={i}
+                            className={`w-6 h-2 rounded-full ${i < freeUsed ? "bg-muted" : "bg-primary"}`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {freeRemaining > 0
+                          ? `${freeRemaining} simulação${freeRemaining !== 1 ? "ões" : ""} gratuita${freeRemaining !== 1 ? "s" : ""} restante${freeRemaining !== 1 ? "s" : ""}`
+                          : "Limite gratuito atingido"}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
+
               <Button
                 size="lg"
-                className="shrink-0 font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]"
-                onClick={() => window.open("https://anjosurbanosvirtual.com", "_blank")}
+                className="shrink-0 font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)] disabled:opacity-50"
+                onClick={handleOpenTool}
+                disabled={recordUsageMutation.isPending || (!canSimulate && !isAdmin && !hasSubscription)}
               >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Abrir Ferramenta IA
+                {recordUsageMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : !canSimulate && !isAdmin && !hasSubscription ? (
+                  <Lock className="h-4 w-4 mr-2" />
+                ) : (
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                )}
+                {!canSimulate && !isAdmin && !hasSubscription ? "Limite Atingido" : "Abrir Ferramenta IA"}
               </Button>
             </div>
           </CardContent>
         </Card>
+
+        {/* Banner upgrade quando limite atingido */}
+        {!isAdmin && !hasSubscription && freeRemaining === 0 && (
+          <Card className="mb-6 border border-primary/50 bg-primary/5">
+            <CardContent className="p-6">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <Zap className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-bold text-foreground mb-1 uppercase tracking-wide text-sm">Usou as 2 simulações gratuitas</p>
+                    <p className="text-sm text-muted-foreground">
+                      Subscreva por 29€/mês para simulações ilimitadas e acesso completo à plataforma.
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => setLocation("/subscribe")}
+                  className="shrink-0 uppercase text-xs tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)]"
+                >
+                  Subscrever Agora
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Status Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -171,15 +280,17 @@ export default function Dashboard() {
                   <CheckCircle2 className="h-5 w-5 text-primary" />
                   <span className="font-bold text-foreground uppercase text-sm tracking-wide">Acesso Admin</span>
                 </div>
-              ) : sub?.status === "active" ? (
+              ) : hasSubscription ? (
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-primary" />
                   <span className="font-bold text-foreground uppercase text-sm tracking-wide">Activa</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5 text-amber-500" />
-                  <span className="font-bold text-foreground uppercase text-sm tracking-wide capitalize">{sub?.status || "Inactiva"}</span>
+                  <Zap className="h-5 w-5 text-primary" />
+                  <span className="font-bold text-foreground uppercase text-sm tracking-wide">
+                    Gratuito · {freeRemaining}/{freeLimit}
+                  </span>
                 </div>
               )}
             </CardContent>
@@ -194,7 +305,7 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <span className="font-bold text-foreground text-sm">
-                {isAdmin ? "Sem expiração" : formatDate(sub?.currentPeriodEnd)}
+                {isAdmin ? "Sem expiração" : hasSubscription ? formatDate(sub?.currentPeriodEnd) : "—"}
               </span>
             </CardContent>
           </Card>
@@ -208,15 +319,17 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-foreground uppercase text-sm tracking-wide">Profissional</span>
-                {!isAdmin && <span className="text-muted-foreground text-sm">· 29€/mês</span>}
+                <span className="font-bold text-foreground uppercase text-sm tracking-wide">
+                  {isAdmin ? "Admin" : hasSubscription ? "Profissional" : "Gratuito"}
+                </span>
+                {!isAdmin && hasSubscription && <span className="text-muted-foreground text-sm">· 29€/mês</span>}
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Billing Portal */}
-        {!isAdmin && sub?.status === "active" && (
+        {!isAdmin && hasSubscription && sub?.status === "active" && (
           <Card className="border-border/50 bg-card">
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -243,27 +356,68 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         )}
-
-        {/* No subscription warning */}
-        {!isAdmin && !subscriptionQuery.isLoading && (!sub || sub.status !== "active") && (
-          <Card className="border-amber-500/30 bg-amber-500/5">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-bold text-foreground mb-1 uppercase tracking-wide text-sm">Subscrição não activa</p>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    A sua subscrição está inactiva. Active-a para continuar a usar o assistente IA.
-                  </p>
-                  <Button size="sm" onClick={() => setLocation("/subscribe")} className="uppercase text-xs tracking-wider">
-                    Activar Subscrição
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </div>
+
+      {/* Modal de Upgrade */}
+      <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
+        <DialogContent className="bg-card border border-primary/30 max-w-md">
+          <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary rounded-t-lg" />
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black uppercase tracking-tight text-center">
+              Limite Gratuito Atingido
+            </DialogTitle>
+          </DialogHeader>
+          <div className="text-center py-4">
+            <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
+              <Zap className="h-8 w-8 text-primary" />
+            </div>
+            <p className="text-muted-foreground text-sm mb-6">
+              Usou as suas <strong className="text-foreground">2 simulações gratuitas</strong>. Subscreva o plano profissional para simulações ilimitadas.
+            </p>
+            <div className="bg-background/50 rounded-lg p-4 mb-6 text-left space-y-2">
+              {[
+                "Simulações ilimitadas todos os dias",
+                "Acesso em todos os dispositivos",
+                "Suporte prioritário por email",
+                "Cancele quando quiser",
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="h-4 w-4 text-primary shrink-0" />
+                  <span className="text-foreground">{item}</span>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-baseline justify-center gap-1 mb-4">
+              <span className="text-4xl font-black text-foreground">29€</span>
+              <span className="text-muted-foreground">/mês</span>
+            </div>
+            <Button
+              className="w-full font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]"
+              size="lg"
+              onClick={() => {
+                setShowUpgradeModal(false);
+                checkoutMutation.mutate({ origin: window.location.origin });
+              }}
+              disabled={checkoutMutation.isPending}
+            >
+              {checkoutMutation.isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  Subscrever por 29€/mês
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+            <button
+              className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => setShowUpgradeModal(false)}
+            >
+              Talvez mais tarde
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
