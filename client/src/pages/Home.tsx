@@ -8,7 +8,7 @@ import { useLocation } from "wouter";
 import { Scissors, Sparkles, Shield, BarChart3, CheckCircle, ArrowRight, Star, Gift, Zap } from "lucide-react";
 
 export default function Home() {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, user, loading } = useAuth();
   const [, setLocation] = useLocation();
   const hasAccessQuery = trpc.subscription.hasAccess.useQuery(undefined, {
     enabled: isAuthenticated,
@@ -18,7 +18,7 @@ export default function Home() {
   const handleGetStarted = () => {
     if (!isAuthenticated) {
       window.location.href = getLoginUrl();
-    } else if (hasAccessQuery.data) {
+    } else if (user?.role === 'admin' || hasAccessQuery.data) {
       setLocation("/dashboard");
     } else {
       setLocation("/subscribe");
