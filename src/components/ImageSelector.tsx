@@ -46,10 +46,10 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
           ✦
         </motion.div>
         <h2 style={{
-          fontFamily: 'Playfair Display, serif',
+          fontFamily: 'Barlow, sans-serif',
           fontSize: '36px',
           fontWeight: '700',
-          background: 'linear-gradient(135deg, #8B6914, #C9A84C, #E8C97A)',
+          background: 'linear-gradient(135deg, #1DB800, #39FF14, #7FFF5A)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
@@ -58,7 +58,7 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
           O Teu Novo Visual
         </h2>
         <p style={{
-          color: '#A89880',
+          color: '#888888',
           fontSize: '16px',
           lineHeight: '1.6',
           maxWidth: '400px',
@@ -81,7 +81,7 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
           onClick={() => fileInputRef.current?.click()}
           style={{
             background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(201, 168, 76, 0.3)',
+            border: '1px solid rgba(57, 255, 20, 0.3)',
             borderRadius: '16px',
             padding: '32px 20px',
             cursor: 'pointer',
@@ -95,13 +95,13 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
         >
           <span style={{ fontSize: '36px' }}>🖼️</span>
           <span style={{
-            fontFamily: 'Playfair Display, serif',
+            fontFamily: 'Barlow, sans-serif',
             fontSize: '16px',
-            color: '#C9A84C',
+            color: '#39FF14',
           }}>
             Carregar Foto
           </span>
-          <span style={{ fontSize: '12px', color: '#A89880' }}>
+          <span style={{ fontSize: '12px', color: '#888888' }}>
             JPG, PNG, WEBP
           </span>
         </motion.button>
@@ -112,7 +112,7 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
           onClick={onCameraOpen}
           style={{
             background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(201, 168, 76, 0.3)',
+            border: '1px solid rgba(57, 255, 20, 0.3)',
             borderRadius: '16px',
             padding: '32px 20px',
             cursor: 'pointer',
@@ -126,13 +126,13 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
         >
           <span style={{ fontSize: '36px' }}>📸</span>
           <span style={{
-            fontFamily: 'Playfair Display, serif',
+            fontFamily: 'Barlow, sans-serif',
             fontSize: '16px',
-            color: '#C9A84C',
+            color: '#39FF14',
           }}>
             Tirar Selfie
           </span>
-          <span style={{ fontSize: '12px', color: '#A89880' }}>
+          <span style={{ fontSize: '12px', color: '#888888' }}>
             Câmera ao vivo
           </span>
         </motion.button>
@@ -151,7 +151,7 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
 
       {/* Partner */}
       <div style={{ textAlign: 'center' }}>
-        <p style={{ fontSize: '11px', color: '#A89880', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
+        <p style={{ fontSize: '11px', color: '#888888', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
           Parceiro Oficial
         </p>
         <div style={{
@@ -159,12 +159,12 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
           alignItems: 'center',
           gap: '8px',
           padding: '10px 24px',
-          border: '1px solid rgba(201, 168, 76, 0.2)',
+          border: '1px solid rgba(57, 255, 20, 0.2)',
           borderRadius: '8px',
-          background: 'rgba(201, 168, 76, 0.05)',
+          background: 'rgba(57, 255, 20, 0.05)',
         }}>
           <span style={{ fontSize: '16px' }}>💎</span>
-          <span style={{ color: '#C9A84C', fontSize: '14px', fontWeight: '600', letterSpacing: '1px' }}>
+          <span style={{ color: '#39FF14', fontSize: '14px', fontWeight: '600', letterSpacing: '1px' }}>
             Alfaparf Milano
           </span>
         </div>

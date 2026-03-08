@@ -60,10 +60,10 @@ const App: React.FC = () => {
       <footer style={{
         textAlign: 'center',
         padding: '24px',
-        borderTop: '1px solid rgba(201, 168, 76, 0.1)',
+        borderTop: '1px solid rgba(57, 255, 20, 0.1)',
         marginTop: '40px',
       }}>
-        <p style={{ fontSize: '12px', color: '#A89880', letterSpacing: '1px' }}>
+        <p style={{ fontSize: '12px', color: '#888888', letterSpacing: '1px' }}>
           ✦ Anjos Urbanos Virtual · Powered by Google Gemini AI ✦
         </p>
       </footer>

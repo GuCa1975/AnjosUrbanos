@@ -29,8 +29,8 @@ const Spinner: React.FC<SpinnerProps> = ({ message = 'A transformar...' }) => {
             inset: 0,
             borderRadius: '50%',
             border: '2px solid transparent',
-            borderTopColor: '#C9A84C',
-            borderRightColor: '#C9A84C',
+            borderTopColor: '#39FF14',
+            borderRightColor: '#39FF14',
           }}
         />
         <motion.div
@@ -41,8 +41,8 @@ const Spinner: React.FC<SpinnerProps> = ({ message = 'A transformar...' }) => {
             inset: '10px',
             borderRadius: '50%',
             border: '2px solid transparent',
-            borderBottomColor: '#8B6914',
-            borderLeftColor: '#8B6914',
+            borderBottomColor: '#1DB800',
+            borderLeftColor: '#1DB800',
           }}
         />
         <div style={{
@@ -59,16 +59,16 @@ const Spinner: React.FC<SpinnerProps> = ({ message = 'A transformar...' }) => {
 
       <div style={{ textAlign: 'center' }}>
         <p style={{
-          fontFamily: 'Playfair Display, serif',
+          fontFamily: 'Barlow, sans-serif',
           fontSize: '18px',
-          color: '#C9A84C',
+          color: '#39FF14',
           marginBottom: '8px',
         }}>
           {message}
         </p>
         <p style={{
           fontSize: '13px',
-          color: '#A89880',
+          color: '#888888',
           letterSpacing: '1px',
         }}>
           A IA está a criar a tua transformação...
@@ -85,7 +85,7 @@ const Spinner: React.FC<SpinnerProps> = ({ message = 'A transformar...' }) => {
               width: '8px',
               height: '8px',
               borderRadius: '50%',
-              background: '#C9A84C',
+              background: '#39FF14',
             }}
           />
         ))}

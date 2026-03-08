@@ -1,17 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;900&family=Inter:wght@300;400;600&display=swap');
 
 :root {
-  --gold: #C9A84C;
-  --gold-light: #E8C97A;
-  --gold-dark: #8B6914;
+  --neon: #39FF14;
+  --neon-light: #7FFF5A;
+  --neon-dark: #1DB800;
   --black: #0A0A0A;
   --dark: #111111;
   --dark-card: #1A1A1A;
   --dark-border: #2A2A2A;
-  --text-primary: #F5F0E8;
-  --text-secondary: #A89880;
+  --text-primary: #F5F5F5;
+  --text-secondary: #888888;
   --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(201, 168, 76, 0.15);
+  --glass-border: rgba(57, 255, 20, 0.15);
 }
 
 * {
@@ -21,7 +21,7 @@
 }
 
 body {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Inter', sans-serif;
   background-color: var(--black);
   color: var(--text-primary);
   min-height: 100vh;
@@ -29,11 +29,11 @@ body {
 }
 
 h1, h2, h3, h4 {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Barlow', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
 }
 
-.gold-gradient {
-  background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+.neon-gradient {
+  background: linear-gradient(135deg, var(--neon-dark), var(--neon), var(--neon-light));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -47,12 +47,12 @@ h1, h2, h3, h4 {
 }
 
 .btn-gold {
-  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  background: var(--neon);
   color: var(--black);
   border: none;
   padding: 12px 28px;
   border-radius: 8px;
-  font-family: 'Lato', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 700;
   font-size: 14px;
   letter-spacing: 1.5px;
@@ -62,18 +62,18 @@ h1, h2, h3, h4 {
 }
 
 .btn-gold:hover {
-  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  background: var(--neon-light);
   transform: translateY(-1px);
-  box-shadow: 0 8px 25px rgba(201, 168, 76, 0.3);
+  box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
 }
 
 .btn-ghost {
   background: transparent;
-  color: var(--gold);
-  border: 1px solid var(--gold);
+  color: var(--neon);
+  border: 1px solid var(--neon);
   padding: 10px 24px;
   border-radius: 8px;
-  font-family: 'Lato', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 700;
   font-size: 13px;
   letter-spacing: 1.5px;
@@ -83,13 +83,13 @@ h1, h2, h3, h4 {
 }
 
 .btn-ghost:hover {
-  background: rgba(201, 168, 76, 0.1);
+  background: rgba(57, 255, 20, 0.1);
   transform: translateY(-1px);
 }
 
 .divider-gold {
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  background: linear-gradient(90deg, transparent, var(--neon), transparent);
   margin: 24px 0;
 }
 
@@ -101,9 +101,9 @@ h1, h2, h3, h4 {
   background: var(--dark);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--gold-dark);
+  background: var(--neon-dark);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--gold);
+  background: var(--neon);
 }

@@ -9,7 +9,7 @@ const Header: React.FC = () => {
       transition={{ duration: 0.6 }}
       style={{
         background: 'linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(10,10,10,0.9) 100%)',
-        borderBottom: '1px solid rgba(201, 168, 76, 0.2)',
+        borderBottom: '1px solid rgba(57, 255, 20, 0.2)',
         padding: '20px 40px',
         display: 'flex',
         alignItems: 'center',
@@ -25,7 +25,7 @@ const Header: React.FC = () => {
           width: '48px',
           height: '48px',
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, #8B6914, #C9A84C)',
+          background: 'linear-gradient(135deg, #1DB800, #39FF14)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -35,10 +35,10 @@ const Header: React.FC = () => {
         </div>
         <div>
           <h1 style={{
-            fontFamily: 'Playfair Display, serif',
+            fontFamily: 'Barlow, sans-serif',
             fontSize: '22px',
             fontWeight: '700',
-            background: 'linear-gradient(135deg, #8B6914, #C9A84C, #E8C97A)',
+            background: 'linear-gradient(135deg, #1DB800, #39FF14, #7FFF5A)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -48,7 +48,7 @@ const Header: React.FC = () => {
           </h1>
           <p style={{
             fontSize: '11px',
-            color: '#A89880',
+            color: '#888888',
             letterSpacing: '3px',
             textTransform: 'uppercase',
             marginTop: '2px',
@@ -61,7 +61,7 @@ const Header: React.FC = () => {
       <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
         <div style={{
           fontSize: '11px',
-          color: '#A89880',
+          color: '#888888',
           letterSpacing: '2px',
           textTransform: 'uppercase',
         }}>
@@ -69,7 +69,7 @@ const Header: React.FC = () => {
         </div>
         <div style={{
           fontSize: '12px',
-          color: '#C9A84C',
+          color: '#39FF14',
           fontWeight: '600',
           letterSpacing: '1px',
         }}>
