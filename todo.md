@@ -29,5 +29,9 @@
 - [ ] Reclamar sandbox Stripe
 - [ ] Testar fluxo completo de pagamento com cartao 4242 4242 4242 4242
 - [ ] Configurar dominio personalizado no painel Manus
-- [ ] Publicar (botao Publish no painel Manus)
+- [x] Publicar (botao Publish no painel Manus)
 - [ ] Criar conta de salao de demonstracao para formacoes
+- [x] Redesign com cores da marca anjosurbanos.pt (dark + verde neon)
+- [x] Corrigir salon.get para retornar null em vez de undefined
+- [x] Redirecionar para /dashboard apos login OAuth
+- [ ] Ligar dominio personalizado (ex: virtual.anjosurbanos.pt)
