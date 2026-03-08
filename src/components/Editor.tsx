@@ -91,7 +91,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {/* Original Preview */}
           <div className="glass-card" style={{ padding: '16px' }}>
-            <p style={{ fontSize: '11px', color: '#A89880', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
+            <p style={{ fontSize: '11px', color: '#888888', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
               Foto Original
             </p>
             <img
@@ -103,7 +103,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
 
           {/* Style Selection */}
           <div className="glass-card" style={{ padding: '16px' }}>
-            <p style={{ fontSize: '11px', color: '#A89880', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
+            <p style={{ fontSize: '11px', color: '#888888', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
               Escolhe o Corte
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
@@ -114,9 +114,9 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
                   style={{
                     padding: '10px',
                     borderRadius: '8px',
-                    border: selectedStyle === style.id ? '1px solid #C9A84C' : '1px solid rgba(201,168,76,0.2)',
+                    border: selectedStyle === style.id ? '1px solid #39FF14' : '1px solid rgba(201,168,76,0.2)',
                     background: selectedStyle === style.id ? 'rgba(201,168,76,0.15)' : 'transparent',
-                    color: selectedStyle === style.id ? '#C9A84C' : '#A89880',
+                    color: selectedStyle === style.id ? '#39FF14' : '#888888',
                     cursor: 'pointer',
                     fontSize: '12px',
                     display: 'flex',
@@ -133,7 +133,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
 
           {/* Color Selection */}
           <div className="glass-card" style={{ padding: '16px' }}>
-            <p style={{ fontSize: '11px', color: '#A89880', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
+            <p style={{ fontSize: '11px', color: '#888888', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
               Escolhe a Cor
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -147,7 +147,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
                     height: '36px',
                     borderRadius: '50%',
                     background: colorOption.color,
-                    border: selectedColor === colorOption.id ? '3px solid #C9A84C' : '2px solid rgba(255,255,255,0.1)',
+                    border: selectedColor === colorOption.id ? '3px solid #39FF14' : '2px solid rgba(255,255,255,0.1)',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                     transform: selectedColor === colorOption.id ? 'scale(1.2)' : 'scale(1)',
@@ -156,7 +156,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
               ))}
             </div>
             {selectedColor && (
-              <p style={{ fontSize: '12px', color: '#C9A84C', marginTop: '8px' }}>
+              <p style={{ fontSize: '12px', color: '#39FF14', marginTop: '8px' }}>
                 {HAIR_COLORS.find(c => c.id === selectedColor)?.label}
               </p>
             )}
@@ -164,7 +164,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
 
           {/* Custom Prompt */}
           <div className="glass-card" style={{ padding: '16px' }}>
-            <p style={{ fontSize: '11px', color: '#A89880', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
+            <p style={{ fontSize: '11px', color: '#888888', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
               Descrição Personalizada
             </p>
             <textarea
@@ -231,7 +231,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
                 className="glass-card"
                 style={{ padding: '16px' }}
               >
-                <p style={{ fontSize: '11px', color: '#A89880', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
+                <p style={{ fontSize: '11px', color: '#888888', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
                   Antes / Depois — Arrasta para comparar
                 </p>
 
@@ -277,7 +277,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
                     transform: 'translateX(-50%)',
                     width: '3px',
                     height: '100%',
-                    background: '#C9A84C',
+                    background: '#39FF14',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -286,7 +286,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
                       width: '32px',
                       height: '32px',
                       borderRadius: '50%',
-                      background: '#C9A84C',
+                      background: '#39FF14',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -340,10 +340,10 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
                 >
                   ✦
                 </motion.div>
-                <p style={{ fontFamily: 'Playfair Display, serif', fontSize: '20px', color: '#C9A84C' }}>
+                <p style={{ fontFamily: 'Barlow, sans-serif', fontSize: '20px', color: '#39FF14' }}>
                   A tua transformação aparecerá aqui
                 </p>
-                <p style={{ fontSize: '13px', color: '#A89880' }}>
+                <p style={{ fontSize: '13px', color: '#888888' }}>
                   Seleciona um estilo e clica em Transformar
                 </p>
               </motion.div>

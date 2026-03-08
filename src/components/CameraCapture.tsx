@@ -75,14 +75,14 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCancel }) =>
         maxWidth: '500px',
         borderRadius: '16px',
         overflow: 'hidden',
-        border: '1px solid rgba(201, 168, 76, 0.3)',
+        border: '1px solid rgba(57, 255, 20, 0.3)',
         background: '#111',
       }}>
         {error ? (
           <div style={{
             padding: '40px',
             textAlign: 'center',
-            color: '#A89880',
+            color: '#888888',
           }}>
             <p style={{ fontSize: '40px', marginBottom: '16px' }}>📷</p>
             <p>{error}</p>
@@ -108,7 +108,7 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCancel }) =>
               <div style={{
                 width: '180px',
                 height: '240px',
-                border: '2px dashed rgba(201, 168, 76, 0.5)',
+                border: '2px dashed rgba(57, 255, 20, 0.5)',
                 borderRadius: '50%',
               }} />
             </div>
@@ -132,7 +132,7 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCancel }) =>
         </button>
       </div>
 
-      <p style={{ fontSize: '12px', color: '#A89880', textAlign: 'center' }}>
+      <p style={{ fontSize: '12px', color: '#888888', textAlign: 'center' }}>
         Posiciona o teu rosto dentro do guia oval para melhores resultados
       </p>
     </motion.div>
