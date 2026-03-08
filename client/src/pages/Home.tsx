@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { Scissors, Sparkles, Shield, BarChart3, CheckCircle, ArrowRight, Star } from "lucide-react";
+import { Scissors, Sparkles, Shield, BarChart3, CheckCircle, ArrowRight, Star, Gift, Zap } from "lucide-react";
 
 export default function Home() {
   const { isAuthenticated, loading } = useAuth();
@@ -116,7 +116,21 @@ export default function Home() {
                 Ver Preços
               </Button>
             </div>
-            <p className="text-sm text-muted-foreground mt-4">Sem compromisso. Cancele quando quiser.</p>
+            {/* Badges de confiança */}
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-5">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground border border-border/50 rounded-full px-3 py-1.5">
+                <Gift className="h-3.5 w-3.5 text-primary" />
+                <span>2 simulações gratuitas</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground border border-border/50 rounded-full px-3 py-1.5">
+                <Zap className="h-3.5 w-3.5 text-primary" />
+                <span>7 dias grátis ao subscrever</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground border border-border/50 rounded-full px-3 py-1.5">
+                <CheckCircle className="h-3.5 w-3.5 text-primary" />
+                <span>Sem cartão para experimentar</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -174,15 +188,19 @@ export default function Home() {
                     <span className="text-muted-foreground">/mês</span>
                   </div>
                   <p className="text-sm text-muted-foreground">por salão · faturação mensal</p>
+                  <div className="mt-2 inline-flex items-center gap-1 bg-primary/10 border border-primary/30 rounded-full px-3 py-1">
+                    <Gift className="h-3 w-3 text-primary" />
+                    <span className="text-xs text-primary font-bold uppercase tracking-wider">7 dias grátis</span>
+                  </div>
                 </div>
                 <ul className="space-y-3 mb-8">
                   {[
+                    "7 dias gratuitos para experimentar",
                     "Simulação de penteados com IA ilimitada",
                     "Assistente virtual para clientes",
                     "Acesso em todos os dispositivos",
                     "Suporte por email",
-                    "Atualizações incluídas",
-                    "Cancele quando quiser",
+                    "Cancele quando quiser, sem penalizações",
                   ].map((item) => (
                     <li key={item} className="flex items-center gap-3 text-sm">
                       <CheckCircle className="h-4 w-4 text-primary shrink-0" />
@@ -191,11 +209,11 @@ export default function Home() {
                   ))}
                 </ul>
                 <Button className="w-full text-base font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]" size="lg" onClick={handleGetStarted}>
-                  Começar Agora — 29€/mês
+                  Começar com 7 dias grátis
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <p className="text-xs text-muted-foreground text-center mt-3">
-                  Pagamento seguro via Stripe. Cancele a qualquer momento.
+                  7 dias gratuitos · depois 29€/mês · cancele quando quiser
                 </p>
               </CardContent>
             </Card>
@@ -240,12 +258,13 @@ export default function Home() {
               Pronto para transformar o seu salão?
             </h2>
             <p className="text-muted-foreground text-base mb-8">
-              Junte-se a centenas de cabeleireiros que já usam a IA para impressionar os seus clientes.
+              Experimente grátis — 2 simulações sem cartão, depois 7 dias grátis ao subscrever.
             </p>
             <Button size="lg" onClick={handleGetStarted} className="text-base px-10 font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]">
-              Começar Hoje
+              Experimentar Grátis Agora
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
+            <p className="text-sm text-muted-foreground mt-3">Sem cartão necessário para as primeiras 2 simulações</p>
           </div>
         </div>
       </section>

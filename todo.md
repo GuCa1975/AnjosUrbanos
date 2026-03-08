@@ -36,3 +36,6 @@
 - [x] Redirecionar para /dashboard apos login OAuth
 - [x] Ligar dominio personalizado (anjosurbanosvirtual.com)
 - [x] Sistema de 2 simulações gratuitas por utilizador com modal de upgrade
+- [x] Contador "2 simulações gratuitas sem cartão" na landing page
+- [x] Notificação ao owner após 2ª simulação gratuita (follow-up de conversão)
+- [x] Período de teste gratuito de 7 dias no checkout Stripe

@@ -6,6 +6,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
+import { notifyOwner } from "./_core/notification";
 import {
   createSalon,
   createSubscription,
@@ -125,6 +126,9 @@ export const appRouter = router({
           cancel_url: `${input.origin}/subscribe?canceled=true`,
           allow_promotion_codes: true,
           client_reference_id: ctx.user.id.toString(),
+          subscription_data: {
+            trial_period_days: 7,
+          },
           metadata: {
             user_id: ctx.user.id.toString(),
             customer_email: ctx.user.email || "",
@@ -168,6 +172,17 @@ export const appRouter = router({
         throw new TRPCError({ code: 'FORBIDDEN', message: 'Limite de simulações gratuitas atingido. Subscreva para continuar.' });
       }
       const newCount = await incrementFreeSimulations(ctx.user.id);
+      // Quando atinge a 2ª simulação gratuita, notificar o owner
+      if (newCount >= 2) {
+        try {
+          await notifyOwner({
+            title: `📊 Utilizador atingiu limite gratuito`,
+            content: `O utilizador **${ctx.user.name || ctx.user.email}** (${ctx.user.email}) usou as 2 simulações gratuitas.\n\nEste é o momento ideal para fazer follow-up e converter em subscrição de 29€/mês.`,
+          });
+        } catch (e) {
+          console.warn('[Simulation] Falha ao notificar owner:', e);
+        }
+      }
       return { freeUsed: newCount, freeLimit: 2, hasSubscription: false };
     }),
   }),
