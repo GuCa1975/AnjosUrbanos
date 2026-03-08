@@ -1,0 +1,358 @@
+import React, { useState, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { transformHairStyle } from '../services/geminiService';
+import Spinner from './Spinner';
+
+interface EditorProps {
+  imageBase64: string;
+  imageMimeType: string;
+  onReset: () => void;
+}
+
+const HAIR_STYLES = [
+  { id: 'pixie', label: 'Pixie Cut', icon: '✂️' },
+  { id: 'bob', label: 'Bob Clássico', icon: '💇' },
+  { id: 'waves', label: 'Ondas Suaves', icon: '🌊' },
+  { id: 'straight', label: 'Liso Sedoso', icon: '✨' },
+  { id: 'curls', label: 'Caracóis', icon: '🌀' },
+  { id: 'long', label: 'Comprido', icon: '💫' },
+];
+
+const HAIR_COLORS = [
+  { id: 'platinum', label: 'Loiro Platinado', color: '#F5F0DC' },
+  { id: 'golden', label: 'Loiro Dourado', color: '#D4A843' },
+  { id: 'auburn', label: 'Ruivo Cobre', color: '#8B3A1A' },
+  { id: 'brunette', label: 'Castanho', color: '#4A2C0A' },
+  { id: 'black', label: 'Preto Intenso', color: '#1A1A1A' },
+  { id: 'rose', label: 'Rosa Pastel', color: '#E8A0B4' },
+  { id: 'violet', label: 'Violeta', color: '#6B3FA0' },
+  { id: 'silver', label: 'Prata', color: '#A8A8A8' },
+];
+
+const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) => {
+  const [selectedStyle, setSelectedStyle] = useState<string>('');
+  const [selectedColor, setSelectedColor] = useState<string>('');
+  const [customPrompt, setCustomPrompt] = useState<string>('');
+  const [transformedImage, setTransformedImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sliderPosition, setSliderPosition] = useState(50);
+  const sliderRef = useRef<HTMLDivElement>(null);
+
+  const handleTransform = async () => {
+    if (!selectedStyle && !customPrompt) {
+      setError('Por favor, seleciona um estilo ou escreve uma descrição personalizada.');
+      return;
+    }
+    setError(null);
+    setIsLoading(true);
+    try {
+      const selectedStyleLabel = HAIR_STYLES.find(s => s.id === selectedStyle)?.label || '';
+      const selectedColorLabel = HAIR_COLORS.find(c => c.id === selectedColor)?.label || '';
+      const result = await transformHairStyle({
+        imageBase64,
+        imageMimeType,
+        style: selectedStyleLabel,
+        color: selectedColorLabel,
+        customPrompt: customPrompt || undefined,
+      });
+      setTransformedImage(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao transformar. Tenta novamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSliderMove = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    if (!sliderRef.current) return;
+    const rect = sliderRef.current.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const pos = ((clientX - rect.left) / rect.width) * 100;
+    setSliderPosition(Math.min(Math.max(pos, 0), 100));
+  }, []);
+
+  const downloadImage = () => {
+    if (!transformedImage) return;
+    const link = document.createElement('a');
+    link.href = `data:image/jpeg;base64,${transformedImage}`;
+    link.download = 'anjos-urbanos-transformacao.jpg';
+    link.click();
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      style={{ maxWidth: '900px', margin: '0 auto', padding: '20px' }}
+    >
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+        {/* Left: Controls */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Original Preview */}
+          <div className="glass-card" style={{ padding: '16px' }}>
+            <p style={{ fontSize: '11px', color: '#A89880', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
+              Foto Original
+            </p>
+            <img
+              src={`data:${imageMimeType};base64,${imageBase64}`}
+              alt="Original"
+              style={{ width: '100%', borderRadius: '8px', maxHeight: '200px', objectFit: 'cover' }}
+            />
+          </div>
+
+          {/* Style Selection */}
+          <div className="glass-card" style={{ padding: '16px' }}>
+            <p style={{ fontSize: '11px', color: '#A89880', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
+              Escolhe o Corte
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              {HAIR_STYLES.map(style => (
+                <button
+                  key={style.id}
+                  onClick={() => setSelectedStyle(style.id)}
+                  style={{
+                    padding: '10px',
+                    borderRadius: '8px',
+                    border: selectedStyle === style.id ? '1px solid #C9A84C' : '1px solid rgba(201,168,76,0.2)',
+                    background: selectedStyle === style.id ? 'rgba(201,168,76,0.15)' : 'transparent',
+                    color: selectedStyle === style.id ? '#C9A84C' : '#A89880',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  {style.icon} {style.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Color Selection */}
+          <div className="glass-card" style={{ padding: '16px' }}>
+            <p style={{ fontSize: '11px', color: '#A89880', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
+              Escolhe a Cor
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {HAIR_COLORS.map(colorOption => (
+                <button
+                  key={colorOption.id}
+                  onClick={() => setSelectedColor(colorOption.id)}
+                  title={colorOption.label}
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    background: colorOption.color,
+                    border: selectedColor === colorOption.id ? '3px solid #C9A84C' : '2px solid rgba(255,255,255,0.1)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    transform: selectedColor === colorOption.id ? 'scale(1.2)' : 'scale(1)',
+                  }}
+                />
+              ))}
+            </div>
+            {selectedColor && (
+              <p style={{ fontSize: '12px', color: '#C9A84C', marginTop: '8px' }}>
+                {HAIR_COLORS.find(c => c.id === selectedColor)?.label}
+              </p>
+            )}
+          </div>
+
+          {/* Custom Prompt */}
+          <div className="glass-card" style={{ padding: '16px' }}>
+            <p style={{ fontSize: '11px', color: '#A89880', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
+              Descrição Personalizada
+            </p>
+            <textarea
+              value={customPrompt}
+              onChange={e => setCustomPrompt(e.target.value)}
+              placeholder="Ex: Corte em camadas com franja lateral, cor castanho acobreado..."
+              style={{
+                width: '100%',
+                minHeight: '80px',
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(201,168,76,0.2)',
+                borderRadius: '8px',
+                color: '#F5F0E8',
+                padding: '10px',
+                fontSize: '13px',
+                resize: 'vertical',
+                fontFamily: 'Lato, sans-serif',
+              }}
+            />
+          </div>
+
+          {error && (
+            <div style={{
+              padding: '12px',
+              background: 'rgba(255,100,100,0.1)',
+              border: '1px solid rgba(255,100,100,0.3)',
+              borderRadius: '8px',
+              color: '#FF8080',
+              fontSize: '13px',
+            }}>
+              {error}
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button onClick={handleTransform} disabled={isLoading} className="btn-gold" style={{ flex: 1 }}>
+              {isLoading ? 'A transformar...' : '✦ Transformar'}
+            </button>
+            <button onClick={onReset} className="btn-ghost">
+              Nova Foto
+            </button>
+          </div>
+        </div>
+
+        {/* Right: Result */}
+        <div>
+          <AnimatePresence mode="wait">
+            {isLoading ? (
+              <motion.div
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="glass-card"
+                style={{ padding: '20px' }}
+              >
+                <Spinner message="A criar a tua transformação..." />
+              </motion.div>
+            ) : transformedImage ? (
+              <motion.div
+                key="result"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="glass-card"
+                style={{ padding: '16px' }}
+              >
+                <p style={{ fontSize: '11px', color: '#A89880', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
+                  Antes / Depois — Arrasta para comparar
+                </p>
+
+                {/* Before/After Slider */}
+                <div
+                  ref={sliderRef}
+                  onMouseMove={e => e.buttons === 1 && handleSliderMove(e)}
+                  onTouchMove={handleSliderMove}
+                  style={{
+                    position: 'relative',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    cursor: 'ew-resize',
+                    userSelect: 'none',
+                  }}
+                >
+                  {/* After (transformed) - full width background */}
+                  <img
+                    src={`data:image/jpeg;base64,${transformedImage}`}
+                    alt="Depois"
+                    style={{ width: '100%', display: 'block' }}
+                  />
+                  {/* Before (original) - clipped */}
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: `${sliderPosition}%`,
+                    height: '100%',
+                    overflow: 'hidden',
+                  }}>
+                    <img
+                      src={`data:${imageMimeType};base64,${imageBase64}`}
+                      alt="Antes"
+                      style={{ width: `${100 / (sliderPosition / 100)}%`, maxWidth: 'none', display: 'block' }}
+                    />
+                  </div>
+                  {/* Slider line */}
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: `${sliderPosition}%`,
+                    transform: 'translateX(-50%)',
+                    width: '3px',
+                    height: '100%',
+                    background: '#C9A84C',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    <div style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '50%',
+                      background: '#C9A84C',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#000',
+                      fontSize: '14px',
+                      fontWeight: 'bold',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                    }}>
+                      ↔
+                    </div>
+                  </div>
+                  {/* Labels */}
+                  <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', color: '#fff', letterSpacing: '1px' }}>
+                    ANTES
+                  </div>
+                  <div style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(201,168,76,0.8)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', color: '#000', letterSpacing: '1px', fontWeight: 'bold' }}>
+                    DEPOIS
+                  </div>
+                </div>
+
+                <div style={{ marginTop: '16px', display: 'flex', gap: '12px' }}>
+                  <button onClick={downloadImage} className="btn-gold" style={{ flex: 1 }}>
+                    ⬇ Guardar Imagem
+                  </button>
+                  <button onClick={() => setTransformedImage(null)} className="btn-ghost">
+                    Nova Transformação
+                  </button>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="placeholder"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="glass-card"
+                style={{
+                  padding: '60px 40px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '16px',
+                  textAlign: 'center',
+                  minHeight: '400px',
+                }}
+              >
+                <motion.div
+                  animate={{ opacity: [0.4, 1, 0.4] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  style={{ fontSize: '48px' }}
+                >
+                  ✦
+                </motion.div>
+                <p style={{ fontFamily: 'Playfair Display, serif', fontSize: '20px', color: '#C9A84C' }}>
+                  A tua transformação aparecerá aqui
+                </p>
+                <p style={{ fontSize: '13px', color: '#A89880' }}>
+                  Seleciona um estilo e clica em Transformar
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+export default Editor;
