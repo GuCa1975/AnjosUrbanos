@@ -40,3 +40,5 @@
 - [x] Notificação ao owner após 2ª simulação gratuita (follow-up de conversão)
 - [x] Período de teste gratuito de 7 dias no checkout Stripe
 - [x] BUG CORRIGIDO: admin é redirecionado para /subscribe ao clicar em "Abrir Ferramenta"
+- [x] Adicionar email geral@anjosurbanosvirtual.com no rodapé e na secção de preços da landing page
+- [x] Corrigir import duplicado de useAuth no Home.tsx

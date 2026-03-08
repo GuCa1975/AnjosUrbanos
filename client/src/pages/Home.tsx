@@ -215,6 +215,12 @@ export default function Home() {
                 <p className="text-xs text-muted-foreground text-center mt-3">
                   7 dias gratuitos · depois 29€/mês · cancele quando quiser
                 </p>
+                <p className="text-xs text-muted-foreground text-center mt-2">
+                  Tem dúvidas?{" "}
+                  <a href="mailto:geral@anjosurbanosvirtual.com" className="text-primary hover:underline">
+                    geral@anjosurbanosvirtual.com
+                  </a>
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -284,6 +290,9 @@ export default function Home() {
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} Anjos Urbanos Virtual. Todos os direitos reservados.
           </p>
+          <a href="mailto:geral@anjosurbanosvirtual.com" className="text-xs text-muted-foreground hover:text-primary transition-colors">
+            geral@anjosurbanosvirtual.com
+          </a>
         </div>
       </footer>
     </div>
