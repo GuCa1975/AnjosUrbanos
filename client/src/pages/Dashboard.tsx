@@ -94,10 +94,16 @@ export default function Dashboard() {
   }, [loading, user, setLocation]);
 
   const handleOpenTool = () => {
+    // Admin tem sempre acesso ilimitado
+    if (user?.role === "admin") {
+      window.open("https://anjosurbanosvirtual.com", "_blank");
+      return;
+    }
+
     const simStatus = simulationStatusQuery.data;
     if (!simStatus) return;
 
-    if (simStatus.hasSubscription || user?.role === "admin") {
+    if (simStatus.hasSubscription) {
       window.open("https://anjosurbanosvirtual.com", "_blank");
       return;
     }
@@ -224,16 +230,16 @@ export default function Dashboard() {
                 size="lg"
                 className="shrink-0 font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)] disabled:opacity-50"
                 onClick={handleOpenTool}
-                disabled={recordUsageMutation.isPending || (!canSimulate && !isAdmin && !hasSubscription)}
+                disabled={recordUsageMutation.isPending || (!isAdmin && !hasSubscription && !canSimulate)}
               >
                 {recordUsageMutation.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                ) : !canSimulate && !isAdmin && !hasSubscription ? (
+                ) : (!isAdmin && !hasSubscription && !canSimulate) ? (
                   <Lock className="h-4 w-4 mr-2" />
                 ) : (
                   <ExternalLink className="h-4 w-4 mr-2" />
                 )}
-                {!canSimulate && !isAdmin && !hasSubscription ? "Limite Atingido" : "Abrir Ferramenta IA"}
+                {(!isAdmin && !hasSubscription && !canSimulate) ? "Limite Atingido" : "Abrir Ferramenta IA"}
               </Button>
             </div>
           </CardContent>

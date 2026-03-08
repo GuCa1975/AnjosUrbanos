@@ -39,3 +39,4 @@
 - [x] Contador "2 simulações gratuitas sem cartão" na landing page
 - [x] Notificação ao owner após 2ª simulação gratuita (follow-up de conversão)
 - [x] Período de teste gratuito de 7 dias no checkout Stripe
+- [x] BUG CORRIGIDO: admin é redirecionado para /subscribe ao clicar em "Abrir Ferramenta"
