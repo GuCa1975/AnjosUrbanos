@@ -4,7 +4,7 @@
 
 [build.environment]
   NODE_VERSION = "22"
-  VITE_GEMINI_API_KEY = "AIzaSyD6hTyGbMDGwsdfJ31KRSu3mCQl3S1DS6Y"
+  VITE_GEMINI_API_KEY = "AIzaSyA0jst4LeuUsJMYDozXyVuHgLf2qTD6paw"
 
 [[redirects]]
   from = "/*"
