@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { transformHairStyle } from '../services/geminiService';
 import Spinner from './Spinner';
@@ -29,17 +29,6 @@ const HAIR_COLORS = [
   { id: 'silver', label: 'Prata', color: '#A8A8A8' },
 ];
 
-// Hook para detectar se é mobile
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  useEffect(() => {
-    const handler = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handler);
-    return () => window.removeEventListener('resize', handler);
-  }, []);
-  return isMobile;
-}
-
 const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) => {
   const [selectedStyle, setSelectedStyle] = useState<string>('');
   const [selectedColor, setSelectedColor] = useState<string>('');
@@ -48,9 +37,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sliderPosition, setSliderPosition] = useState(50);
-  const [isDragging, setIsDragging] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
-  const isMobile = useIsMobile();
 
   const handleTransform = async () => {
     if (!selectedStyle && !customPrompt) {
@@ -59,12 +46,6 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
     }
     setError(null);
     setIsLoading(true);
-    // Scroll para o resultado no mobile
-    if (isMobile) {
-      setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 100);
-    }
     try {
       const selectedStyleLabel = HAIR_STYLES.find(s => s.id === selectedStyle)?.label || '';
       const selectedColorLabel = HAIR_COLORS.find(c => c.id === selectedColor)?.label || '';
@@ -91,10 +72,8 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
   }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (e.buttons === 1 || isDragging) {
-      updateSliderPosition(e.clientX);
-    }
-  }, [isDragging, updateSliderPosition]);
+    if (e.buttons === 1) updateSliderPosition(e.clientX);
+  }, [updateSliderPosition]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
@@ -102,13 +81,8 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
   }, [updateSliderPosition]);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    setIsDragging(true);
     updateSliderPosition(e.touches[0].clientX);
   }, [updateSliderPosition]);
-
-  const handleTouchEnd = useCallback(() => {
-    setIsDragging(false);
-  }, []);
 
   const downloadImage = () => {
     if (!transformedImage) return;
@@ -118,198 +92,318 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
     link.click();
   };
 
-  const cardStyle: React.CSSProperties = {
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(57, 255, 20, 0.15)',
-    borderRadius: '12px',
-    padding: '14px',
-  };
-
-  const labelStyle: React.CSSProperties = {
-    fontSize: '10px',
-    color: '#888888',
-    letterSpacing: '2px',
-    textTransform: 'uppercase',
-    marginBottom: '10px',
-  };
+  const BeforeAfterSlider = () => (
+    <div
+      ref={sliderRef}
+      onMouseMove={handleMouseMove}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      style={{
+        position: 'relative',
+        borderRadius: '8px',
+        overflow: 'hidden',
+        cursor: 'ew-resize',
+        userSelect: 'none',
+        touchAction: 'none',
+      }}
+    >
+      <img
+        src={`data:image/jpeg;base64,${transformedImage}`}
+        alt="Depois"
+        style={{ width: '100%', display: 'block' }}
+      />
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: `${sliderPosition}%`,
+        height: '100%',
+        overflow: 'hidden',
+      }}>
+        <img
+          src={`data:${imageMimeType};base64,${imageBase64}`}
+          alt="Antes"
+          style={{ width: `${100 / (sliderPosition / 100)}%`, maxWidth: 'none', display: 'block' }}
+        />
+      </div>
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: `${sliderPosition}%`,
+        transform: 'translateX(-50%)',
+        width: '3px',
+        height: '100%',
+        background: '#39FF14',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <div style={{
+          width: '40px',
+          height: '40px',
+          borderRadius: '50%',
+          background: '#39FF14',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#000',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          boxShadow: '0 2px 12px rgba(57,255,20,0.5)',
+        }}>↔</div>
+      </div>
+      <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(0,0,0,0.75)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', color: '#fff', letterSpacing: '1px' }}>
+        ANTES
+      </div>
+      <div style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(57,255,20,0.85)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', color: '#000', letterSpacing: '1px', fontWeight: 'bold' }}>
+        DEPOIS
+      </div>
+    </div>
+  );
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      style={{ maxWidth: '960px', margin: '0 auto', padding: isMobile ? '12px' : '20px' }}
-    >
-      {/* Layout: coluna única no mobile, 2 colunas no desktop */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-        gap: isMobile ? '12px' : '24px',
-      }}>
+    <>
+      <style>{`
+        .editor-wrapper {
+          max-width: 960px;
+          margin: 0 auto;
+          padding: 12px;
+        }
+        .editor-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+        @media (min-width: 768px) {
+          .editor-wrapper {
+            padding: 20px;
+          }
+          .editor-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+          }
+          .result-desktop {
+            display: block;
+          }
+          .result-mobile {
+            display: none !important;
+          }
+          .preview-mobile {
+            display: none !important;
+          }
+          .preview-desktop {
+            display: block;
+          }
+        }
+        @media (max-width: 767px) {
+          .result-desktop {
+            display: none !important;
+          }
+          .result-mobile {
+            display: block;
+          }
+          .preview-mobile {
+            display: grid;
+          }
+          .preview-desktop {
+            display: none !important;
+          }
+        }
+        .style-btn {
+          padding: 12px 8px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 13px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          transition: all 0.2s;
+          touch-action: manipulation;
+          min-height: 48px;
+          font-family: Inter, sans-serif;
+          width: 100%;
+        }
+        .color-btn {
+          border-radius: 50%;
+          cursor: pointer;
+          transition: all 0.2s;
+          touch-action: manipulation;
+          flex-shrink: 0;
+          width: 40px;
+          height: 40px;
+          border: 2px solid rgba(255,255,255,0.15);
+        }
+        @media (min-width: 768px) {
+          .color-btn {
+            width: 36px;
+            height: 36px;
+          }
+        }
+        .glass-inner {
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(57, 255, 20, 0.15);
+          border-radius: 12px;
+          padding: 14px;
+        }
+        .section-label {
+          font-size: 10px;
+          color: #888888;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          margin-bottom: 10px;
+        }
+      `}</style>
 
-        {/* Coluna Esquerda: Controlos */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '10px' : '16px' }}>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="editor-wrapper"
+      >
+        <div className="editor-grid">
 
-          {/* Foto Original — só mostra no desktop */}
-          {!isMobile && (
-            <div style={cardStyle}>
-              <p style={labelStyle}>Foto Original</p>
+          {/* COLUNA ESQUERDA: Controlos */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+
+            {/* Foto original — desktop */}
+            <div className="glass-inner preview-desktop">
+              <p className="section-label">Foto Original</p>
               <img
                 src={`data:${imageMimeType};base64,${imageBase64}`}
                 alt="Original"
                 style={{ width: '100%', borderRadius: '8px', maxHeight: '200px', objectFit: 'cover' }}
               />
             </div>
-          )}
 
-          {/* No mobile: mostra foto original pequena + resultado lado a lado */}
-          {isMobile && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              <div style={cardStyle}>
-                <p style={labelStyle}>Original</p>
+            {/* Mobile: foto original + resultado em miniatura */}
+            <div className="preview-mobile" style={{ gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <div className="glass-inner">
+                <p className="section-label">Original</p>
                 <img
                   src={`data:${imageMimeType};base64,${imageBase64}`}
                   alt="Original"
-                  style={{ width: '100%', borderRadius: '6px', maxHeight: '120px', objectFit: 'cover' }}
+                  style={{ width: '100%', borderRadius: '6px', maxHeight: '130px', objectFit: 'cover' }}
                 />
               </div>
-              <div style={cardStyle}>
-                <p style={labelStyle}>Resultado</p>
+              <div className="glass-inner">
+                <p className="section-label">Resultado</p>
                 {isLoading ? (
-                  <div style={{ height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{ fontSize: '24px', animation: 'spin 1s linear infinite' }}>⟳</div>
+                  <div style={{ height: '130px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#39FF14', fontSize: '28px' }}>
+                    ⟳
                   </div>
                 ) : transformedImage ? (
                   <img
                     src={`data:image/jpeg;base64,${transformedImage}`}
                     alt="Resultado"
-                    style={{ width: '100%', borderRadius: '6px', maxHeight: '120px', objectFit: 'cover' }}
+                    style={{ width: '100%', borderRadius: '6px', maxHeight: '130px', objectFit: 'cover' }}
                   />
                 ) : (
-                  <div style={{ height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#39FF14', fontSize: '24px' }}>
+                  <div style={{ height: '130px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#39FF14', fontSize: '28px' }}>
                     ✦
                   </div>
                 )}
               </div>
             </div>
-          )}
 
-          {/* Escolhe o Corte */}
-          <div style={cardStyle}>
-            <p style={labelStyle}>Escolhe o Corte</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
-              {HAIR_STYLES.map(style => (
-                <button
-                  key={style.id}
-                  onClick={() => setSelectedStyle(style.id)}
-                  style={{
-                    padding: isMobile ? '12px 8px' : '10px',
-                    borderRadius: '8px',
-                    border: selectedStyle === style.id ? '1px solid #39FF14' : '1px solid rgba(57,255,20,0.15)',
-                    background: selectedStyle === style.id ? 'rgba(57,255,20,0.12)' : 'transparent',
-                    color: selectedStyle === style.id ? '#39FF14' : '#888888',
-                    cursor: 'pointer',
-                    fontSize: isMobile ? '13px' : '12px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    transition: 'all 0.2s',
-                    touchAction: 'manipulation',
-                    minHeight: '44px',
-                    fontFamily: 'Inter, sans-serif',
-                  }}
-                >
-                  {style.icon} {style.label}
-                </button>
-              ))}
+            {/* Escolhe o Corte */}
+            <div className="glass-inner">
+              <p className="section-label">Escolhe o Corte</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                {HAIR_STYLES.map(style => (
+                  <button
+                    key={style.id}
+                    onClick={() => setSelectedStyle(style.id)}
+                    className="style-btn"
+                    style={{
+                      border: selectedStyle === style.id ? '1px solid #39FF14' : '1px solid rgba(57,255,20,0.15)',
+                      background: selectedStyle === style.id ? 'rgba(57,255,20,0.12)' : 'transparent',
+                      color: selectedStyle === style.id ? '#39FF14' : '#888888',
+                    }}
+                  >
+                    {style.icon} {style.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Escolhe a Cor */}
-          <div style={cardStyle}>
-            <p style={labelStyle}>Escolhe a Cor</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-              {HAIR_COLORS.map(colorOption => (
-                <button
-                  key={colorOption.id}
-                  onClick={() => setSelectedColor(colorOption.id)}
-                  title={colorOption.label}
-                  style={{
-                    width: isMobile ? '44px' : '36px',
-                    height: isMobile ? '44px' : '36px',
-                    borderRadius: '50%',
-                    background: colorOption.color,
-                    border: selectedColor === colorOption.id ? '3px solid #39FF14' : '2px solid rgba(255,255,255,0.15)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    transform: selectedColor === colorOption.id ? 'scale(1.15)' : 'scale(1)',
-                    touchAction: 'manipulation',
-                    flexShrink: 0,
-                  }}
-                />
-              ))}
+            {/* Escolhe a Cor */}
+            <div className="glass-inner">
+              <p className="section-label">Escolhe a Cor</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                {HAIR_COLORS.map(colorOption => (
+                  <button
+                    key={colorOption.id}
+                    onClick={() => setSelectedColor(colorOption.id)}
+                    title={colorOption.label}
+                    className="color-btn"
+                    style={{
+                      background: colorOption.color,
+                      border: selectedColor === colorOption.id ? '3px solid #39FF14' : '2px solid rgba(255,255,255,0.15)',
+                      transform: selectedColor === colorOption.id ? 'scale(1.15)' : 'scale(1)',
+                    }}
+                  />
+                ))}
+              </div>
+              {selectedColor && (
+                <p style={{ fontSize: '12px', color: '#39FF14', marginTop: '8px' }}>
+                  ✓ {HAIR_COLORS.find(c => c.id === selectedColor)?.label}
+                </p>
+              )}
             </div>
-            {selectedColor && (
-              <p style={{ fontSize: '12px', color: '#39FF14', marginTop: '8px' }}>
-                ✓ {HAIR_COLORS.find(c => c.id === selectedColor)?.label}
-              </p>
-            )}
-          </div>
 
-          {/* Descrição Personalizada */}
-          <div style={cardStyle}>
-            <p style={labelStyle}>Descrição Personalizada (opcional)</p>
-            <textarea
-              value={customPrompt}
-              onChange={e => setCustomPrompt(e.target.value)}
-              placeholder="Ex: Corte em camadas com franja lateral, cor castanho acobreado..."
-              style={{
-                width: '100%',
-                minHeight: isMobile ? '72px' : '80px',
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(57,255,20,0.15)',
+            {/* Descrição Personalizada */}
+            <div className="glass-inner">
+              <p className="section-label">Descrição Personalizada (opcional)</p>
+              <textarea
+                value={customPrompt}
+                onChange={e => setCustomPrompt(e.target.value)}
+                placeholder="Ex: Corte em camadas com franja lateral, cor castanho acobreado..."
+                style={{
+                  width: '100%',
+                  minHeight: '72px',
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(57,255,20,0.15)',
+                  borderRadius: '8px',
+                  color: '#F5F5F5',
+                  padding: '10px',
+                  fontSize: '16px',
+                  resize: 'vertical',
+                  fontFamily: 'Inter, sans-serif',
+                  outline: 'none',
+                }}
+              />
+            </div>
+
+            {error && (
+              <div style={{
+                padding: '12px',
+                background: 'rgba(255,100,100,0.1)',
+                border: '1px solid rgba(255,100,100,0.3)',
                 borderRadius: '8px',
-                color: '#F5F5F5',
-                padding: '10px',
-                fontSize: '16px',
-                resize: 'vertical',
-                fontFamily: 'Inter, sans-serif',
-                outline: 'none',
-              }}
-            />
-          </div>
+                color: '#FF8080',
+                fontSize: '13px',
+              }}>
+                ⚠ {error}
+              </div>
+            )}
 
-          {error && (
-            <div style={{
-              padding: '12px',
-              background: 'rgba(255,100,100,0.1)',
-              border: '1px solid rgba(255,100,100,0.3)',
-              borderRadius: '8px',
-              color: '#FF8080',
-              fontSize: '13px',
-            }}>
-              ⚠ {error}
+            {/* Botões de acção */}
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                onClick={handleTransform}
+                disabled={isLoading}
+                className="btn-gold"
+                style={{ flex: 1, opacity: isLoading ? 0.7 : 1 }}
+              >
+                {isLoading ? '⟳ A transformar...' : '✦ Transformar'}
+              </button>
+              <button onClick={onReset} className="btn-ghost">
+                Nova Foto
+              </button>
             </div>
-          )}
-
-          {/* Botões de acção */}
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button
-              onClick={handleTransform}
-              disabled={isLoading}
-              className="btn-gold"
-              style={{ flex: 1, opacity: isLoading ? 0.7 : 1 }}
-            >
-              {isLoading ? '⟳ A transformar...' : '✦ Transformar'}
-            </button>
-            <button onClick={onReset} className="btn-ghost">
-              Nova Foto
-            </button>
           </div>
-        </div>
 
-        {/* Coluna Direita: Resultado (só no desktop) */}
-        {!isMobile && (
-          <div>
+          {/* COLUNA DIREITA: Resultado — só no desktop */}
+          <div className="result-desktop">
             <AnimatePresence mode="wait">
               {isLoading ? (
                 <motion.div
@@ -317,7 +411,8 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  style={{ ...cardStyle, padding: '20px' }}
+                  className="glass-inner"
+                  style={{ padding: '20px' }}
                 >
                   <Spinner message="A criar a tua transformação..." />
                 </motion.div>
@@ -326,82 +421,10 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
                   key="result"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  style={cardStyle}
+                  className="glass-inner"
                 >
-                  <p style={labelStyle}>Antes / Depois — Arrasta para comparar</p>
-
-                  {/* Before/After Slider */}
-                  <div
-                    ref={sliderRef}
-                    onMouseMove={handleMouseMove}
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
-                    style={{
-                      position: 'relative',
-                      borderRadius: '8px',
-                      overflow: 'hidden',
-                      cursor: 'ew-resize',
-                      userSelect: 'none',
-                      touchAction: 'none',
-                    }}
-                  >
-                    <img
-                      src={`data:image/jpeg;base64,${transformedImage}`}
-                      alt="Depois"
-                      style={{ width: '100%', display: 'block' }}
-                    />
-                    <div style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: `${sliderPosition}%`,
-                      height: '100%',
-                      overflow: 'hidden',
-                    }}>
-                      <img
-                        src={`data:${imageMimeType};base64,${imageBase64}`}
-                        alt="Antes"
-                        style={{ width: `${100 / (sliderPosition / 100)}%`, maxWidth: 'none', display: 'block' }}
-                      />
-                    </div>
-                    {/* Linha do slider */}
-                    <div style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: `${sliderPosition}%`,
-                      transform: 'translateX(-50%)',
-                      width: '3px',
-                      height: '100%',
-                      background: '#39FF14',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                      <div style={{
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '50%',
-                        background: '#39FF14',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#000',
-                        fontSize: '16px',
-                        fontWeight: 'bold',
-                        boxShadow: '0 2px 12px rgba(57,255,20,0.5)',
-                      }}>
-                        ↔
-                      </div>
-                    </div>
-                    <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(0,0,0,0.75)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', color: '#fff', letterSpacing: '1px' }}>
-                      ANTES
-                    </div>
-                    <div style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(57,255,20,0.85)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', color: '#000', letterSpacing: '1px', fontWeight: 'bold' }}>
-                      DEPOIS
-                    </div>
-                  </div>
-
+                  <p className="section-label">Antes / Depois — Arrasta para comparar</p>
+                  <BeforeAfterSlider />
                   <div style={{ marginTop: '14px', display: 'flex', gap: '10px' }}>
                     <button onClick={downloadImage} className="btn-gold" style={{ flex: 1 }}>
                       ⬇ Guardar Imagem
@@ -416,8 +439,8 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
                   key="placeholder"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
+                  className="glass-inner"
                   style={{
-                    ...cardStyle,
                     padding: '60px 40px',
                     display: 'flex',
                     flexDirection: 'column',
@@ -445,112 +468,44 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
               )}
             </AnimatePresence>
           </div>
-        )}
 
-        {/* No mobile: resultado completo abaixo dos controlos */}
-        {isMobile && transformedImage && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            style={cardStyle}
-          >
-            <p style={labelStyle}>Antes / Depois — Arrasta para comparar</p>
+        </div>
 
-            {/* Before/After Slider mobile */}
-            <div
-              ref={sliderRef}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              onMouseMove={handleMouseMove}
-              style={{
-                position: 'relative',
-                borderRadius: '8px',
-                overflow: 'hidden',
-                cursor: 'ew-resize',
-                userSelect: 'none',
-                touchAction: 'none',
-              }}
+        {/* RESULTADO COMPLETO NO MOBILE — aparece abaixo dos controlos */}
+        <div className="result-mobile">
+          {isLoading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="glass-inner"
+              style={{ marginTop: '10px', padding: '20px' }}
             >
-              <img
-                src={`data:image/jpeg;base64,${transformedImage}`}
-                alt="Depois"
-                style={{ width: '100%', display: 'block' }}
-              />
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: `${sliderPosition}%`,
-                height: '100%',
-                overflow: 'hidden',
-              }}>
-                <img
-                  src={`data:${imageMimeType};base64,${imageBase64}`}
-                  alt="Antes"
-                  style={{ width: `${100 / (sliderPosition / 100)}%`, maxWidth: 'none', display: 'block' }}
-                />
+              <Spinner message="A criar a tua transformação..." />
+            </motion.div>
+          )}
+          {!isLoading && transformedImage && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="glass-inner"
+              style={{ marginTop: '10px' }}
+            >
+              <p className="section-label">Antes / Depois — Arrasta para comparar</p>
+              <BeforeAfterSlider />
+              <div style={{ marginTop: '14px', display: 'flex', gap: '10px' }}>
+                <button onClick={downloadImage} className="btn-gold" style={{ flex: 1 }}>
+                  ⬇ Guardar Imagem
+                </button>
+                <button onClick={() => setTransformedImage(null)} className="btn-ghost">
+                  Nova
+                </button>
               </div>
-              {/* Linha do slider */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: `${sliderPosition}%`,
-                transform: 'translateX(-50%)',
-                width: '3px',
-                height: '100%',
-                background: '#39FF14',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <div style={{
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '50%',
-                  background: '#39FF14',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#000',
-                  fontSize: '18px',
-                  fontWeight: 'bold',
-                  boxShadow: '0 2px 12px rgba(57,255,20,0.5)',
-                }}>
-                  ↔
-                </div>
-              </div>
-              <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(0,0,0,0.75)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', color: '#fff', letterSpacing: '1px' }}>
-                ANTES
-              </div>
-              <div style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(57,255,20,0.85)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', color: '#000', letterSpacing: '1px', fontWeight: 'bold' }}>
-                DEPOIS
-              </div>
-            </div>
+            </motion.div>
+          )}
+        </div>
 
-            <div style={{ marginTop: '14px', display: 'flex', gap: '10px' }}>
-              <button onClick={downloadImage} className="btn-gold" style={{ flex: 1 }}>
-                ⬇ Guardar Imagem
-              </button>
-              <button onClick={() => setTransformedImage(null)} className="btn-ghost">
-                Nova
-              </button>
-            </div>
-          </motion.div>
-        )}
-
-        {/* No mobile: spinner durante loading */}
-        {isMobile && isLoading && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            style={{ ...cardStyle, padding: '20px' }}
-          >
-            <Spinner message="A criar a tua transformação..." />
-          </motion.div>
-        )}
-      </div>
-    </motion.div>
+      </motion.div>
+    </>
   );
 };
 
