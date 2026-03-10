@@ -29,7 +29,7 @@ const App: React.FC = () => {
   return (
     <div style={{ minHeight: '100vh', background: '#0A0A0A' }}>
       <Header />
-      <main style={{ padding: '20px 0' }}>
+      <main style={{ padding: '8px 0' }}>
         <AnimatePresence mode="wait">
           {appState === 'select' && (
             <ImageSelector
@@ -59,9 +59,9 @@ const App: React.FC = () => {
       {/* Footer */}
       <footer style={{
         textAlign: 'center',
-        padding: '24px',
+        padding: '16px',
         borderTop: '1px solid rgba(57, 255, 20, 0.1)',
-        marginTop: '40px',
+        marginTop: '16px',
       }}>
         <p style={{ fontSize: '12px', color: '#888888', letterSpacing: '1px' }}>
           ✦ Anjos Urbanos Virtual · Powered by Google Gemini AI ✦

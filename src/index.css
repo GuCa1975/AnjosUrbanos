@@ -20,16 +20,30 @@
   box-sizing: border-box;
 }
 
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--black);
   color: var(--text-primary);
   min-height: 100vh;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4 {
-  font-family: 'Barlow', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Prevent zoom on input focus on iOS */
+input, textarea, select {
+  font-size: 16px !important;
 }
 
 .neon-gradient {
@@ -43,6 +57,7 @@ h1, h2, h3, h4 {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: 16px;
 }
 
@@ -50,7 +65,7 @@ h1, h2, h3, h4 {
   background: var(--neon);
   color: var(--black);
   border: none;
-  padding: 12px 28px;
+  padding: 14px 28px;
   border-radius: 8px;
   font-family: 'Inter', sans-serif;
   font-weight: 700;
@@ -59,6 +74,8 @@ h1, h2, h3, h4 {
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s ease;
+  touch-action: manipulation;
+  min-height: 48px;
 }
 
 .btn-gold:hover {
@@ -71,7 +88,7 @@ h1, h2, h3, h4 {
   background: transparent;
   color: var(--neon);
   border: 1px solid var(--neon);
-  padding: 10px 24px;
+  padding: 12px 24px;
   border-radius: 8px;
   font-family: 'Inter', sans-serif;
   font-weight: 700;
@@ -80,6 +97,8 @@ h1, h2, h3, h4 {
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s ease;
+  touch-action: manipulation;
+  min-height: 48px;
 }
 
 .btn-ghost:hover {

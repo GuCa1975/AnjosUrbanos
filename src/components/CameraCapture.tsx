@@ -16,7 +16,7 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCancel }) =>
   const startCamera = useCallback(async () => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
+        video: { facingMode: 'user', width: { ideal: 1080 }, height: { ideal: 1080 } }
       });
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
@@ -65,8 +65,8 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCancel }) =>
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '20px',
-        padding: '20px',
+        gap: '16px',
+        padding: '16px',
       }}
     >
       <div style={{
@@ -118,12 +118,12 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCancel }) =>
 
       <canvas ref={canvasRef} style={{ display: 'none' }} />
 
-      <div style={{ display: 'flex', gap: '12px' }}>
+      <div style={{ display: 'flex', gap: '12px', width: '100%', maxWidth: '500px' }}>
         <button
           onClick={capturePhoto}
           disabled={!isReady}
           className="btn-gold"
-          style={{ opacity: isReady ? 1 : 0.5 }}
+          style={{ opacity: isReady ? 1 : 0.5, flex: 1 }}
         >
           📸 Tirar Foto
         </button>
