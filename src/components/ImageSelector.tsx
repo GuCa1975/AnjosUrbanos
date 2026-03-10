@@ -30,8 +30,8 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '40px',
-        padding: '40px 20px',
+        gap: '24px',
+        padding: '24px 16px',
         maxWidth: '700px',
         margin: '0 auto',
       }}
@@ -41,13 +41,13 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
         <motion.div
           animate={{ rotate: [0, 5, -5, 0] }}
           transition={{ duration: 4, repeat: Infinity }}
-          style={{ fontSize: '60px', marginBottom: '20px' }}
+          style={{ fontSize: 'clamp(40px, 10vw, 60px)', marginBottom: '16px' }}
         >
           ✦
         </motion.div>
         <h2 style={{
           fontFamily: 'Barlow, sans-serif',
-          fontSize: '36px',
+          fontSize: 'clamp(24px, 7vw, 36px)',
           fontWeight: '700',
           background: 'linear-gradient(135deg, #1DB800, #39FF14, #7FFF5A)',
           WebkitBackgroundClip: 'text',
@@ -59,7 +59,7 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
         </h2>
         <p style={{
           color: '#888888',
-          fontSize: '16px',
+          fontSize: 'clamp(14px, 3.5vw, 16px)',
           lineHeight: '1.6',
           maxWidth: '400px',
         }}>
@@ -83,20 +83,22 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
             background: 'rgba(255,255,255,0.03)',
             border: '1px solid rgba(57, 255, 20, 0.3)',
             borderRadius: '16px',
-            padding: '32px 20px',
+            padding: 'clamp(20px, 5vw, 32px) 16px',
             cursor: 'pointer',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '12px',
+            gap: '10px',
             transition: 'all 0.3s ease',
             color: 'inherit',
+            touchAction: 'manipulation',
+            minHeight: '120px',
           }}
         >
-          <span style={{ fontSize: '36px' }}>🖼️</span>
+          <span style={{ fontSize: 'clamp(28px, 7vw, 36px)' }}>🖼️</span>
           <span style={{
             fontFamily: 'Barlow, sans-serif',
-            fontSize: '16px',
+            fontSize: 'clamp(14px, 3.5vw, 16px)',
             color: '#39FF14',
           }}>
             Carregar Foto
@@ -114,20 +116,22 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
             background: 'rgba(255,255,255,0.03)',
             border: '1px solid rgba(57, 255, 20, 0.3)',
             borderRadius: '16px',
-            padding: '32px 20px',
+            padding: 'clamp(20px, 5vw, 32px) 16px',
             cursor: 'pointer',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '12px',
+            gap: '10px',
             transition: 'all 0.3s ease',
             color: 'inherit',
+            touchAction: 'manipulation',
+            minHeight: '120px',
           }}
         >
-          <span style={{ fontSize: '36px' }}>📸</span>
+          <span style={{ fontSize: 'clamp(28px, 7vw, 36px)' }}>📸</span>
           <span style={{
             fontFamily: 'Barlow, sans-serif',
-            fontSize: '16px',
+            fontSize: 'clamp(14px, 3.5vw, 16px)',
             color: '#39FF14',
           }}>
             Tirar Selfie
