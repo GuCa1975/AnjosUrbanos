@@ -84,12 +84,55 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
     updateSliderPosition(e.touches[0].clientX);
   }, [updateSliderPosition]);
 
-  const downloadImage = () => {
+  const downloadImage = async () => {
     if (!transformedImage) return;
+    const dataUrl = `data:image/jpeg;base64,${transformedImage}`;
+
+    // iOS Safari: usar Web Share API se disponível (melhor experiência)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS && navigator.share) {
+      try {
+        // Converter base64 para Blob para partilhar
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        const file = new File([blob], 'anjos-urbanos-transformacao.jpg', { type: 'image/jpeg' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: 'Anjos Urbanos Virtual',
+            text: 'A minha transformação de cabelo',
+          });
+          return;
+        }
+      } catch (err) {
+        // Se falhar, continuar para o fallback
+      }
+    }
+
+    // iOS Safari fallback: abrir imagem numa nova aba (utilizador guarda manualmente)
+    if (isIOS) {
+      const newTab = window.open();
+      if (newTab) {
+        newTab.document.write(`
+          <html><head><title>Guardar Imagem</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <style>body{margin:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;color:#fff;gap:16px;padding:16px;box-sizing:border-box}
+          img{max-width:100%;border-radius:12px} p{font-size:14px;text-align:center;color:#aaa}</style></head>
+          <body><img src="${dataUrl}" />
+          <p>Pressiona e mantém a imagem para guardar na galeria</p></body></html>
+        `);
+        newTab.document.close();
+      }
+      return;
+    }
+
+    // Android e Desktop: método padrão com link
     const link = document.createElement('a');
-    link.href = `data:image/jpeg;base64,${transformedImage}`;
+    link.href = dataUrl;
     link.download = 'anjos-urbanos-transformacao.jpg';
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   };
 
   const BeforeAfterSlider = () => (
