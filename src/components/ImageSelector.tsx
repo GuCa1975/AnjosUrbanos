@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useLang } from '../LangContext';
 
 interface ImageSelectorProps {
   onImageSelected: (imageBase64: string, mimeType: string) => void;
@@ -7,6 +8,7 @@ interface ImageSelectorProps {
 }
 
 const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCameraOpen }) => {
+  const { t } = useLang();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,7 +57,7 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
           backgroundClip: 'text',
           marginBottom: '12px',
         }}>
-          O Teu Novo Visual
+          {t.heroTitle}
         </h2>
         <p style={{
           color: '#888888',
@@ -63,7 +65,7 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
           lineHeight: '1.6',
           maxWidth: '400px',
         }}>
-          Experimenta cortes e cores de cabelo com inteligência artificial antes de os fazer no salão
+          {t.heroSubtitle}
         </p>
       </div>
 
@@ -101,10 +103,10 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
             fontSize: 'clamp(14px, 3.5vw, 16px)',
             color: '#39FF14',
           }}>
-            Carregar Foto
+            {t.uploadPhoto}
           </span>
           <span style={{ fontSize: '12px', color: '#888888' }}>
-            JPG, PNG, WEBP
+            {t.uploadFormats}
           </span>
         </motion.button>
 
@@ -134,10 +136,10 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
             fontSize: 'clamp(14px, 3.5vw, 16px)',
             color: '#39FF14',
           }}>
-            Tirar Selfie
+            {t.takeSelfie}
           </span>
           <span style={{ fontSize: '12px', color: '#888888' }}>
-            Câmera ao vivo
+            {t.cameraLive}
           </span>
         </motion.button>
       </div>
@@ -156,7 +158,7 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({ onImageSelected, onCamera
       {/* Partner */}
       <div style={{ textAlign: 'center' }}>
         <p style={{ fontSize: '11px', color: '#888888', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
-          Parceiro Oficial
+          {t.officialPartner}
         </p>
         <div style={{
           display: 'inline-flex',

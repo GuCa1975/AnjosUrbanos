@@ -1,5 +1,6 @@
 import React, { useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { useLang } from '../LangContext';
 
 interface CameraCaptureProps {
   onCapture: (imageBase64: string, mimeType: string) => void;
@@ -7,34 +8,49 @@ interface CameraCaptureProps {
 }
 
 const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCancel }) => {
+  const { t } = useLang();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
 
-  const startCamera = useCallback(async () => {
+  const startCamera = useCallback(async (mode: 'user' | 'environment') => {
+    // Parar stream anterior
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    setIsReady(false);
+    setError(null);
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 1080 }, height: { ideal: 1080 } }
+        video: { facingMode: mode, width: { ideal: 1080 }, height: { ideal: 1080 } },
       });
+      streamRef.current = mediaStream;
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
         videoRef.current.onloadedmetadata = () => setIsReady(true);
       }
-      setStream(mediaStream);
     } catch {
-      setError('Não foi possível aceder à câmera. Verifica as permissões do browser.');
+      setError(t.cameraError);
+    }
+  }, [t.cameraError]);
+
+  const stopCamera = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+      setIsReady(false);
     }
   }, []);
 
-  const stopCamera = useCallback(() => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-      setStream(null);
-      setIsReady(false);
-    }
-  }, [stream]);
+  const switchCamera = useCallback(async () => {
+    const newMode = facingMode === 'user' ? 'environment' : 'user';
+    setFacingMode(newMode);
+    await startCamera(newMode);
+  }, [facingMode, startCamera]);
 
   const capturePhoto = useCallback(() => {
     if (!videoRef.current || !canvasRef.current) return;
@@ -44,17 +60,22 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCancel }) =>
     canvas.height = video.videoHeight;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    // Espelhar horizontalmente se for câmara frontal (para imagem não ficar invertida)
+    if (facingMode === 'user') {
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+    }
     ctx.drawImage(video, 0, 0);
     const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
     const base64 = dataUrl.split(',')[1];
     stopCamera();
     onCapture(base64, 'image/jpeg');
-  }, [stopCamera, onCapture]);
+  }, [stopCamera, onCapture, facingMode]);
 
   React.useEffect(() => {
-    startCamera();
+    startCamera('user');
     return () => stopCamera();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <motion.div
@@ -85,7 +106,7 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCancel }) =>
             color: '#888888',
           }}>
             <p style={{ fontSize: '40px', marginBottom: '16px' }}>📷</p>
-            <p>{error}</p>
+            <p style={{ color: '#FF8080', fontSize: '14px' }}>{error}</p>
           </div>
         ) : (
           <>
@@ -94,8 +115,60 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCancel }) =>
               autoPlay
               playsInline
               muted
-              style={{ width: '100%', display: 'block' }}
+              style={{
+                width: '100%',
+                display: 'block',
+                // Espelhar visualmente a câmara frontal (preview)
+                transform: facingMode === 'user' ? 'scaleX(-1)' : 'none',
+              }}
             />
+
+            {/* Indicador de câmara activa */}
+            <div style={{
+              position: 'absolute',
+              top: '12px',
+              left: '12px',
+              background: 'rgba(0,0,0,0.72)',
+              padding: '4px 12px',
+              borderRadius: '20px',
+              fontSize: '11px',
+              color: '#39FF14',
+              letterSpacing: '1px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              pointerEvents: 'none',
+            }}>
+              <span style={{ fontSize: '8px', color: '#39FF14' }}>●</span>
+              {facingMode === 'user' ? t.frontCamera : t.backCamera}
+            </div>
+
+            {/* Botão de trocar câmara */}
+            <button
+              onClick={switchCamera}
+              title={t.switchCamera}
+              style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                background: 'rgba(0,0,0,0.72)',
+                border: '1px solid rgba(57,255,20,0.5)',
+                borderRadius: '50%',
+                width: '46px',
+                height: '46px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '22px',
+                touchAction: 'manipulation',
+                color: '#fff',
+                zIndex: 10,
+              }}
+            >
+              🔄
+            </button>
+
             {/* Guia oval para o rosto */}
             <div style={{
               position: 'absolute',
@@ -125,15 +198,15 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCancel }) =>
           className="btn-gold"
           style={{ opacity: isReady ? 1 : 0.5, flex: 1 }}
         >
-          📸 Tirar Foto
+          {t.takePhoto}
         </button>
         <button onClick={() => { stopCamera(); onCancel(); }} className="btn-ghost">
-          Cancelar
+          {t.cancel}
         </button>
       </div>
 
       <p style={{ fontSize: '12px', color: '#888888', textAlign: 'center' }}>
-        Posiciona o teu rosto dentro do guia oval para melhores resultados
+        {t.faceGuide}
       </p>
     </motion.div>
   );

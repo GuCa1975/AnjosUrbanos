@@ -4,6 +4,7 @@ import Header from './components/Header';
 import ImageSelector from './components/ImageSelector';
 import CameraCapture from './components/CameraCapture';
 import Editor from './components/Editor';
+import { useLang } from './LangContext';
 
 type AppState = 'select' | 'camera' | 'edit';
 
@@ -13,6 +14,7 @@ interface ImageData {
 }
 
 const App: React.FC = () => {
+  const { t } = useLang();
   const [appState, setAppState] = useState<AppState>('select');
   const [imageData, setImageData] = useState<ImageData | null>(null);
 
@@ -64,7 +66,7 @@ const App: React.FC = () => {
         marginTop: '16px',
       }}>
         <p style={{ fontSize: '12px', color: '#888888', letterSpacing: '1px' }}>
-          ✦ Anjos Urbanos Virtual · Powered by Google Gemini AI ✦
+          {t.footer}
         </p>
       </footer>
     </div>
