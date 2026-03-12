@@ -1,7 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useLang } from '../LangContext';
 
 const Header: React.FC = () => {
+  const { lang, t, setLang } = useLang();
+
   return (
     <motion.header
       initial={{ opacity: 0, y: -20 }}
@@ -21,6 +24,7 @@ const Header: React.FC = () => {
         zIndex: 100,
       }}
     >
+      {/* Logo */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         <div style={{
           width: '40px',
@@ -55,27 +59,64 @@ const Header: React.FC = () => {
             textTransform: 'uppercase',
             marginTop: '2px',
           }}>
-            Estúdio Virtual
+            {t.studioVirtual}
           </p>
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <div style={{
-          fontSize: 'clamp(9px, 2vw, 11px)',
-          color: '#888888',
-          letterSpacing: '1px',
-          textTransform: 'uppercase',
-        }}>
-          Powered by
+      {/* Direita: Powered by + Selector de idioma */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{
+            fontSize: 'clamp(9px, 2vw, 11px)',
+            color: '#888888',
+            letterSpacing: '1px',
+            textTransform: 'uppercase',
+          }}>
+            {t.poweredBy}
+          </span>
+          <span style={{
+            fontSize: 'clamp(10px, 2.5vw, 12px)',
+            color: '#39FF14',
+            fontWeight: '600',
+            letterSpacing: '1px',
+          }}>
+            Gemini AI
+          </span>
         </div>
+
+        {/* Selector PT / EN */}
         <div style={{
-          fontSize: 'clamp(10px, 2.5vw, 12px)',
-          color: '#39FF14',
-          fontWeight: '600',
-          letterSpacing: '1px',
+          display: 'flex',
+          alignItems: 'center',
+          background: 'rgba(255,255,255,0.05)',
+          border: '1px solid rgba(57,255,20,0.25)',
+          borderRadius: '20px',
+          overflow: 'hidden',
+          flexShrink: 0,
         }}>
-          Gemini AI
+          {(['pt', 'en'] as const).map(l => (
+            <button
+              key={l}
+              onClick={() => setLang(l)}
+              style={{
+                padding: '5px 10px',
+                fontSize: '11px',
+                fontWeight: '700',
+                letterSpacing: '1px',
+                cursor: 'pointer',
+                border: 'none',
+                background: lang === l ? 'rgba(57,255,20,0.2)' : 'transparent',
+                color: lang === l ? '#39FF14' : '#666',
+                transition: 'all 0.2s',
+                touchAction: 'manipulation',
+                textTransform: 'uppercase',
+                fontFamily: 'Barlow, sans-serif',
+              }}
+            >
+              {l}
+            </button>
+          ))}
         </div>
       </div>
     </motion.header>

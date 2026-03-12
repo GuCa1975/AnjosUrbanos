@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { transformHairStyle } from '../services/geminiService';
 import Spinner from './Spinner';
+import { useLang } from '../LangContext';
 
 interface EditorProps {
   imageBase64: string;
@@ -9,27 +10,25 @@ interface EditorProps {
   onReset: () => void;
 }
 
-const HAIR_STYLES = [
-  { id: 'pixie', label: 'Pixie Cut', icon: '✂️' },
-  { id: 'bob', label: 'Bob Clássico', icon: '💇' },
-  { id: 'waves', label: 'Ondas Suaves', icon: '🌊' },
-  { id: 'straight', label: 'Liso Sedoso', icon: '✨' },
-  { id: 'curls', label: 'Caracóis', icon: '🌀' },
-  { id: 'long', label: 'Comprido', icon: '💫' },
-];
-
-const HAIR_COLORS = [
-  { id: 'platinum', label: 'Loiro Platinado', color: '#F5F0DC' },
-  { id: 'golden', label: 'Loiro Dourado', color: '#D4A843' },
-  { id: 'auburn', label: 'Ruivo Cobre', color: '#8B3A1A' },
-  { id: 'brunette', label: 'Castanho', color: '#4A2C0A' },
-  { id: 'black', label: 'Preto Intenso', color: '#1A1A1A' },
-  { id: 'rose', label: 'Rosa Pastel', color: '#E8A0B4' },
-  { id: 'violet', label: 'Violeta', color: '#6B3FA0' },
-  { id: 'silver', label: 'Prata', color: '#A8A8A8' },
-];
+const HAIR_STYLE_ICONS: Record<string, string> = {
+  pixie: '✂️', bob: '💇', waves: '🌊', straight: '✨', curls: '🌀', long: '💫',
+};
+const HAIR_COLOR_VALUES: Record<string, string> = {
+  platinum: '#F5F0DC', golden: '#D4A843', auburn: '#8B3A1A', brunette: '#4A2C0A',
+  black: '#1A1A1A', rose: '#E8A0B4', violet: '#6B3FA0', silver: '#A8A8A8',
+};
 
 const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) => {
+  const { t } = useLang();
+
+  // Estilos e cores dinâmicos baseados no idioma
+  const HAIR_STYLES = Object.entries(t.styles).map(([id, label]) => ({
+    id, label, icon: HAIR_STYLE_ICONS[id] || '✦',
+  }));
+  const HAIR_COLORS = Object.entries(t.colors).map(([id, label]) => ({
+    id, label, color: HAIR_COLOR_VALUES[id] || '#888',
+  }));
+
   const [selectedStyle, setSelectedStyle] = useState<string>('');
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [customPrompt, setCustomPrompt] = useState<string>('');
@@ -41,7 +40,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
 
   const handleTransform = async () => {
     if (!selectedStyle && !customPrompt) {
-      setError('Por favor, seleciona um estilo ou escreve uma descrição personalizada.');
+      setError(t.errorNoStyle);
       return;
     }
     setError(null);
@@ -58,7 +57,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
       });
       setTransformedImage(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao transformar. Tenta novamente.');
+      setError(err instanceof Error ? err.message : t.errorTransform);
     } finally {
       setIsLoading(false);
     }
@@ -196,10 +195,10 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
         }}>↔</div>
       </div>
       <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(0,0,0,0.75)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', color: '#fff', letterSpacing: '1px' }}>
-        ANTES
+        {t.before}
       </div>
       <div style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(57,255,20,0.85)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', color: '#000', letterSpacing: '1px', fontWeight: 'bold' }}>
-        DEPOIS
+        {t.after}
       </div>
     </div>
   );
@@ -309,7 +308,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
 
             {/* Foto original — desktop */}
             <div className="glass-inner preview-desktop">
-              <p className="section-label">Foto Original</p>
+              <p className="section-label">{t.originalPhoto}</p>
               <img
                 src={`data:${imageMimeType};base64,${imageBase64}`}
                 alt="Original"
@@ -320,7 +319,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
             {/* Mobile: foto original + resultado em miniatura */}
             <div className="preview-mobile" style={{ gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <div className="glass-inner">
-                <p className="section-label">Original</p>
+                <p className="section-label">{t.original}</p>
                 <img
                   src={`data:${imageMimeType};base64,${imageBase64}`}
                   alt="Original"
@@ -328,7 +327,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
                 />
               </div>
               <div className="glass-inner">
-                <p className="section-label">Resultado</p>
+                <p className="section-label">{t.result}</p>
                 {isLoading ? (
                   <div style={{ height: '130px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#39FF14', fontSize: '28px' }}>
                     ⟳
@@ -349,7 +348,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
 
             {/* Escolhe o Corte */}
             <div className="glass-inner">
-              <p className="section-label">Escolhe o Corte</p>
+              <p className="section-label">{t.chooseStyle}</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                 {HAIR_STYLES.map(style => (
                   <button
@@ -370,7 +369,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
 
             {/* Escolhe a Cor */}
             <div className="glass-inner">
-              <p className="section-label">Escolhe a Cor</p>
+              <p className="section-label">{t.chooseColor}</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                 {HAIR_COLORS.map(colorOption => (
                   <button
@@ -395,11 +394,11 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
 
             {/* Descrição Personalizada */}
             <div className="glass-inner">
-              <p className="section-label">Descrição Personalizada (opcional)</p>
+              <p className="section-label">{t.customDesc}</p>
               <textarea
                 value={customPrompt}
                 onChange={e => setCustomPrompt(e.target.value)}
-                placeholder="Ex: Corte em camadas com franja lateral, cor castanho acobreado..."
+                placeholder={t.customPlaceholder}
                 style={{
                   width: '100%',
                   minHeight: '72px',
@@ -437,10 +436,10 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
                 className="btn-gold"
                 style={{ flex: 1, opacity: isLoading ? 0.7 : 1 }}
               >
-                {isLoading ? '⟳ A transformar...' : '✦ Transformar'}
+                {isLoading ? t.transforming : t.transform}
               </button>
               <button onClick={onReset} className="btn-ghost">
-                Nova Foto
+                {t.newPhoto}
               </button>
             </div>
           </div>
@@ -457,7 +456,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
                   className="glass-inner"
                   style={{ padding: '20px' }}
                 >
-                  <Spinner message="A criar a tua transformação..." />
+                  <Spinner message={t.loadingMsg} />
                 </motion.div>
               ) : transformedImage ? (
                 <motion.div
@@ -466,14 +465,14 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
                   animate={{ opacity: 1, scale: 1 }}
                   className="glass-inner"
                 >
-                  <p className="section-label">Antes / Depois — Arrasta para comparar</p>
+                  <p className="section-label">{t.beforeAfter}</p>
                   <BeforeAfterSlider />
                   <div style={{ marginTop: '14px', display: 'flex', gap: '10px' }}>
                     <button onClick={downloadImage} className="btn-gold" style={{ flex: 1 }}>
-                      ⬇ Guardar Imagem
+                      {t.saveImage}
                     </button>
                     <button onClick={() => setTransformedImage(null)} className="btn-ghost">
-                      Nova
+                      {t.newResult}
                     </button>
                   </div>
                 </motion.div>
@@ -502,10 +501,10 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
                     ✦
                   </motion.div>
                   <p style={{ fontFamily: 'Barlow, sans-serif', fontSize: '20px', color: '#39FF14' }}>
-                    A tua transformação aparecerá aqui
+                    {t.transformAppear}
                   </p>
                   <p style={{ fontSize: '13px', color: '#888888' }}>
-                    Seleciona um estilo e clica em Transformar
+                    {t.selectStyleHint}
                   </p>
                 </motion.div>
               )}
@@ -523,7 +522,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
               className="glass-inner"
               style={{ marginTop: '10px', padding: '20px' }}
             >
-              <Spinner message="A criar a tua transformação..." />
+              <Spinner message={t.loadingMsg} />
             </motion.div>
           )}
           {!isLoading && transformedImage && (
@@ -533,14 +532,14 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
               className="glass-inner"
               style={{ marginTop: '10px' }}
             >
-              <p className="section-label">Antes / Depois — Arrasta para comparar</p>
+              <p className="section-label">{t.beforeAfter}</p>
               <BeforeAfterSlider />
               <div style={{ marginTop: '14px', display: 'flex', gap: '10px' }}>
                 <button onClick={downloadImage} className="btn-gold" style={{ flex: 1 }}>
-                  ⬇ Guardar Imagem
+                  {t.saveImage}
                 </button>
                 <button onClick={() => setTransformedImage(null)} className="btn-ghost">
-                  Nova
+                  {t.newResult}
                 </button>
               </div>
             </motion.div>
