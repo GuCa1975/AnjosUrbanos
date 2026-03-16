@@ -14,6 +14,7 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCancel }) =>
   const streamRef = useRef<MediaStream | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorType, setErrorType] = useState<'permission' | 'notfound' | 'other' | null>(null);
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
 
   const startCamera = useCallback(async (mode: 'user' | 'environment') => {
@@ -24,19 +25,55 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCancel }) =>
     }
     setIsReady(false);
     setError(null);
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: mode, width: { ideal: 1080 }, height: { ideal: 1080 } },
-      });
-      streamRef.current = mediaStream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-        videoRef.current.onloadedmetadata = () => setIsReady(true);
+    setErrorType(null);
+
+    // Tentar várias configurações por ordem — mais compatível com tablets
+    const attempts = [
+      { video: { facingMode: { ideal: mode }, width: { ideal: 1280 }, height: { ideal: 720 } } },
+      { video: { facingMode: { ideal: mode } } },
+      { video: { facingMode: mode } },
+      { video: true }, // último recurso: qualquer câmara disponível
+    ];
+
+    let mediaStream: MediaStream | null = null;
+    let lastError: DOMException | null = null;
+
+    for (const constraints of attempts) {
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+        break; // sucesso — sair do loop
+      } catch (err) {
+        lastError = err as DOMException;
+        // Se for recusa de permissão, não vale a pena tentar mais
+        if (lastError?.name === 'NotAllowedError' || lastError?.name === 'PermissionDeniedError') {
+          break;
+        }
       }
-    } catch {
-      setError(t.cameraError);
     }
-  }, [t.cameraError]);
+
+    if (!mediaStream) {
+      if (lastError?.name === 'NotAllowedError' || lastError?.name === 'PermissionDeniedError') {
+        setErrorType('permission');
+        setError(t.cameraError);
+      } else if (lastError?.name === 'NotFoundError' || lastError?.name === 'DevicesNotFoundError') {
+        setErrorType('notfound');
+        setError(t.cameraError);
+      } else {
+        setErrorType('other');
+        setError(t.cameraError);
+      }
+      return;
+    }
+
+    streamRef.current = mediaStream;
+    if (videoRef.current) {
+      videoRef.current.srcObject = mediaStream;
+      videoRef.current.onloadedmetadata = () => {
+        videoRef.current?.play().catch(() => {});
+        setIsReady(true);
+      };
+    }
+  }, [t]);
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
@@ -77,6 +114,21 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCancel }) =>
     return () => stopCamera();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Mensagem de erro detalhada consoante o tipo
+  const getErrorMessage = () => {
+    if (errorType === 'permission') {
+      return t.lang === 'en'
+        ? 'Camera access was blocked. Please allow camera access in your browser settings and try again.'
+        : 'O acesso à câmara foi bloqueado. Permite o acesso à câmara nas definições do browser e tenta novamente.';
+    }
+    if (errorType === 'notfound') {
+      return t.lang === 'en'
+        ? 'No camera found on this device.'
+        : 'Nenhuma câmara encontrada neste dispositivo.';
+    }
+    return t.cameraError;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -98,15 +150,41 @@ const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCancel }) =>
         overflow: 'hidden',
         border: '1px solid rgba(57, 255, 20, 0.3)',
         background: '#111',
+        minHeight: error ? 'auto' : '300px',
       }}>
         {error ? (
           <div style={{
-            padding: '40px',
+            padding: '40px 24px',
             textAlign: 'center',
             color: '#888888',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '16px',
           }}>
-            <p style={{ fontSize: '40px', marginBottom: '16px' }}>📷</p>
-            <p style={{ color: '#FF8080', fontSize: '14px' }}>{error}</p>
+            <p style={{ fontSize: '48px', margin: 0 }}>📷</p>
+            <p style={{ color: '#FF8080', fontSize: '14px', lineHeight: '1.5', margin: 0 }}>
+              {getErrorMessage()}
+            </p>
+            {/* Botão para tentar novamente */}
+            {errorType !== 'notfound' && (
+              <button
+                onClick={() => startCamera(facingMode)}
+                style={{
+                  marginTop: '8px',
+                  padding: '12px 24px',
+                  background: 'rgba(57,255,20,0.12)',
+                  border: '1px solid rgba(57,255,20,0.4)',
+                  borderRadius: '8px',
+                  color: '#39FF14',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  touchAction: 'manipulation',
+                }}
+              >
+                🔄 {t.lang === 'en' ? 'Try Again' : 'Tentar Novamente'}
+              </button>
+            )}
           </div>
         ) : (
           <>
