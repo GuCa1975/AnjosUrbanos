@@ -49,8 +49,19 @@ const Header: React.FC = () => {
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
             letterSpacing: '1px',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '2px',
           }}>
             Anjos Urbanos
+            <sup style={{
+              fontSize: '0.5em',
+              lineHeight: 1,
+              marginTop: '3px',
+              WebkitTextFillColor: '#39FF14',
+              color: '#39FF14',
+              fontWeight: '400',
+            }}>®</sup>
           </h1>
           <p style={{
             fontSize: 'clamp(9px, 2vw, 11px)',
