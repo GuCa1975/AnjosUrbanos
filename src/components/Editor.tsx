@@ -37,6 +37,7 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
   const [error, setError] = useState<string | null>(null);
   const [sliderPosition, setSliderPosition] = useState(50);
   const sliderRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
 
   const handleTransform = async () => {
     if (!selectedStyle && !customPrompt) {
@@ -70,18 +71,33 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
     setSliderPosition(Math.min(Math.max(pos, 0), 100));
   }, []);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (e.buttons === 1) updateSliderPosition(e.clientX);
   }, [updateSliderPosition]);
-
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
     updateSliderPosition(e.touches[0].clientX);
   }, [updateSliderPosition]);
-
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     updateSliderPosition(e.touches[0].clientX);
   }, [updateSliderPosition]);
+  // Pointer Events (melhor suporte em todos os dispositivos)
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    isDragging.current = true;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    updateSliderPosition(e.clientX);
+  }, [updateSliderPosition]);
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!isDragging.current) return;
+    e.preventDefault();
+    updateSliderPosition(e.clientX);
+  }, [updateSliderPosition]);
+  const handlePointerUp = useCallback(() => {
+    isDragging.current = false;
+  }, []);
+  const nudgeSlider = useCallback((direction: 'left' | 'right') => {
+    setSliderPosition(prev => Math.min(Math.max(prev + (direction === 'right' ? 10 : -10), 0), 100));
+  }, []);;
 
   const downloadImage = async () => {
     if (!transformedImage) return;
@@ -135,18 +151,22 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
   };
 
   const BeforeAfterSlider = () => (
+    <div>
     <div
       ref={sliderRef}
-      onMouseMove={handleMouseMove}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
       style={{
         position: 'relative',
         borderRadius: '8px',
         overflow: 'hidden',
         cursor: 'ew-resize',
         userSelect: 'none',
-        touchAction: 'none',
+        touchAction: 'pan-y',
+        WebkitUserSelect: 'none',
+        WebkitTouchCallout: 'none',
       }}
     >
       <img
@@ -181,17 +201,19 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
         justifyContent: 'center',
       }}>
         <div style={{
-          width: '40px',
-          height: '40px',
+          width: '60px',
+          height: '60px',
           borderRadius: '50%',
           background: '#39FF14',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           color: '#000',
-          fontSize: '16px',
+          fontSize: '22px',
           fontWeight: 'bold',
-          boxShadow: '0 2px 12px rgba(57,255,20,0.5)',
+          boxShadow: '0 0 0 4px rgba(57,255,20,0.3), 0 2px 16px rgba(57,255,20,0.7)',
+          border: '3px solid #fff',
+          pointerEvents: 'none',
         }}>↔</div>
       </div>
       <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'rgba(0,0,0,0.75)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', color: '#fff', letterSpacing: '1px' }}>
@@ -200,6 +222,54 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
       <div style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(57,255,20,0.85)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', color: '#000', letterSpacing: '1px', fontWeight: 'bold' }}>
         {t.after}
       </div>
+    </div>
+    {/* Barra de controlo alternativa — fácil de usar em todos os dispositivos */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '12px' }}>
+      <button
+        onPointerDown={(e) => { e.preventDefault(); nudgeSlider('left'); }}
+        style={{
+          minWidth: '52px', minHeight: '52px',
+          padding: '0',
+          background: 'rgba(255,255,255,0.1)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: '10px',
+          color: '#fff',
+          fontSize: '22px',
+          cursor: 'pointer',
+          touchAction: 'manipulation',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0,
+        }}
+      >◀</button>
+      {/* Barra de progresso clicável */}
+      <div
+        style={{ flex: 1, height: '20px', background: 'rgba(255,255,255,0.08)', borderRadius: '10px', position: 'relative', cursor: 'pointer', touchAction: 'manipulation' }}
+        onPointerDown={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          const pos = ((e.clientX - rect.left) / rect.width) * 100;
+          setSliderPosition(Math.min(Math.max(pos, 0), 100));
+        }}
+      >
+        <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${sliderPosition}%`, background: '#39FF14', borderRadius: '10px', transition: 'width 0.05s' }} />
+        <div style={{ position: 'absolute', top: '50%', left: `${sliderPosition}%`, transform: 'translate(-50%, -50%)', width: '24px', height: '24px', borderRadius: '50%', background: '#39FF14', border: '2px solid #fff', boxShadow: '0 0 8px rgba(57,255,20,0.6)' }} />
+      </div>
+      <button
+        onPointerDown={(e) => { e.preventDefault(); nudgeSlider('right'); }}
+        style={{
+          minWidth: '52px', minHeight: '52px',
+          padding: '0',
+          background: 'rgba(57,255,20,0.15)',
+          border: '1px solid rgba(57,255,20,0.4)',
+          borderRadius: '10px',
+          color: '#39FF14',
+          fontSize: '22px',
+          cursor: 'pointer',
+          touchAction: 'manipulation',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0,
+        }}
+      >▶</button>
+    </div>
     </div>
   );
 
