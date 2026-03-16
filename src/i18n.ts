@@ -64,6 +64,8 @@ export interface Translations {
   };
   // Footer
   footer: string;
+  // Idioma actual (para uso interno)
+  lang: string;
 }
 
 export const translations: Record<Lang, Translations> = {
@@ -123,6 +125,7 @@ export const translations: Record<Lang, Translations> = {
       silver: 'Prata',
     },
     footer: '✦ Anjos Urbanos Virtual · Powered by Google Gemini AI ✦',
+    lang: 'pt',
   },
 
   en: {
@@ -181,5 +184,6 @@ export const translations: Record<Lang, Translations> = {
       silver: 'Silver',
     },
     footer: '✦ Anjos Urbanos Virtual · Powered by Google Gemini AI ✦',
+    lang: 'en',
   },
 };
