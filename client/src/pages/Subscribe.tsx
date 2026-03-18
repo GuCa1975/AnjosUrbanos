@@ -157,9 +157,6 @@ export default function Subscribe() {
                 <p className="text-xs text-muted-foreground">
                   Pagamento seguro processado pela Stripe
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  Para testar, use o cartão: <span className="font-mono font-medium text-foreground">4242 4242 4242 4242</span>
-                </p>
               </div>
             </CardContent>
           </Card>
