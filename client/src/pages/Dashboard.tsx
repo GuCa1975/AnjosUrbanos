@@ -93,28 +93,29 @@ export default function Dashboard() {
     }
   }, [loading, user, setLocation]);
 
-  const handleOpenTool = () => {
+    const handleOpenTool = () => {
+    const simStatus = simulationStatusQuery.data;
     // Admin tem sempre acesso ilimitado
     if (user?.role === "admin") {
+      if (user?.email) localStorage.setItem('au_user_email', user.email);
       window.open("https://anjos-urbanos-virtual.netlify.app", "_blank");
       return;
     }
-
-    const simStatus = simulationStatusQuery.data;
     if (!simStatus) return;
-
     if (simStatus.hasSubscription) {
+      // Subscritores têm acesso ilimitado — guarda email para rastreio mas não conta
+      if (user?.email) localStorage.setItem('au_user_email', user.email);
       window.open("https://anjos-urbanos-virtual.netlify.app", "_blank");
       return;
     }
-
     if (simStatus.freeUsed >= simStatus.freeLimit) {
       setShowUpgradeModal(true);
       return;
     }
-
-    // Regista a simulação gratuita e abre a ferramenta
-    recordUsageMutation.mutate();
+    // Guarda o email no localStorage para a app Netlify reportar a geração
+    // A contagem só acontece quando a IA gera uma imagem com sucesso
+    if (user?.email) localStorage.setItem('au_user_email', user.email);
+    window.open("https://anjos-urbanos-virtual.netlify.app", "_blank");
   };
 
   if (loading || hasAccessQuery.isLoading || simulationStatusQuery.isLoading) {

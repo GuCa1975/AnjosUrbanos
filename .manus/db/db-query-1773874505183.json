@@ -1,0 +1,59 @@
+{
+  "query": "SELECT id, name, email, freeSimulations, createdAt FROM users ORDER BY createdAt DESC LIMIT 20;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2yPYZ2iGbP3R6dR.9a76fff1d66a --database fFjzT76BdEK7cS957mMQeL --execute SELECT id, name, email, freeSimulations, createdAt FROM users ORDER BY createdAt DESC LIMIT 20;",
+  "rows": [
+    {
+      "id": "540001",
+      "name": "susanaoliveira397",
+      "email": "susanaoliveira397@gmail.com",
+      "freeSimulations": "2",
+      "createdAt": "2026-03-10 00:04:57"
+    },
+    {
+      "id": "300001",
+      "name": "Bárbara Mesquita",
+      "email": "barbaramsferreira@gmail.com",
+      "freeSimulations": "0",
+      "createdAt": "2026-03-09 10:17:28"
+    },
+    {
+      "id": "270001",
+      "name": "J Anargyrou UK",
+      "email": "janargyrou@gmail.com",
+      "freeSimulations": "2",
+      "createdAt": "2026-03-09 09:10:20"
+    },
+    {
+      "id": "180006",
+      "name": "Carlos Almeida",
+      "email": "arqueologia.digital25@gmail.com",
+      "freeSimulations": "1",
+      "createdAt": "2026-03-08 20:00:30"
+    },
+    {
+      "id": "30075",
+      "name": "Anjos Urbanos Cabeleireiros",
+      "email": "anjosurbanoscabeleireiros@gmail.com",
+      "freeSimulations": "0",
+      "createdAt": "2026-03-08 17:22:34"
+    },
+    {
+      "id": "32",
+      "name": "Carlos Almeida",
+      "email": "riversbeaches@gmail.com",
+      "freeSimulations": "0",
+      "createdAt": "2026-03-08 10:47:23"
+    },
+    {
+      "id": "1",
+      "name": "Carlos Almeida",
+      "email": "cmdoespiritosanto@gmail.com",
+      "freeSimulations": "0",
+      "createdAt": "2026-03-08 10:27:26"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\tfreeSimulations\tcreatedAt\n540001\tsusanaoliveira397\tsusanaoliveira397@gmail.com\t2\t2026-03-10 00:04:57\n300001\tBárbara Mesquita\tbarbaramsferreira@gmail.com\t0\t2026-03-09 10:17:28\n270001\tJ Anargyrou UK\tjanargyrou@gmail.com\t2\t2026-03-09 09:10:20\n180006\tCarlos Almeida\tarqueologia.digital25@gmail.com\t1\t2026-03-08 20:00:30\n30075\tAnjos Urbanos Cabeleireiros\tanjosurbanoscabeleireiros@gmail.com\t0\t2026-03-08 17:22:34\n32\tCarlos Almeida\triversbeaches@gmail.com\t0\t2026-03-08 10:47:23\n1\tCarlos Almeida\tcmdoespiritosanto@gmail.com\t0\t2026-03-08 10:27:26\n",
+  "stderr": "",
+  "execution_time_ms": 980
+}

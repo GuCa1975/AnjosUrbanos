@@ -17,6 +17,7 @@ import {
   getFreeSimulationsCount,
   getSalonByUserId,
   getSubscriptionByUserId,
+  getUserByEmail,
   incrementFreeSimulations,
   updateSalon,
   updateSubscriptionByStripeId,
@@ -154,36 +155,26 @@ export const appRouter = router({
 
   simulation: router({
     getStatus: protectedProcedure.query(async ({ ctx }) => {
-      if (ctx.user.role === 'admin') return { canSimulate: true, freeUsed: 0, freeLimit: 2, hasSubscription: true };
+      if (ctx.user.role === 'admin') return { canSimulate: true, freeUsed: 0, freeLimit: 5, hasSubscription: true };
       const [sub, freeUsed] = await Promise.all([
         getActiveSubscriptionByUserId(ctx.user.id),
         getFreeSimulationsCount(ctx.user.id),
       ]);
       const hasSubscription = !!sub;
-      const canSimulate = hasSubscription || freeUsed < 2;
-      return { canSimulate, freeUsed, freeLimit: 2, hasSubscription };
+      const canSimulate = hasSubscription || freeUsed < 5;
+      return { canSimulate, freeUsed, freeLimit: 5, hasSubscription };
     }),
     recordUsage: protectedProcedure.mutation(async ({ ctx }) => {
-      if (ctx.user.role === 'admin') return { freeUsed: 0, freeLimit: 2, hasSubscription: true };
+      // Apenas abre a ferramenta — NÃO conta geração aqui
+      // A contagem real é feita pelo endpoint /api/simulation/record quando a IA gera uma imagem
+      if (ctx.user.role === 'admin') return { freeUsed: 0, freeLimit: 5, hasSubscription: true };
       const sub = await getActiveSubscriptionByUserId(ctx.user.id);
-      if (sub) return { freeUsed: 0, freeLimit: 2, hasSubscription: true };
+      if (sub) return { freeUsed: 0, freeLimit: 5, hasSubscription: true };
       const freeUsed = await getFreeSimulationsCount(ctx.user.id);
-      if (freeUsed >= 2) {
+      if (freeUsed >= 5) {
         throw new TRPCError({ code: 'FORBIDDEN', message: 'Limite de simulações gratuitas atingido. Subscreva para continuar.' });
       }
-      const newCount = await incrementFreeSimulations(ctx.user.id);
-      // Quando atinge a 2ª simulação gratuita, notificar o owner
-      if (newCount >= 2) {
-        try {
-          await notifyOwner({
-            title: `📊 Utilizador atingiu limite gratuito`,
-            content: `O utilizador **${ctx.user.name || ctx.user.email}** (${ctx.user.email}) usou as 2 simulações gratuitas.\n\nEste é o momento ideal para fazer follow-up e converter em subscrição de 29€/mês.`,
-          });
-        } catch (e) {
-          console.warn('[Simulation] Falha ao notificar owner:', e);
-        }
-      }
-      return { freeUsed: newCount, freeLimit: 2, hasSubscription: false };
+      return { freeUsed, freeLimit: 5, hasSubscription: false };
     }),
   }),
 
@@ -219,6 +210,54 @@ export const appRouter = router({
 export type AppRouter = typeof appRouter;
 
 
+
+export function registerSimulationEndpoint(app: import('express').Express) {
+  // Endpoint público chamado pela app Netlify quando a IA gera uma imagem com sucesso
+  // Protegido por token secreto para evitar abusos
+  app.post('/api/simulation/record', async (req: import('express').Request, res: import('express').Response) => {
+    const authHeader = req.headers.authorization || '';
+    const token = authHeader.replace('Bearer ', '');
+    const expectedToken = process.env.SIMULATION_RECORD_TOKEN || process.env.JWT_SECRET || '';
+    if (!token || token !== expectedToken) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const { email } = req.body as { email?: string };
+    if (!email) {
+      return res.status(400).json({ error: 'Email required' });
+    }
+    try {
+      const user = await getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      // Se tem subscrição activa, não conta para o limite gratuito
+      const sub = await getActiveSubscriptionByUserId(user.id);
+      if (sub) {
+        return res.json({ ok: true, counted: false, reason: 'has_subscription' });
+      }
+      const freeUsed = await getFreeSimulationsCount(user.id);
+      if (freeUsed >= 5) {
+        return res.status(403).json({ error: 'Limite atingido', freeUsed, freeLimit: 5 });
+      }
+      const newCount = await incrementFreeSimulations(user.id);
+      // Notificar owner quando atinge o limite
+      if (newCount >= 5) {
+        try {
+          await notifyOwner({
+            title: `📊 Utilizador atingiu limite gratuito`,
+            content: `O utilizador **${user.name || user.email}** (${user.email}) usou as 5 simulações gratuitas.\n\nEste é o momento ideal para fazer follow-up e converter em subscrição de 29€/mês.`,
+          });
+        } catch (e) {
+          console.warn('[Simulation] Falha ao notificar owner:', e);
+        }
+      }
+      return res.json({ ok: true, counted: true, freeUsed: newCount, freeLimit: 5 });
+    } catch (err) {
+      console.error('[Simulation] Erro ao registar geração:', err);
+      return res.status(500).json({ error: 'Internal error' });
+    }
+  });
+}
 
 export function registerStripeWebhook(app: import('express').Express) {
   app.post(
