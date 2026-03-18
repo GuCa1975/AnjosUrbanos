@@ -220,7 +220,7 @@ export default function Home() {
             <div className="flex flex-wrap items-center justify-center gap-3 mt-5">
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground border border-border/50 rounded-full px-3 py-1.5">
                 <Gift className="h-3.5 w-3.5 text-primary" />
-                <span>2 simulações gratuitas</span>
+                <span>5 simulações gratuitas</span>
               </div>
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground border border-border/50 rounded-full px-3 py-1.5">
                 <Zap className="h-3.5 w-3.5 text-primary" />
@@ -578,13 +578,13 @@ export default function Home() {
               Pronto para transformar o seu salão?
             </h2>
             <p className="text-muted-foreground text-base mb-8">
-              Experimente grátis — 2 simulações sem cartão, depois 7 dias grátis ao subscrever.
+              Experimente grátis — 5 simulações sem cartão, depois 7 dias grátis ao subscrever.
             </p>
             <Button size="lg" onClick={handleGetStarted} className="text-base px-10 font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]">
               Experimentar Grátis Agora
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
-            <p className="text-sm text-muted-foreground mt-3">Sem cartão necessário para as primeiras 2 simulações</p>
+            <p className="text-sm text-muted-foreground mt-3">Sem cartão necessário para as primeiras 5 simulações</p>
           </div>
         </div>
       </section>

@@ -131,7 +131,7 @@ export default function Dashboard() {
   const salonName = salonQuery.data?.name || user?.name || "O meu Salão";
   const simStatus = simulationStatusQuery.data;
   const freeUsed = simStatus?.freeUsed ?? 0;
-  const freeLimit = simStatus?.freeLimit ?? 2;
+  const freeLimit = simStatus?.freeLimit ?? 5;
   const hasSubscription = simStatus?.hasSubscription ?? false;
   const canSimulate = simStatus?.canSimulate ?? false;
   const freeRemaining = Math.max(0, freeLimit - freeUsed);
@@ -254,7 +254,7 @@ export default function Dashboard() {
                 <div className="flex items-start gap-3">
                   <Zap className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-bold text-foreground mb-1 uppercase tracking-wide text-sm">Usou as 2 simulações gratuitas</p>
+                    <p className="font-bold text-foreground mb-1 uppercase tracking-wide text-sm">Usou as 5 simulações gratuitas</p>
                     <p className="text-sm text-muted-foreground">
                       Subscreva por 29€/mês para simulações ilimitadas e acesso completo à plataforma.
                     </p>
@@ -379,7 +379,7 @@ export default function Dashboard() {
               <Zap className="h-8 w-8 text-primary" />
             </div>
             <p className="text-muted-foreground text-sm mb-6">
-              Usou as suas <strong className="text-foreground">2 simulações gratuitas</strong>. Subscreva o plano profissional para simulações ilimitadas.
+              Usou as suas <strong className="text-foreground">5 simulações gratuitas</strong>. Subscreva o plano profissional para simulações ilimitadas.
             </p>
             <div className="bg-background/50 rounded-lg p-4 mb-6 text-left space-y-2">
               {[
