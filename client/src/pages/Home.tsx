@@ -5,7 +5,107 @@ import { Badge } from "@/components/ui/badge";
 import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { Scissors, Sparkles, Shield, BarChart3, CheckCircle, ArrowRight, Star, Gift, Zap } from "lucide-react";
+import { Scissors, Sparkles, Shield, BarChart3, CheckCircle, ArrowRight, Star, Gift, Zap, MapPin, Calendar, Clock, Users, GraduationCap, Mail, Phone, User, Tag } from "lucide-react";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+
+function FormacaoForm() {
+  const [formData, setFormData] = useState({ nome: '', telefone: '', email: '', mensagem: '' });
+  const [enviado, setEnviado] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const subject = encodeURIComponent('Inscrição Formação IA para Cabeleireiros — 18 Maio 2026');
+    const body = encodeURIComponent(
+      `Nome: ${formData.nome}\nTelefone: ${formData.telefone}\nEmail: ${formData.email}\n\nMensagem:\n${formData.mensagem || '(sem mensagem adicional)'}`
+    );
+    window.open(`mailto:caccportugal@gmail.com?subject=${subject}&body=${body}`, '_blank');
+    setEnviado(true);
+  };
+
+  if (enviado) {
+    return (
+      <div className="text-center py-8">
+        <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-4">
+          <CheckCircle className="h-8 w-8 text-primary" />
+        </div>
+        <h4 className="font-black text-foreground uppercase tracking-wide text-sm mb-2">Pedido Enviado!</h4>
+        <p className="text-sm text-muted-foreground mb-4">O seu cliente de email foi aberto com os dados preenchidos. Envie o email para completar a inscrição.</p>
+        <p className="text-xs text-muted-foreground">Será contactado pela Associação de Cabeleireiros de Portugal em breve.</p>
+        <button onClick={() => setEnviado(false)} className="mt-4 text-xs text-primary hover:underline">Enviar outro pedido</button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-1.5">
+        <Label htmlFor="nome" className="text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+          <User className="h-3 w-3" /> Nome Completo *
+        </Label>
+        <Input
+          id="nome"
+          required
+          placeholder="O seu nome"
+          value={formData.nome}
+          onChange={(e) => setFormData(p => ({ ...p, nome: e.target.value }))}
+          className="bg-background border-border/50 focus:border-primary/50"
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="telefone" className="text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+          <Phone className="h-3 w-3" /> Telefóne *
+        </Label>
+        <Input
+          id="telefone"
+          required
+          type="tel"
+          placeholder="+351 9XX XXX XXX"
+          value={formData.telefone}
+          onChange={(e) => setFormData(p => ({ ...p, telefone: e.target.value }))}
+          className="bg-background border-border/50 focus:border-primary/50"
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="email" className="text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+          <Mail className="h-3 w-3" /> Email *
+        </Label>
+        <Input
+          id="email"
+          required
+          type="email"
+          placeholder="o.seu@email.com"
+          value={formData.email}
+          onChange={(e) => setFormData(p => ({ ...p, email: e.target.value }))}
+          className="bg-background border-border/50 focus:border-primary/50"
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="mensagem" className="text-xs uppercase tracking-wider text-muted-foreground">
+          Mensagem (opcional)
+        </Label>
+        <Textarea
+          id="mensagem"
+          placeholder="Dúvidas, tipo de inscrição (sócio/não sócio/feira)..."
+          value={formData.mensagem}
+          onChange={(e) => setFormData(p => ({ ...p, mensagem: e.target.value }))}
+          className="bg-background border-border/50 focus:border-primary/50 resize-none"
+          rows={3}
+        />
+      </div>
+      <Button type="submit" className="w-full font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]" size="lg">
+        <Mail className="mr-2 h-4 w-4" />
+        Enviar Pedido de Inscrição
+      </Button>
+      <p className="text-xs text-muted-foreground text-center">
+        O seu pedido será enviado para{" "}
+        <a href="mailto:caccportugal@gmail.com" className="text-primary hover:underline">caccportugal@gmail.com</a>
+      </p>
+    </form>
+  );
+}
 
 export default function Home() {
   const { isAuthenticated, user, loading } = useAuth();
@@ -252,6 +352,220 @@ export default function Home() {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ExpoCosmética 2026 */}
+      <section id="expocosmetica" className="py-20 bg-secondary/30">
+        <div className="container">
+          <div className="text-center mb-12">
+            <Badge variant="outline" className="mb-4 border-primary/40 text-primary bg-primary/5 uppercase tracking-widest text-xs">
+              <Calendar className="h-3 w-3 mr-1" />
+              Evento Presencial
+            </Badge>
+            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">
+              Venha Conhecer-nos na <span className="text-primary">ExpoCosmética 2026</span>
+            </h2>
+            <p className="text-muted-foreground text-base max-w-2xl mx-auto">
+              Experimente a app ao vivo, fale com a nossa equipa e descubra como a Inteligência Artificial pode transformar o seu salão. Entrada gratuita no stand.
+            </p>
+          </div>
+          <div className="max-w-4xl mx-auto">
+            <Card className="border border-primary/40 bg-card shadow-[0_0_40px_rgba(57,255,20,0.08)] relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary" />
+              <CardContent className="p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                  <div>
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-12 h-12 rounded-sm bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                        <Sparkles className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-black text-foreground uppercase tracking-wide text-sm">Anjos Urbanos® Estúdio Virtual</p>
+                        <p className="text-xs text-muted-foreground">Demonstração ao vivo · Entrada gratuita</p>
+                      </div>
+                    </div>
+                    <div className="space-y-3 mb-6">
+                      <div className="flex items-center gap-3 text-sm">
+                        <Calendar className="h-4 w-4 text-primary shrink-0" />
+                        <span className="text-foreground font-bold">12 e 13 de Abril de 2026</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm">
+                        <MapPin className="h-4 w-4 text-primary shrink-0" />
+                        <span className="text-foreground">Stand da Associação de Cabeleireiros de Portugal</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm">
+                        <Sparkles className="h-4 w-4 text-primary shrink-0" />
+                        <span className="text-foreground">Simulação ao vivo com o seu próprio telemóvel</span>
+                      </div>
+                    </div>
+                    <div className="bg-primary/5 border border-primary/20 rounded-sm p-4">
+                      <p className="text-xs text-primary font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
+                        <Tag className="h-3 w-3" />
+                        Oferta Exclusiva para Visitantes
+                      </p>
+                      <p className="text-sm text-foreground">
+                        Quem se inscrever na formação de IA durante os dias da feira beneficia de <strong className="text-primary">desconto especial</strong> no preço de inscrição.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center justify-center text-center gap-4">
+                    <div className="flex gap-4">
+                      <div className="border border-primary/40 rounded-sm px-6 py-4 bg-primary/5">
+                        <p className="text-3xl font-black text-primary">12</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-widest">Abril</p>
+                      </div>
+                      <div className="border border-primary/40 rounded-sm px-6 py-4 bg-primary/5">
+                        <p className="text-3xl font-black text-primary">13</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-widest">Abril</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground max-w-xs">
+                      Traga o seu telemóvel e experimente a simulação de cabelo com IA em tempo real.
+                    </p>
+                    <Button
+                      variant="outline"
+                      className="border-primary/40 text-primary hover:bg-primary/10 uppercase tracking-wider text-xs font-bold"
+                      onClick={() => document.getElementById('formacao')?.scrollIntoView({ behavior: 'smooth' })}
+                    >
+                      Ver Formação com Desconto de Feira
+                      <ArrowRight className="ml-2 h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Formação de IA */}
+      <section id="formacao" className="py-20">
+        <div className="container">
+          <div className="text-center mb-12">
+            <Badge variant="outline" className="mb-4 border-primary/40 text-primary bg-primary/5 uppercase tracking-widest text-xs">
+              <GraduationCap className="h-3 w-3 mr-1" />
+              Formação Profissional
+            </Badge>
+            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">
+              Inteligência Artificial <span className="text-primary">Para Cabeleireiros</span>
+            </h2>
+            <p className="text-muted-foreground text-base max-w-2xl mx-auto">
+              Uma formação prática e intensiva para aprender a usar as ferramentas de IA mais poderosas no seu trabalho diário.
+            </p>
+          </div>
+          <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Info da formação */}
+            <div className="space-y-6">
+              <Card className="border-border/50 bg-card">
+                <CardContent className="p-6">
+                  <h3 className="font-black text-foreground uppercase tracking-wide text-sm mb-4 flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-primary" />
+                    Detalhes da Formação
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 text-sm">
+                      <Calendar className="h-4 w-4 text-primary shrink-0" />
+                      <div>
+                        <span className="text-foreground font-bold">18 de Maio de 2026</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm">
+                      <Clock className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-foreground">Das 10h00 às 17h00 (7 horas)</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm">
+                      <MapPin className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-foreground">Porto · Instalações da Associação de Cabeleireiros de Portugal</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm">
+                      <Users className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-foreground font-bold text-primary">Vagas limitadas — máximo 15 participantes</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-border/50 bg-card">
+                <CardContent className="p-6">
+                  <h3 className="font-black text-foreground uppercase tracking-wide text-sm mb-4 flex items-center gap-2">
+                    <GraduationCap className="h-4 w-4 text-primary" />
+                    O que vai aprender
+                  </h3>
+                  <ul className="space-y-2">
+                    {[
+                      "Simulação de cortes e cores com Inteligência Artificial",
+                      "Como criar Reels profissionais para o seu salão",
+                      "Optimização de imagens de baixa resolução para redes sociais",
+                      "Ferramentas de IA para marketing e captação de clientes",
+                      "Automatização de tarefas repetitivas no salão",
+                    ].map((item) => (
+                      <li key={item} className="flex items-start gap-3 text-sm">
+                        <CheckCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                        <span className="text-foreground">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card className="border border-primary/40 bg-primary/5">
+                <CardContent className="p-6">
+                  <h3 className="font-black text-foreground uppercase tracking-wide text-sm mb-4 flex items-center gap-2">
+                    <Tag className="h-4 w-4 text-primary" />
+                    Preços de Inscrição
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-background rounded-sm border border-border/50">
+                      <div>
+                        <p className="text-sm font-bold text-foreground">Sócios da Associação</p>
+                        <p className="text-xs text-muted-foreground">Preço normal</p>
+                      </div>
+                      <span className="text-xl font-black text-foreground">100€</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-background rounded-sm border border-border/50">
+                      <div>
+                        <p className="text-sm font-bold text-foreground">Não Sócios</p>
+                        <p className="text-xs text-muted-foreground">Preço normal</p>
+                      </div>
+                      <span className="text-xl font-black text-foreground">150€</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-primary/10 rounded-sm border border-primary/30">
+                      <div>
+                        <p className="text-sm font-bold text-primary">Inscrição na Feira</p>
+                        <p className="text-xs text-primary/70">Desconto exclusivo ExpoCosmética</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xl font-black text-primary">100€</span>
+                        <p className="text-xs text-primary/70">sócios e não sócios</p>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-3 text-center">
+                    * Desconto de feira válido apenas para inscrições realizadas nos dias 12 e 13 de Abril na ExpoCosmética
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Formulário de inscrição */}
+            <div>
+              <Card className="border border-primary/40 bg-card shadow-[0_0_40px_rgba(57,255,20,0.08)] relative overflow-hidden sticky top-24">
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary" />
+                <CardContent className="p-8">
+                  <div className="text-center mb-6">
+                    <Badge className="mb-3 bg-primary/10 text-primary border-primary/30 hover:bg-primary/10 uppercase tracking-widest text-xs">
+                      <Users className="h-3 w-3 mr-1" />
+                      Vagas Limitadas · 15 Lugares
+                    </Badge>
+                    <h3 className="font-black text-foreground uppercase tracking-wide text-base">Pedir Informações / Inscrição</h3>
+                    <p className="text-xs text-muted-foreground mt-1">Preencha o formulário e entraremos em contacto brevemente</p>
+                  </div>
+                  <FormacaoForm />
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
