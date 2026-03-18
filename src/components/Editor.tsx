@@ -57,6 +57,23 @@ const Editor: React.FC<EditorProps> = ({ imageBase64, imageMimeType, onReset }) 
         customPrompt: customPrompt || undefined,
       });
       setTransformedImage(result);
+      // Reportar geração bem-sucedida ao servidor (só conta quando a IA gera imagem)
+      try {
+        const userEmail = localStorage.getItem('au_user_email');
+        if (userEmail) {
+          await fetch('https://anjurbanos-ffjzt76b.manus.space/api/simulation/record', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${import.meta.env.VITE_RECORD_TOKEN || ''}`,
+            },
+            body: JSON.stringify({ email: userEmail }),
+          });
+        }
+      } catch (e) {
+        // Falha silenciosa — não bloqueia o utilizador
+        console.warn('[Record] Falha ao registar geração:', e);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : t.errorTransform);
     } finally {
