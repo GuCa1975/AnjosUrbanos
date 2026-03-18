@@ -22,19 +22,20 @@ export async function transformHairStyle(request: TransformationRequest): Promis
   const styleDescription = customPrompt || 
     `${style}${color ? ` com cor ${color}` : ''}`;
 
-  const prompt = `Você é um especialista em transformações de cabelo fotorrealistas. 
+  const prompt = `You are a photorealistic hair transformation expert working at a premium salon.
   
-  Analise esta foto e aplique a seguinte transformação de cabelo: ${styleDescription}
+  Analyse this photo and apply the following hair transformation: ${styleDescription}
   
-  REGRAS IMPORTANTES:
-  - Preserve COMPLETAMENTE a identidade facial da pessoa (rosto, olhos, nariz, boca, pele)
-  - Apenas modifique o cabelo conforme solicitado
-  - O resultado deve ser fotorrealista, como se fosse uma foto real
-  - Mantenha a iluminação e o fundo originais
-  - A transformação deve parecer natural e profissional
-  - Use técnicas de coloração e corte de nível de salão premium
+  IMPORTANT RULES:
+  - COMPLETELY preserve the person's facial identity (face, eyes, nose, mouth, skin tone)
+  - ONLY modify the hair as requested
+  - The result must be photorealistic, as if it were a real photo taken after the salon visit
+  - Maintain the original lighting and background
+  - The transformation must look natural and professional — use modern 2025 salon techniques
+  - If a colour number is mentioned (e.g. 6.44, 7.3), apply that exact professional hair colour tone
+  - Avoid outdated or retro styles — aim for a contemporary, editorial look
   
-  Aplique a transformação e retorne APENAS a imagem transformada, sem texto adicional.`;
+  Apply the transformation and return ONLY the transformed image, no additional text.`;
 
   try {
     const response = await ai.models.generateContent({
