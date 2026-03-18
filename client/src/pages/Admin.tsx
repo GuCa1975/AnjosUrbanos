@@ -6,7 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import {
   Scissors, Users, CreditCard, TrendingUp, ArrowLeft,
-  Loader2, CheckCircle2, XCircle, AlertCircle, Euro
+  Loader2, CheckCircle2, XCircle, AlertCircle, Euro, Zap, Activity
 } from "lucide-react";
 import { useEffect } from "react";
 
@@ -45,6 +45,8 @@ export default function Admin() {
 
   const stats = statsQuery.data;
   const clients = clientsQuery.data || [];
+  const totalGenerations = clients.reduce((sum, c) => sum + (c.freeSimulations ?? 0), 0);
+  const usersAtLimit = clients.filter(c => !c.subscription && (c.freeSimulations ?? 0) >= 5).length;
 
   const getStatusBadge = (status: string | null | undefined) => {
     switch (status) {
@@ -104,6 +106,7 @@ export default function Admin() {
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
           </div>
         ) : stats ? (
+          <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <Card className="border-border/50 bg-card">
               <CardHeader className="pb-2">
@@ -153,6 +156,33 @@ export default function Admin() {
               </CardContent>
             </Card>
           </div>
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            <Card className="border-border/50 bg-card">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
+                  <Zap className="h-3.5 w-3.5 text-primary" />
+                  Total de Gerações IA
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-black text-foreground">{totalGenerations}</p>
+                <p className="text-xs text-muted-foreground mt-1">simulações realizadas</p>
+              </CardContent>
+            </Card>
+            <Card className="border-amber-500/30 bg-amber-500/5">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
+                  <Activity className="h-3.5 w-3.5 text-amber-400" />
+                  Prontos para Converter
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-black text-amber-400">{usersAtLimit}</p>
+                <p className="text-xs text-muted-foreground mt-1">atingiram o limite gratuito</p>
+              </CardContent>
+            </Card>
+          </div>
+          </>
         ) : null}
 
         {/* Clients Table */}
@@ -181,12 +211,13 @@ export default function Admin() {
                       <th className="text-left py-3 px-2 font-medium text-muted-foreground uppercase text-xs tracking-wider">Utilizador</th>
                       <th className="text-left py-3 px-2 font-medium text-muted-foreground uppercase text-xs tracking-wider">Salão</th>
                       <th className="text-left py-3 px-2 font-medium text-muted-foreground uppercase text-xs tracking-wider">Subscrição</th>
+                      <th className="text-center py-3 px-2 font-medium text-muted-foreground uppercase text-xs tracking-wider">Gerações IA</th>
                       <th className="text-left py-3 px-2 font-medium text-muted-foreground uppercase text-xs tracking-wider">Renovação</th>
                       <th className="text-left py-3 px-2 font-medium text-muted-foreground uppercase text-xs tracking-wider">Registado</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {clients.map(({ user: u, salon, subscription }) => (
+                    {clients.map(({ user: u, salon, subscription, freeSimulations, lastActivity }) => (
                       <tr key={u.id} className="border-b border-border/30 last:border-0 hover:bg-muted/20 transition-colors">
                         <td className="py-3 px-2">
                           <div>
@@ -199,6 +230,29 @@ export default function Admin() {
                         </td>
                         <td className="py-3 px-2">
                           {getStatusBadge(subscription?.status)}
+                        </td>
+                        <td className="py-3 px-2 text-center">
+                          {subscription?.status === 'active' ? (
+                            <span className="text-xs text-primary font-bold">Ilimitado</span>
+                          ) : (
+                            <div className="flex flex-col items-center gap-1">
+                              <span className={`text-sm font-black ${
+                                (freeSimulations ?? 0) >= 5 ? 'text-amber-400' :
+                                (freeSimulations ?? 0) >= 3 ? 'text-yellow-400' :
+                                'text-foreground'
+                              }`}>{freeSimulations ?? 0}/5</span>
+                              <div className="w-12 h-1 bg-border/50 rounded-full overflow-hidden">
+                                <div
+                                  className={`h-full rounded-full transition-all ${
+                                    (freeSimulations ?? 0) >= 5 ? 'bg-amber-400' :
+                                    (freeSimulations ?? 0) >= 3 ? 'bg-yellow-400' :
+                                    'bg-primary'
+                                  }`}
+                                  style={{ width: `${Math.min(100, ((freeSimulations ?? 0) / 5) * 100)}%` }}
+                                />
+                              </div>
+                            </div>
+                          )}
                         </td>
                         <td className="py-3 px-2 text-muted-foreground text-xs">
                           {formatDate(subscription?.currentPeriodEnd)}

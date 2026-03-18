@@ -202,6 +202,8 @@ export const appRouter = router({
           user,
           salon: allSalons.find((s) => s.userId === user.id) || null,
           subscription: allSubs.find((s) => s.userId === user.id) || null,
+          freeSimulations: user.freeSimulations ?? 0,
+          lastActivity: user.updatedAt,
         }));
     }),
   }),
