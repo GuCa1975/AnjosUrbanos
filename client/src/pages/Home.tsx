@@ -11,10 +11,152 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
-function FormacaoForm() {
+type Lang = "pt" | "es" | "en";
+
+const translations: Record<Lang, Record<string, string>> = {
+  pt: {
+    dashboard: "Dashboard", activateSubscription: "Activar Subscrição", login: "Entrar", startNow: "Começar Agora",
+    heroSubtitle: "Powered by Gemini AI", heroTitle1: "More Than", heroTitle2: "Hairstyle",
+    heroDesc: "Mostre aos seus clientes o resultado final antes de qualquer corte ou coloração. Aumente a confiança e eleve a experiência do seu salão.",
+    tryNow: "Experimentar Agora", seePrices: "Ver Preços",
+    badge5sims: "5 simulações gratuitas", badge7days: "7 dias grátis ao subscrever", badgeNoCard: "Sem cartão para experimentar",
+    featuresTitle: "Tudo o que o seu salão precisa",
+    featuresDesc: "Uma plataforma completa desenvolvida especialmente para profissionais de cabeleireiro em Portugal.",
+    feat1Title: "Simulação de Penteados com IA", feat1Desc: "Mostre aos seus clientes como ficam com diferentes penteados antes de qualquer corte. Tecnologia de ponta ao serviço do seu salão.",
+    feat2Title: "Acesso Seguro e Exclusivo", feat2Desc: "Cada salão tem o seu acesso privado. Os seus dados e os dos seus clientes estão sempre protegidos.",
+    feat3Title: "Painel de Gestão", feat3Desc: "Gira a sua subscrição, consulte o histórico e controle tudo a partir de um painel intuitivo.",
+    feat4Title: "Ferramenta Profissional", feat4Desc: "Desenvolvida especificamente para cabeleireiros profissionais. Simples de usar, poderosa nos resultados.",
+    pricingTitle: "Preço simples e transparente", pricingDesc: "Um único plano com tudo incluído. Sem surpresas.",
+    planBadge: "Plano Profissional", perMonth: "/mês", perSalon: "por salão · faturação mensal", trialBadge: "7 dias grátis",
+    pricingItem1: "7 dias gratuitos para experimentar", pricingItem2: "Simulação de penteados com IA ilimitada",
+    pricingItem3: "Assistente virtual para clientes", pricingItem4: "Painel de gestão do salão",
+    pricingItem5: "Suporte por email", pricingItem6: "Actualizações incluídas",
+    startTrial: "Começar com 7 dias grátis", trialNote: "7 dias gratuitos · depois 29€/mês · cancele quando quiser", questions: "Tem dúvidas?",
+    testimonialsTitle: "O que dizem os nossos clientes",
+    test1Text: "Os meus clientes adoram ver o resultado antes de decidirem. As vendas de serviços premium aumentaram 40%.", test1Name: "Maria Santos", test1Salon: "Salão Elegance, Lisboa",
+    test2Text: "Uma ferramenta indispensável. Economizo tempo nas consultas e os clientes saem sempre satisfeitos.", test2Name: "João Ferreira", test2Salon: "Hair Studio Porto",
+    test3Text: "Simples de usar e os resultados são impressionantes. Recomendo a todos os colegas.", test3Name: "Ana Costa", test3Salon: "Beleza & Arte, Braga",
+    eventBadge: "Evento Presencial", expoTitle: "Venha Conhecer-nos na",
+    expoDesc: "Experimente a app ao vivo, fale com a nossa equipa e descubra como a Inteligência Artificial pode transformar o seu salão. Entrada gratuita no stand.",
+    expoStudio: "Anjos Urbanos® Estúdio Virtual", expoLive: "Demonstração ao vivo · Entrada gratuita",
+    expoDates: "12 e 13 de Abril de 2026", expoStand: "Stand da Associação de Cabeleireiros de Portugal",
+    expoSim: "Simulação ao vivo com o seu próprio telemóvel", expoFree: "Entrada gratuita para profissionais",
+    expoVisit: "Visite-nos", expoVisitDesc: "Venha experimentar a tecnologia em primeira mão. A nossa equipa estará disponível para demonstrações personalizadas.",
+    formacaoBadge: "Formação Profissional", formacaoTitle: "Formação de IA para Cabeleireiros",
+    formacaoDesc: "Aprenda a dominar as ferramentas de Inteligência Artificial para transformar o seu negócio. Formação prática e intensiva.",
+    formacaoDate: "18 de Maio de 2026", formacaoLocal: "Porto (local a confirmar)", formacaoDuration: "1 dia · 9h00 às 18h00", formacaoSpots: "15 vagas disponíveis",
+    formacaoProgram: "Programa da Formação",
+    prog1: "Introdução à IA no sector da beleza", prog2: "Prática com a ferramenta Anjos Urbanos Virtual",
+    prog3: "Estratégias de venda com simulação de penteados", prog4: "Marketing digital para cabeleireiros", prog5: "Casos práticos e simulações reais",
+    formacaoPrices: "Preços", socios: "Sócios da Associação", naoSocios: "Não Sócios", precoNormal: "Preço normal",
+    inscricaoFeira: "Inscrição na Feira", descontoExpo: "Desconto exclusivo ExpoCosmética", sociosENaoSocios: "sócios e não sócios",
+    discountNote: "* Desconto de feira válido apenas para inscrições realizadas nos dias 12 e 13 de Abril na ExpoCosmética",
+    vagasLimitadas: "Vagas Limitadas · 15 Lugares", formTitle: "Pedir Informações / Inscrição", formDesc: "Preencha o formulário e entraremos em contacto brevemente",
+    formNome: "Nome Completo *", formTelefone: "Telefone *", formEmail: "Email *", formMensagem: "Mensagem (opcional)",
+    formMensagemPlaceholder: "Dúvidas, tipo de inscrição (sócio/não sócio/feira)...", formSubmit: "Enviar Pedido de Inscrição",
+    formSentTo: "O seu pedido será enviado para", formSentTitle: "Pedido Enviado!",
+    formSentDesc: "O seu cliente de email foi aberto com os dados preenchidos. Envie o email para completar a inscrição.",
+    formSentNote: "Será contactado pela Associação de Cabeleireiros de Portugal em breve.", formSendAnother: "Enviar outro pedido",
+    ctaTitle: "Pronto para transformar o seu salão?", ctaDesc: "Experimente grátis — 5 simulações sem cartão, depois 7 dias grátis ao subscrever.",
+    ctaBtn: "Experimentar Grátis Agora", ctaNote: "Sem cartão necessário para as primeiras 5 simulações", rights: "Todos os direitos reservados.",
+  },
+  es: {
+    dashboard: "Panel", activateSubscription: "Activar Suscripción", login: "Entrar", startNow: "Empezar Ahora",
+    heroSubtitle: "Powered by Gemini AI", heroTitle1: "More Than", heroTitle2: "Hairstyle",
+    heroDesc: "Muestre a sus clientes el resultado final antes de cualquier corte o coloración. Aumente la confianza y eleve la experiencia de su salón.",
+    tryNow: "Probar Ahora", seePrices: "Ver Precios",
+    badge5sims: "5 simulaciones gratuitas", badge7days: "7 días gratis al suscribirse", badgeNoCard: "Sin tarjeta para probar",
+    featuresTitle: "Todo lo que su salón necesita",
+    featuresDesc: "Una plataforma completa desarrollada especialmente para profesionales de peluquería.",
+    feat1Title: "Simulación de Peinados con IA", feat1Desc: "Muestre a sus clientes cómo quedarían con diferentes peinados antes de cualquier corte. Tecnología de vanguardia al servicio de su salón.",
+    feat2Title: "Acceso Seguro y Exclusivo", feat2Desc: "Cada salón tiene su acceso privado. Sus datos y los de sus clientes están siempre protegidos.",
+    feat3Title: "Panel de Gestión", feat3Desc: "Gestione su suscripción, consulte el historial y controle todo desde un panel intuitivo.",
+    feat4Title: "Herramienta Profesional", feat4Desc: "Desarrollada específicamente para peluqueros profesionales. Fácil de usar, potente en resultados.",
+    pricingTitle: "Precio simple y transparente", pricingDesc: "Un único plan con todo incluido. Sin sorpresas.",
+    planBadge: "Plan Profesional", perMonth: "/mes", perSalon: "por salón · facturación mensual", trialBadge: "7 días gratis",
+    pricingItem1: "7 días gratuitos para probar", pricingItem2: "Simulación de peinados con IA ilimitada",
+    pricingItem3: "Asistente virtual para clientes", pricingItem4: "Panel de gestión del salón",
+    pricingItem5: "Soporte por email", pricingItem6: "Actualizaciones incluidas",
+    startTrial: "Empezar con 7 días gratis", trialNote: "7 días gratuitos · luego 29€/mes · cancele cuando quiera", questions: "¿Tiene dudas?",
+    testimonialsTitle: "Lo que dicen nuestros clientes",
+    test1Text: "Mis clientes adoran ver el resultado antes de decidir. Las ventas de servicios premium aumentaron un 40%.", test1Name: "María Santos", test1Salon: "Salón Elegance, Lisboa",
+    test2Text: "Una herramienta indispensable. Ahorro tiempo en las consultas y los clientes siempre salen satisfechos.", test2Name: "Juan Ferreira", test2Salon: "Hair Studio Porto",
+    test3Text: "Fácil de usar y los resultados son impresionantes. Se la recomiendo a todos mis colegas.", test3Name: "Ana Costa", test3Salon: "Beleza & Arte, Braga",
+    eventBadge: "Evento Presencial", expoTitle: "Visítenos en la",
+    expoDesc: "Pruebe la app en vivo, hable con nuestro equipo y descubra cómo la Inteligencia Artificial puede transformar su salón. Entrada gratuita en el stand.",
+    expoStudio: "Anjos Urbanos® Estudio Virtual", expoLive: "Demostración en vivo · Entrada gratuita",
+    expoDates: "12 y 13 de Abril de 2026", expoStand: "Stand de la Asociación de Peluqueros de Portugal",
+    expoSim: "Simulación en vivo con su propio teléfono", expoFree: "Entrada gratuita para profesionales",
+    expoVisit: "Visítenos", expoVisitDesc: "Venga a probar la tecnología de primera mano. Nuestro equipo estará disponible para demostraciones personalizadas.",
+    formacaoBadge: "Formación Profesional", formacaoTitle: "Formación de IA para Peluqueros",
+    formacaoDesc: "Aprenda a dominar las herramientas de Inteligencia Artificial para transformar su negocio. Formación práctica e intensiva.",
+    formacaoDate: "18 de Mayo de 2026", formacaoLocal: "Oporto (lugar por confirmar)", formacaoDuration: "1 día · 9h00 a 18h00", formacaoSpots: "15 plazas disponibles",
+    formacaoProgram: "Programa de Formación",
+    prog1: "Introducción a la IA en el sector de la belleza", prog2: "Práctica con la herramienta Anjos Urbanos Virtual",
+    prog3: "Estrategias de venta con simulación de peinados", prog4: "Marketing digital para peluqueros", prog5: "Casos prácticos y simulaciones reales",
+    formacaoPrices: "Precios", socios: "Socios de la Asociación", naoSocios: "No Socios", precoNormal: "Precio normal",
+    inscricaoFeira: "Inscripción en la Feria", descontoExpo: "Descuento exclusivo ExpoCosmética", sociosENaoSocios: "socios y no socios",
+    discountNote: "* Descuento de feria válido solo para inscripciones realizadas los días 12 y 13 de Abril en ExpoCosmética",
+    vagasLimitadas: "Plazas Limitadas · 15 Lugares", formTitle: "Pedir Información / Inscripción", formDesc: "Rellene el formulario y nos pondremos en contacto brevemente",
+    formNome: "Nombre Completo *", formTelefone: "Teléfono *", formEmail: "Email *", formMensagem: "Mensaje (opcional)",
+    formMensagemPlaceholder: "Dudas, tipo de inscripción (socio/no socio/feria)...", formSubmit: "Enviar Solicitud de Inscripción",
+    formSentTo: "Su solicitud será enviada a", formSentTitle: "¡Solicitud Enviada!",
+    formSentDesc: "Su cliente de email se abrió con los datos rellenados. Envíe el email para completar la inscripción.",
+    formSentNote: "Será contactado por la Asociación de Peluqueros de Portugal en breve.", formSendAnother: "Enviar otra solicitud",
+    ctaTitle: "¿Listo para transformar su salón?", ctaDesc: "Pruebe gratis — 5 simulaciones sin tarjeta, luego 7 días gratis al suscribirse.",
+    ctaBtn: "Probar Gratis Ahora", ctaNote: "Sin tarjeta necesaria para las primeras 5 simulaciones", rights: "Todos los derechos reservados.",
+  },
+  en: {
+    dashboard: "Dashboard", activateSubscription: "Activate Subscription", login: "Sign In", startNow: "Get Started",
+    heroSubtitle: "Powered by Gemini AI", heroTitle1: "More Than", heroTitle2: "Hairstyle",
+    heroDesc: "Show your clients the final result before any cut or colour. Boost confidence and elevate your salon experience.",
+    tryNow: "Try Now", seePrices: "See Pricing",
+    badge5sims: "5 free simulations", badge7days: "7-day free trial on subscribe", badgeNoCard: "No card to try",
+    featuresTitle: "Everything your salon needs",
+    featuresDesc: "A complete platform built specifically for professional hairstylists.",
+    feat1Title: "AI Hairstyle Simulation", feat1Desc: "Show clients how they'd look with different hairstyles before any cut. Cutting-edge technology at your salon's service.",
+    feat2Title: "Secure & Exclusive Access", feat2Desc: "Each salon has its own private access. Your data and your clients' data are always protected.",
+    feat3Title: "Management Dashboard", feat3Desc: "Manage your subscription, check history and control everything from an intuitive dashboard.",
+    feat4Title: "Professional Tool", feat4Desc: "Built specifically for professional hairstylists. Simple to use, powerful in results.",
+    pricingTitle: "Simple, transparent pricing", pricingDesc: "One plan with everything included. No surprises.",
+    planBadge: "Professional Plan", perMonth: "/month", perSalon: "per salon · monthly billing", trialBadge: "7 days free",
+    pricingItem1: "7-day free trial", pricingItem2: "Unlimited AI hairstyle simulation",
+    pricingItem3: "Virtual assistant for clients", pricingItem4: "Salon management dashboard",
+    pricingItem5: "Email support", pricingItem6: "Updates included",
+    startTrial: "Start 7-day free trial", trialNote: "7 days free · then €29/month · cancel anytime", questions: "Have questions?",
+    testimonialsTitle: "What our clients say",
+    test1Text: "My clients love seeing the result before deciding. Premium service sales increased by 40%.", test1Name: "Maria Santos", test1Salon: "Salão Elegance, Lisbon",
+    test2Text: "An indispensable tool. I save time in consultations and clients always leave satisfied.", test2Name: "João Ferreira", test2Salon: "Hair Studio Porto",
+    test3Text: "Easy to use and the results are impressive. I recommend it to all my colleagues.", test3Name: "Ana Costa", test3Salon: "Beleza & Arte, Braga",
+    eventBadge: "In-Person Event", expoTitle: "Visit us at",
+    expoDesc: "Try the app live, talk to our team and discover how Artificial Intelligence can transform your salon. Free entry at the stand.",
+    expoStudio: "Anjos Urbanos® Virtual Studio", expoLive: "Live demonstration · Free entry",
+    expoDates: "April 12 & 13, 2026", expoStand: "Portuguese Hairdressers Association Stand",
+    expoSim: "Live simulation with your own phone", expoFree: "Free entry for professionals",
+    expoVisit: "Visit us", expoVisitDesc: "Come and experience the technology first-hand. Our team will be available for personalised demonstrations.",
+    formacaoBadge: "Professional Training", formacaoTitle: "AI Training for Hairstylists",
+    formacaoDesc: "Learn to master Artificial Intelligence tools to transform your business. Practical and intensive training.",
+    formacaoDate: "May 18, 2026", formacaoLocal: "Porto (venue to be confirmed)", formacaoDuration: "1 day · 9am to 6pm", formacaoSpots: "15 spots available",
+    formacaoProgram: "Training Programme",
+    prog1: "Introduction to AI in the beauty sector", prog2: "Hands-on with Anjos Urbanos Virtual tool",
+    prog3: "Sales strategies with hairstyle simulation", prog4: "Digital marketing for hairstylists", prog5: "Practical cases and real simulations",
+    formacaoPrices: "Prices", socios: "Association Members", naoSocios: "Non-Members", precoNormal: "Regular price",
+    inscricaoFeira: "Fair Registration", descontoExpo: "Exclusive ExpoCosmética discount", sociosENaoSocios: "members and non-members",
+    discountNote: "* Fair discount valid only for registrations made on April 12 & 13 at ExpoCosmética",
+    vagasLimitadas: "Limited Spots · 15 Places", formTitle: "Request Information / Registration", formDesc: "Fill in the form and we'll get in touch shortly",
+    formNome: "Full Name *", formTelefone: "Phone *", formEmail: "Email *", formMensagem: "Message (optional)",
+    formMensagemPlaceholder: "Questions, registration type (member/non-member/fair)...", formSubmit: "Send Registration Request",
+    formSentTo: "Your request will be sent to", formSentTitle: "Request Sent!",
+    formSentDesc: "Your email client opened with the details filled in. Send the email to complete the registration.",
+    formSentNote: "You will be contacted by the Portuguese Hairdressers Association shortly.", formSendAnother: "Send another request",
+    ctaTitle: "Ready to transform your salon?", ctaDesc: "Try for free — 5 simulations without a card, then 7 days free on subscribe.",
+    ctaBtn: "Try for Free Now", ctaNote: "No card required for the first 5 simulations", rights: "All rights reserved.",
+  },
+};
+
+function FormacaoForm({ lang, tr }: { lang: Lang; tr: Record<string, string> }) {
   const [formData, setFormData] = useState({ nome: '', telefone: '', email: '', mensagem: '' });
   const [enviado, setEnviado] = useState(false);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const subject = encodeURIComponent('Inscrição Formação IA para Cabeleireiros — 18 Maio 2026');
@@ -24,83 +166,62 @@ function FormacaoForm() {
     window.open(`mailto:caccportugal@gmail.com?subject=${subject}&body=${body}`, '_blank');
     setEnviado(true);
   };
-
   if (enviado) {
     return (
       <div className="text-center py-8">
         <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-4">
           <CheckCircle className="h-8 w-8 text-primary" />
         </div>
-        <h4 className="font-black text-foreground uppercase tracking-wide text-sm mb-2">Pedido Enviado!</h4>
-        <p className="text-sm text-muted-foreground mb-4">O seu cliente de email foi aberto com os dados preenchidos. Envie o email para completar a inscrição.</p>
-        <p className="text-xs text-muted-foreground">Será contactado pela Associação de Cabeleireiros de Portugal em breve.</p>
-        <button onClick={() => setEnviado(false)} className="mt-4 text-xs text-primary hover:underline">Enviar outro pedido</button>
+        <h4 className="font-black text-foreground uppercase tracking-wide text-sm mb-2">{tr.formSentTitle}</h4>
+        <p className="text-sm text-muted-foreground mb-4">{tr.formSentDesc}</p>
+        <p className="text-xs text-muted-foreground">{tr.formSentNote}</p>
+        <button onClick={() => setEnviado(false)} className="mt-4 text-xs text-primary hover:underline">{tr.formSendAnother}</button>
       </div>
     );
   }
-
+  const phonePlaceholder = lang === "en" ? "+44 7XX XXX XXXX" : lang === "es" ? "+34 6XX XXX XXX" : "+351 9XX XXX XXX";
+  const namePlaceholder = lang === "en" ? "Your full name" : lang === "es" ? "Su nombre completo" : "O seu nome";
+  const emailPlaceholder = lang === "en" ? "your@email.com" : lang === "es" ? "su@email.com" : "o.seu@email.com";
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-1.5">
         <Label htmlFor="nome" className="text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-          <User className="h-3 w-3" /> Nome Completo *
+          <User className="h-3 w-3" /> {tr.formNome}
         </Label>
-        <Input
-          id="nome"
-          required
-          placeholder="O seu nome"
-          value={formData.nome}
+        <Input id="nome" required placeholder={namePlaceholder} value={formData.nome}
           onChange={(e) => setFormData(p => ({ ...p, nome: e.target.value }))}
-          className="bg-background border-border/50 focus:border-primary/50"
-        />
+          className="bg-background border-border/50 focus:border-primary/50" />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="telefone" className="text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-          <Phone className="h-3 w-3" /> Telefóne *
+          <Phone className="h-3 w-3" /> {tr.formTelefone}
         </Label>
-        <Input
-          id="telefone"
-          required
-          type="tel"
-          placeholder="+351 9XX XXX XXX"
-          value={formData.telefone}
+        <Input id="telefone" required type="tel" placeholder={phonePlaceholder} value={formData.telefone}
           onChange={(e) => setFormData(p => ({ ...p, telefone: e.target.value }))}
-          className="bg-background border-border/50 focus:border-primary/50"
-        />
+          className="bg-background border-border/50 focus:border-primary/50" />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="email" className="text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-          <Mail className="h-3 w-3" /> Email *
+          <Mail className="h-3 w-3" /> {tr.formEmail}
         </Label>
-        <Input
-          id="email"
-          required
-          type="email"
-          placeholder="o.seu@email.com"
-          value={formData.email}
+        <Input id="email" required type="email" placeholder={emailPlaceholder} value={formData.email}
           onChange={(e) => setFormData(p => ({ ...p, email: e.target.value }))}
-          className="bg-background border-border/50 focus:border-primary/50"
-        />
+          className="bg-background border-border/50 focus:border-primary/50" />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="mensagem" className="text-xs uppercase tracking-wider text-muted-foreground">
-          Mensagem (opcional)
+          {tr.formMensagem}
         </Label>
-        <Textarea
-          id="mensagem"
-          placeholder="Dúvidas, tipo de inscrição (sócio/não sócio/feira)..."
-          value={formData.mensagem}
+        <Textarea id="mensagem" placeholder={tr.formMensagemPlaceholder} value={formData.mensagem}
           onChange={(e) => setFormData(p => ({ ...p, mensagem: e.target.value }))}
-          className="bg-background border-border/50 focus:border-primary/50 resize-none"
-          rows={3}
-        />
+          className="bg-background border-border/50 focus:border-primary/50 resize-none" rows={3} />
       </div>
       <Button type="submit" className="w-full font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]" size="lg">
         <Mail className="mr-2 h-4 w-4" />
-        Enviar Pedido de Inscrição
+        {tr.formSubmit}
       </Button>
       <p className="text-xs text-muted-foreground text-center">
-        O seu pedido será enviado para{" "}
+        {tr.formSentTo}{" "}
         <a href="mailto:caccportugal@gmail.com" className="text-primary hover:underline">caccportugal@gmail.com</a>
       </p>
     </form>
@@ -110,6 +231,9 @@ function FormacaoForm() {
 export default function Home() {
   const { isAuthenticated, user, loading } = useAuth();
   const [, setLocation] = useLocation();
+  const [lang, setLang] = useState<Lang>("pt");
+  const tr = translations[lang];
+
   const hasAccessQuery = trpc.subscription.hasAccess.useQuery(undefined, {
     enabled: isAuthenticated,
     retry: false,
@@ -118,7 +242,9 @@ export default function Home() {
   const handleGetStarted = () => {
     if (!isAuthenticated) {
       window.location.href = getLoginUrl();
-    } else if (user?.role === 'admin' || hasAccessQuery.data) {
+      return;
+    }
+    if (user?.role === 'admin' || hasAccessQuery.data) {
       setLocation("/dashboard");
     } else {
       setLocation("/subscribe");
@@ -126,33 +252,28 @@ export default function Home() {
   };
 
   const features = [
-    {
-      icon: Sparkles,
-      title: "Simulação de Penteados com IA",
-      description: "Mostre aos seus clientes como ficam com diferentes penteados antes de qualquer corte. Tecnologia de ponta ao serviço do seu salão.",
-    },
-    {
-      icon: Shield,
-      title: "Acesso Seguro e Exclusivo",
-      description: "Cada salão tem o seu acesso privado. Os seus dados e os dos seus clientes estão sempre protegidos.",
-    },
-    {
-      icon: BarChart3,
-      title: "Painel de Gestão",
-      description: "Gira a sua subscrição, consulte o histórico e controle tudo a partir de um painel intuitivo.",
-    },
-    {
-      icon: Scissors,
-      title: "Ferramenta Profissional",
-      description: "Desenvolvida especificamente para cabeleireiros profissionais. Simples de usar, poderosa nos resultados.",
-    },
+    { icon: Sparkles, title: tr.feat1Title, description: tr.feat1Desc },
+    { icon: Shield, title: tr.feat2Title, description: tr.feat2Desc },
+    { icon: BarChart3, title: tr.feat3Title, description: tr.feat3Desc },
+    { icon: Scissors, title: tr.feat4Title, description: tr.feat4Desc },
   ];
 
   const testimonials = [
-    { name: "Maria Santos", salon: "Salão Elegance, Lisboa", text: "Os meus clientes adoram ver o resultado antes de decidirem. As vendas de serviços premium aumentaram 40%." },
-    { name: "João Ferreira", salon: "Hair Studio Porto", text: "Uma ferramenta indispensável. Economizo tempo nas consultas e os clientes saem sempre satisfeitos." },
-    { name: "Ana Costa", salon: "Beleza & Arte, Braga", text: "Simples de usar e os resultados são impressionantes. Recomendo a todos os colegas." },
+    { name: tr.test1Name, salon: tr.test1Salon, text: tr.test1Text },
+    { name: tr.test2Name, salon: tr.test2Salon, text: tr.test2Text },
+    { name: tr.test3Name, salon: tr.test3Salon, text: tr.test3Text },
   ];
+
+  const LangBtn = ({ l, label }: { l: Lang; label: string }) => (
+    <button
+      onClick={() => setLang(l)}
+      className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded transition-colors ${
+        lang === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+      }`}
+    >
+      {label}
+    </button>
+  );
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -169,20 +290,25 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            {/* Language selector */}
+            <div className="flex items-center gap-0.5 border border-border/50 rounded px-1 py-0.5">
+              <LangBtn l="pt" label="PT" />
+              <span className="text-border text-xs px-0.5">|</span>
+              <LangBtn l="es" label="ES" />
+              <span className="text-border text-xs px-0.5">|</span>
+              <LangBtn l="en" label="EN" />
+            </div>
             {loading ? null : isAuthenticated ? (
-              <Button
-                onClick={() => setLocation(hasAccessQuery.data ? "/dashboard" : "/subscribe")}
-                size="sm"
-              >
-                {hasAccessQuery.data ? "Dashboard" : "Activar Subscrição"}
+              <Button onClick={() => setLocation(hasAccessQuery.data ? "/dashboard" : "/subscribe")} size="sm">
+                {hasAccessQuery.data ? tr.dashboard : tr.activateSubscription}
               </Button>
             ) : (
               <>
                 <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" onClick={() => window.location.href = getLoginUrl()}>
-                  Entrar
+                  {tr.login}
                 </Button>
                 <Button size="sm" onClick={() => window.location.href = getLoginUrl()}>
-                  Começar Agora
+                  {tr.startNow}
                 </Button>
               </>
             )}
@@ -197,38 +323,33 @@ export default function Home() {
           <div className="max-w-3xl mx-auto text-center">
             <Badge variant="outline" className="mb-6 border-primary/40 text-primary bg-primary/5 uppercase tracking-widest text-xs">
               <Sparkles className="h-3 w-3 mr-1" />
-              Powered by Gemini AI
+              {tr.heroSubtitle}
             </Badge>
             <h1 className="text-4xl md:text-6xl font-black text-foreground mb-6 leading-tight tracking-tight uppercase">
-              More Than<br />
-              <span className="text-primary">Hairstyle</span>
+              {tr.heroTitle1}<br />
+              <span className="text-primary">{tr.heroTitle2}</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-10 leading-relaxed max-w-2xl mx-auto">
-              Mostre aos seus clientes o resultado final antes de qualquer corte ou coloração.
-              Aumente a confiança e eleve a experiência do seu salão.
+              {tr.heroDesc}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" onClick={handleGetStarted} className="text-base px-8 font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)] transition-all">
-                Experimentar Agora
+                {tr.tryNow}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
               <Button size="lg" variant="outline" onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })} className="text-base px-8 uppercase tracking-wider border-border/50 hover:border-primary/50">
-                Ver Preços
+                {tr.seePrices}
               </Button>
             </div>
-            {/* Badges de confiança */}
             <div className="flex flex-wrap items-center justify-center gap-3 mt-5">
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground border border-border/50 rounded-full px-3 py-1.5">
-                <Gift className="h-3.5 w-3.5 text-primary" />
-                <span>5 simulações gratuitas</span>
+                <Gift className="h-3.5 w-3.5 text-primary" /><span>{tr.badge5sims}</span>
               </div>
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground border border-border/50 rounded-full px-3 py-1.5">
-                <Zap className="h-3.5 w-3.5 text-primary" />
-                <span>7 dias grátis ao subscrever</span>
+                <Zap className="h-3.5 w-3.5 text-primary" /><span>{tr.badge7days}</span>
               </div>
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground border border-border/50 rounded-full px-3 py-1.5">
-                <CheckCircle className="h-3.5 w-3.5 text-primary" />
-                <span>Sem cartão para experimentar</span>
+                <CheckCircle className="h-3.5 w-3.5 text-primary" /><span>{tr.badgeNoCard}</span>
               </div>
             </div>
           </div>
@@ -239,12 +360,8 @@ export default function Home() {
       <section className="py-20 bg-secondary/30">
         <div className="container">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">
-              Tudo o que o seu salão precisa
-            </h2>
-            <p className="text-muted-foreground text-base max-w-xl mx-auto">
-              Uma plataforma completa desenvolvida especialmente para profissionais de cabeleireiro em Portugal.
-            </p>
+            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">{tr.featuresTitle}</h2>
+            <p className="text-muted-foreground text-base max-w-xl mx-auto">{tr.featuresDesc}</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
             {features.map((feature) => (
@@ -270,56 +387,40 @@ export default function Home() {
       <section id="pricing" className="py-20">
         <div className="container">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">
-              Preço simples e transparente
-            </h2>
-            <p className="text-muted-foreground text-base">Um único plano com tudo incluído. Sem surpresas.</p>
+            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">{tr.pricingTitle}</h2>
+            <p className="text-muted-foreground text-base">{tr.pricingDesc}</p>
           </div>
           <div className="max-w-md mx-auto">
             <Card className="border border-primary/40 bg-card shadow-[0_0_40px_rgba(57,255,20,0.1)] relative overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary" />
               <CardContent className="p-8">
                 <div className="text-center mb-6">
-                  <Badge className="mb-4 bg-primary/10 text-primary border-primary/30 hover:bg-primary/10 uppercase tracking-widest text-xs">
-                    Plano Profissional
-                  </Badge>
+                  <Badge className="mb-4 bg-primary/10 text-primary border-primary/30 hover:bg-primary/10 uppercase tracking-widest text-xs">{tr.planBadge}</Badge>
                   <div className="flex items-baseline justify-center gap-1 mb-2">
                     <span className="text-5xl font-black text-foreground">29€</span>
-                    <span className="text-muted-foreground">/mês</span>
+                    <span className="text-muted-foreground">{tr.perMonth}</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">por salão · faturação mensal</p>
+                  <p className="text-sm text-muted-foreground">{tr.perSalon}</p>
                   <div className="mt-2 inline-flex items-center gap-1 bg-primary/10 border border-primary/30 rounded-full px-3 py-1">
                     <Gift className="h-3 w-3 text-primary" />
-                    <span className="text-xs text-primary font-bold uppercase tracking-wider">7 dias grátis</span>
+                    <span className="text-xs text-primary font-bold uppercase tracking-wider">{tr.trialBadge}</span>
                   </div>
                 </div>
                 <ul className="space-y-3 mb-8">
-                  {[
-                    "7 dias gratuitos para experimentar",
-                    "Simulação de penteados com IA ilimitada",
-                    "Assistente virtual para clientes",
-                    "Acesso em todos os dispositivos",
-                    "Suporte por email",
-                    "Cancele quando quiser, sem penalizações",
-                  ].map((item) => (
+                  {[tr.pricingItem1, tr.pricingItem2, tr.pricingItem3, tr.pricingItem4, tr.pricingItem5, tr.pricingItem6].map((item) => (
                     <li key={item} className="flex items-center gap-3 text-sm">
                       <CheckCircle className="h-4 w-4 text-primary shrink-0" />
                       <span className="text-foreground">{item}</span>
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full text-base font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]" size="lg" onClick={handleGetStarted}>
-                  Começar com 7 dias grátis
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                <Button className="w-full font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]" size="lg" onClick={handleGetStarted}>
+                  {tr.startTrial}<ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-                <p className="text-xs text-muted-foreground text-center mt-3">
-                  7 dias gratuitos · depois 29€/mês · cancele quando quiser
-                </p>
+                <p className="text-xs text-muted-foreground text-center mt-3">{tr.trialNote}</p>
                 <p className="text-xs text-muted-foreground text-center mt-2">
-                  Tem dúvidas?{" "}
-                  <a href="mailto:geral@anjosurbanosvirtual.com" className="text-primary hover:underline">
-                    geral@anjosurbanosvirtual.com
-                  </a>
+                  {tr.questions}{" "}
+                  <a href="mailto:geral@anjosurbanosvirtual.com" className="text-primary hover:underline">geral@anjosurbanosvirtual.com</a>
                 </p>
               </CardContent>
             </Card>
@@ -331,18 +432,14 @@ export default function Home() {
       <section className="py-20 bg-secondary/30">
         <div className="container">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">
-              O que dizem os nossos clientes
-            </h2>
+            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">{tr.testimonialsTitle}</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
             {testimonials.map((t) => (
               <Card key={t.name} className="border-border/50 bg-card hover:border-primary/20 transition-colors">
                 <CardContent className="p-6">
                   <div className="flex gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-primary text-primary" />
-                    ))}
+                    {[...Array(5)].map((_, i) => (<Star key={i} className="h-4 w-4 fill-primary text-primary" />))}
                   </div>
                   <p className="text-sm text-muted-foreground mb-4 leading-relaxed italic">"{t.text}"</p>
                   <div>
@@ -361,15 +458,12 @@ export default function Home() {
         <div className="container">
           <div className="text-center mb-12">
             <Badge variant="outline" className="mb-4 border-primary/40 text-primary bg-primary/5 uppercase tracking-widest text-xs">
-              <Calendar className="h-3 w-3 mr-1" />
-              Evento Presencial
+              <Calendar className="h-3 w-3 mr-1" />{tr.eventBadge}
             </Badge>
             <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">
-              Venha Conhecer-nos na <span className="text-primary">ExpoCosmética 2026</span>
+              {tr.expoTitle} <span className="text-primary">ExpoCosmética 2026</span>
             </h2>
-            <p className="text-muted-foreground text-base max-w-2xl mx-auto">
-              Experimente a app ao vivo, fale com a nossa equipa e descubra como a Inteligência Artificial pode transformar o seu salão. Entrada gratuita no stand.
-            </p>
+            <p className="text-muted-foreground text-base max-w-2xl mx-auto">{tr.expoDesc}</p>
           </div>
           <div className="max-w-4xl mx-auto">
             <Card className="border border-primary/40 bg-card shadow-[0_0_40px_rgba(57,255,20,0.08)] relative overflow-hidden">
@@ -382,56 +476,37 @@ export default function Home() {
                         <Sparkles className="h-6 w-6 text-primary" />
                       </div>
                       <div>
-                        <p className="font-black text-foreground uppercase tracking-wide text-sm">Anjos Urbanos® Estúdio Virtual</p>
-                        <p className="text-xs text-muted-foreground">Demonstração ao vivo · Entrada gratuita</p>
+                        <p className="font-black text-foreground uppercase tracking-wide text-sm">{tr.expoStudio}</p>
+                        <p className="text-xs text-muted-foreground">{tr.expoLive}</p>
                       </div>
                     </div>
                     <div className="space-y-3 mb-6">
                       <div className="flex items-center gap-3 text-sm">
                         <Calendar className="h-4 w-4 text-primary shrink-0" />
-                        <span className="text-foreground font-bold">12 e 13 de Abril de 2026</span>
+                        <span className="text-foreground font-bold">{tr.expoDates}</span>
                       </div>
                       <div className="flex items-center gap-3 text-sm">
                         <MapPin className="h-4 w-4 text-primary shrink-0" />
-                        <span className="text-foreground">Stand da Associação de Cabeleireiros de Portugal</span>
+                        <span className="text-foreground">{tr.expoStand}</span>
                       </div>
                       <div className="flex items-center gap-3 text-sm">
                         <Sparkles className="h-4 w-4 text-primary shrink-0" />
-                        <span className="text-foreground">Simulação ao vivo com o seu próprio telemóvel</span>
+                        <span className="text-foreground">{tr.expoSim}</span>
                       </div>
-                    </div>
-                    <div className="bg-primary/5 border border-primary/20 rounded-sm p-4">
-                      <p className="text-xs text-primary font-bold uppercase tracking-wider mb-1 flex items-center gap-1">
-                        <Tag className="h-3 w-3" />
-                        Oferta Exclusiva para Visitantes
-                      </p>
-                      <p className="text-sm text-foreground">
-                        Quem se inscrever na formação de IA durante os dias da feira beneficia de <strong className="text-primary">desconto especial</strong> no preço de inscrição.
-                      </p>
+                      <div className="flex items-center gap-3 text-sm">
+                        <CheckCircle className="h-4 w-4 text-primary shrink-0" />
+                        <span className="text-foreground">{tr.expoFree}</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex flex-col items-center justify-center text-center gap-4">
-                    <div className="flex gap-4">
-                      <div className="border border-primary/40 rounded-sm px-6 py-4 bg-primary/5">
-                        <p className="text-3xl font-black text-primary">12</p>
-                        <p className="text-xs text-muted-foreground uppercase tracking-widest">Abril</p>
-                      </div>
-                      <div className="border border-primary/40 rounded-sm px-6 py-4 bg-primary/5">
-                        <p className="text-3xl font-black text-primary">13</p>
-                        <p className="text-xs text-muted-foreground uppercase tracking-widest">Abril</p>
-                      </div>
+                  <div className="bg-primary/5 border border-primary/20 rounded-sm p-6">
+                    <h3 className="font-black text-foreground uppercase tracking-wide text-sm mb-3">{tr.expoVisit}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{tr.expoVisitDesc}</p>
+                    <div className="mt-4 pt-4 border-t border-border/50">
+                      <Badge className="bg-primary/10 text-primary border-primary/30 hover:bg-primary/10 uppercase tracking-widest text-xs">
+                        <Tag className="h-3 w-3 mr-1" />ExpoCosmética 2026
+                      </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground max-w-xs">
-                      Traga o seu telemóvel e experimente a simulação de cabelo com IA em tempo real.
-                    </p>
-                    <Button
-                      variant="outline"
-                      className="border-primary/40 text-primary hover:bg-primary/10 uppercase tracking-wider text-xs font-bold"
-                      onClick={() => document.getElementById('formacao')?.scrollIntoView({ behavior: 'smooth' })}
-                    >
-                      Ver Formação com Desconto de Feira
-                      <ArrowRight className="ml-2 h-3 w-3" />
-                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -440,129 +515,99 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Formação de IA */}
+      {/* Formação */}
       <section id="formacao" className="py-20">
         <div className="container">
           <div className="text-center mb-12">
             <Badge variant="outline" className="mb-4 border-primary/40 text-primary bg-primary/5 uppercase tracking-widest text-xs">
-              <GraduationCap className="h-3 w-3 mr-1" />
-              Formação Profissional
+              <GraduationCap className="h-3 w-3 mr-1" />{tr.formacaoBadge}
             </Badge>
-            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">
-              Inteligência Artificial <span className="text-primary">Para Cabeleireiros</span>
-            </h2>
-            <p className="text-muted-foreground text-base max-w-2xl mx-auto">
-              Uma formação prática e intensiva para aprender a usar as ferramentas de IA mais poderosas no seu trabalho diário.
-            </p>
+            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">{tr.formacaoTitle}</h2>
+            <p className="text-muted-foreground text-base max-w-2xl mx-auto">{tr.formacaoDesc}</p>
           </div>
           <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Info da formação */}
             <div className="space-y-6">
-              <Card className="border-border/50 bg-card">
+              <Card className="border border-primary/40 bg-card shadow-[0_0_40px_rgba(57,255,20,0.08)] relative overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary" />
                 <CardContent className="p-6">
-                  <h3 className="font-black text-foreground uppercase tracking-wide text-sm mb-4 flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-primary" />
-                    Detalhes da Formação
-                  </h3>
-                  <div className="space-y-3">
+                  <div className="space-y-3 mb-6">
                     <div className="flex items-center gap-3 text-sm">
                       <Calendar className="h-4 w-4 text-primary shrink-0" />
-                      <div>
-                        <span className="text-foreground font-bold">18 de Maio de 2026</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm">
-                      <Clock className="h-4 w-4 text-primary shrink-0" />
-                      <span className="text-foreground">Das 10h00 às 17h00 (7 horas)</span>
+                      <span className="text-foreground font-bold">{tr.formacaoDate}</span>
                     </div>
                     <div className="flex items-center gap-3 text-sm">
                       <MapPin className="h-4 w-4 text-primary shrink-0" />
-                      <span className="text-foreground">Porto · Instalações da Associação de Cabeleireiros de Portugal</span>
+                      <span className="text-foreground">{tr.formacaoLocal}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm">
+                      <Clock className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-foreground">{tr.formacaoDuration}</span>
                     </div>
                     <div className="flex items-center gap-3 text-sm">
                       <Users className="h-4 w-4 text-primary shrink-0" />
-                      <span className="text-foreground font-bold text-primary">Vagas limitadas — máximo 15 participantes</span>
+                      <span className="text-foreground">{tr.formacaoSpots}</span>
                     </div>
+                  </div>
+                  <div className="border-t border-border/50 pt-4">
+                    <h4 className="font-bold text-foreground uppercase tracking-wide text-xs mb-3">{tr.formacaoProgram}</h4>
+                    <ul className="space-y-2">
+                      {[tr.prog1, tr.prog2, tr.prog3, tr.prog4, tr.prog5].map((item, i) => (
+                        <li key={i} className="flex items-start gap-2 text-xs text-muted-foreground">
+                          <CheckCircle className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </CardContent>
               </Card>
-
               <Card className="border-border/50 bg-card">
                 <CardContent className="p-6">
-                  <h3 className="font-black text-foreground uppercase tracking-wide text-sm mb-4 flex items-center gap-2">
-                    <GraduationCap className="h-4 w-4 text-primary" />
-                    O que vai aprender
-                  </h3>
-                  <ul className="space-y-2">
-                    {[
-                      "Simulação de cortes e cores com Inteligência Artificial",
-                      "Como criar Reels profissionais para o seu salão",
-                      "Optimização de imagens de baixa resolução para redes sociais",
-                      "Ferramentas de IA para marketing e captação de clientes",
-                      "Automatização de tarefas repetitivas no salão",
-                    ].map((item) => (
-                      <li key={item} className="flex items-start gap-3 text-sm">
-                        <CheckCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                        <span className="text-foreground">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card className="border border-primary/40 bg-primary/5">
-                <CardContent className="p-6">
-                  <h3 className="font-black text-foreground uppercase tracking-wide text-sm mb-4 flex items-center gap-2">
-                    <Tag className="h-4 w-4 text-primary" />
-                    Preços de Inscrição
-                  </h3>
+                  <h4 className="font-bold text-foreground uppercase tracking-wide text-xs mb-4 flex items-center gap-2">
+                    <Tag className="h-3.5 w-3.5 text-primary" />{tr.formacaoPrices}
+                  </h4>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between p-3 bg-background rounded-sm border border-border/50">
                       <div>
-                        <p className="text-sm font-bold text-foreground">Sócios da Associação</p>
-                        <p className="text-xs text-muted-foreground">Preço normal</p>
+                        <p className="text-sm font-bold text-foreground">{tr.socios}</p>
+                        <p className="text-xs text-muted-foreground">{tr.precoNormal}</p>
                       </div>
                       <span className="text-xl font-black text-foreground">100€</span>
                     </div>
                     <div className="flex items-center justify-between p-3 bg-background rounded-sm border border-border/50">
                       <div>
-                        <p className="text-sm font-bold text-foreground">Não Sócios</p>
-                        <p className="text-xs text-muted-foreground">Preço normal</p>
+                        <p className="text-sm font-bold text-foreground">{tr.naoSocios}</p>
+                        <p className="text-xs text-muted-foreground">{tr.precoNormal}</p>
                       </div>
                       <span className="text-xl font-black text-foreground">150€</span>
                     </div>
                     <div className="flex items-center justify-between p-3 bg-primary/10 rounded-sm border border-primary/30">
                       <div>
-                        <p className="text-sm font-bold text-primary">Inscrição na Feira</p>
-                        <p className="text-xs text-primary/70">Desconto exclusivo ExpoCosmética</p>
+                        <p className="text-sm font-bold text-primary">{tr.inscricaoFeira}</p>
+                        <p className="text-xs text-primary/70">{tr.descontoExpo}</p>
                       </div>
                       <div className="text-right">
                         <span className="text-xl font-black text-primary">100€</span>
-                        <p className="text-xs text-primary/70">sócios e não sócios</p>
+                        <p className="text-xs text-primary/70">{tr.sociosENaoSocios}</p>
                       </div>
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-3 text-center">
-                    * Desconto de feira válido apenas para inscrições realizadas nos dias 12 e 13 de Abril na ExpoCosmética
-                  </p>
+                  <p className="text-xs text-muted-foreground mt-3 text-center">{tr.discountNote}</p>
                 </CardContent>
               </Card>
             </div>
-
-            {/* Formulário de inscrição */}
             <div>
               <Card className="border border-primary/40 bg-card shadow-[0_0_40px_rgba(57,255,20,0.08)] relative overflow-hidden sticky top-24">
                 <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary" />
                 <CardContent className="p-8">
                   <div className="text-center mb-6">
                     <Badge className="mb-3 bg-primary/10 text-primary border-primary/30 hover:bg-primary/10 uppercase tracking-widest text-xs">
-                      <Users className="h-3 w-3 mr-1" />
-                      Vagas Limitadas · 15 Lugares
+                      <Users className="h-3 w-3 mr-1" />{tr.vagasLimitadas}
                     </Badge>
-                    <h3 className="font-black text-foreground uppercase tracking-wide text-base">Pedir Informações / Inscrição</h3>
-                    <p className="text-xs text-muted-foreground mt-1">Preencha o formulário e entraremos em contacto brevemente</p>
+                    <h3 className="font-black text-foreground uppercase tracking-wide text-base">{tr.formTitle}</h3>
+                    <p className="text-xs text-muted-foreground mt-1">{tr.formDesc}</p>
                   </div>
-                  <FormacaoForm />
+                  <FormacaoForm lang={lang} tr={tr} />
                 </CardContent>
               </Card>
             </div>
@@ -574,17 +619,12 @@ export default function Home() {
       <section className="py-20">
         <div className="container">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">
-              Pronto para transformar o seu salão?
-            </h2>
-            <p className="text-muted-foreground text-base mb-8">
-              Experimente grátis — 5 simulações sem cartão, depois 7 dias grátis ao subscrever.
-            </p>
+            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">{tr.ctaTitle}</h2>
+            <p className="text-muted-foreground text-base mb-8">{tr.ctaDesc}</p>
             <Button size="lg" onClick={handleGetStarted} className="text-base px-10 font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(57,255,20,0.3)] hover:shadow-[0_0_30px_rgba(57,255,20,0.5)]">
-              Experimentar Grátis Agora
-              <ArrowRight className="ml-2 h-4 w-4" />
+              {tr.ctaBtn}<ArrowRight className="ml-2 h-4 w-4" />
             </Button>
-            <p className="text-sm text-muted-foreground mt-3">Sem cartão necessário para as primeiras 5 simulações</p>
+            <p className="text-sm text-muted-foreground mt-3">{tr.ctaNote}</p>
           </div>
         </div>
       </section>
@@ -602,7 +642,7 @@ export default function Home() {
             </div>
           </div>
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Anjos Urbanos Virtual. Todos os direitos reservados.
+            © {new Date().getFullYear()} Anjos Urbanos Virtual. {tr.rights}
           </p>
           <a href="mailto:geral@anjosurbanosvirtual.com" className="text-xs text-muted-foreground hover:text-primary transition-colors">
             geral@anjosurbanosvirtual.com
