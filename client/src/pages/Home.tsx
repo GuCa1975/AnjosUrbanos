@@ -163,7 +163,7 @@ function FormacaoForm({ lang, tr }: { lang: Lang; tr: Record<string, string> }) 
     const body = encodeURIComponent(
       `Nome: ${formData.nome}\nTelefone: ${formData.telefone}\nEmail: ${formData.email}\n\nMensagem:\n${formData.mensagem || '(sem mensagem adicional)'}`
     );
-    window.open(`mailto:caccportugal@gmail.com?subject=${subject}&body=${body}`, '_blank');
+    window.open(`mailto:hairschoolacp@gmail.com?subject=${subject}&body=${body}`, '_blank');
     setEnviado(true);
   };
   if (enviado) {
@@ -222,7 +222,7 @@ function FormacaoForm({ lang, tr }: { lang: Lang; tr: Record<string, string> }) 
       </Button>
       <p className="text-xs text-muted-foreground text-center">
         {tr.formSentTo}{" "}
-        <a href="mailto:caccportugal@gmail.com" className="text-primary hover:underline">caccportugal@gmail.com</a>
+        <a href="mailto:hairschoolacp@gmail.com" className="text-primary hover:underline">hairschoolacp@gmail.com</a>
       </p>
     </form>
   );
