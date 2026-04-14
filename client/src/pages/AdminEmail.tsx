@@ -62,8 +62,9 @@ export default function AdminEmail() {
   const sendTestEmail = trpc.admin.sendCampaign.useMutation({
     onSuccess: () => {
       setTestSent(true);
-      toast.success(`Email de teste enviado para ${testEmail}`);
-      setTimeout(() => setTestSent(false), 4000);
+      setResult(null); // limpar resultado de campanha anterior
+      toast.success(`✓ Email de teste enviado para ${testEmail}! Verifica a caixa de entrada.`, { duration: 6000 });
+      setTimeout(() => setTestSent(false), 5000);
     },
     onError: (err) => {
       toast.error(`Erro ao enviar teste: ${err.message}`);

@@ -49,3 +49,4 @@
 - [x] Fazer upload da imagem de imprensa para CDN e inserir nos templates de email
 - [x] Adicionar campo de email de teste no painel de campanhas
 - [x] Criar email de boas-vindas automático no registo do utilizador
+- [ ] BUG: botão TESTAR no painel de campanhas envia 0 emails em vez de enviar para o email de teste
