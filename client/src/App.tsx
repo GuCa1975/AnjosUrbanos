@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Subscribe from "./pages/Subscribe";
 import Admin from "./pages/Admin";
+import AdminEmail from "./pages/AdminEmail";
 
 function Router() {
   return (
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/subscribe" component={Subscribe} />
       <Route path="/admin" component={Admin} />
+      <Route path="/admin/email" component={AdminEmail} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

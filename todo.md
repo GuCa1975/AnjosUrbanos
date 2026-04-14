@@ -42,3 +42,7 @@
 - [x] BUG CORRIGIDO: admin é redirecionado para /subscribe ao clicar em "Abrir Ferramenta"
 - [x] Adicionar email geral@anjosurbanosvirtual.com no rodapé e na secção de preços da landing page
 - [x] Corrigir import duplicado de useAuth no Home.tsx
+- [x] Integrar Resend SDK para envio de emails
+- [x] Criar endpoint admin para envio de campanhas de email
+- [x] Criar template HTML do email de conversão
+- [x] Adicionar painel "Campanhas de Email" no Admin com seletor de destinatários e botão de envio

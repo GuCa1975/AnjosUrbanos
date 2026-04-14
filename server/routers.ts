@@ -23,6 +23,7 @@ import {
   updateSubscriptionByStripeId,
 } from "./db";
 import { SUBSCRIPTION_PRICE } from "./stripe/products";
+import { buildConversionEmailHtml, sendCampaignEmail } from "./email";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2026-02-25.clover",
@@ -179,6 +180,35 @@ export const appRouter = router({
   }),
 
   admin: router({
+    sendCampaign: adminProcedure
+      .input(z.object({
+        subject: z.string().min(1),
+        message: z.string().min(1),
+        audience: z.enum(["all", "free_only", "limit_reached"]),
+      }))
+      .mutation(async ({ input }) => {
+        const allUsers = await getAllUsers();
+        const allSubs = await getAllSubscriptions();
+        const allSimCounts = await Promise.all(
+          allUsers
+            .filter((u) => u.role !== "admin" && u.email)
+            .map(async (u) => ({ user: u, freeUsed: await getFreeSimulationsCount(u.id), sub: allSubs.find((s) => s.userId === u.id) }))
+        );
+        let targets = allSimCounts;
+        if (input.audience === "free_only") {
+          targets = allSimCounts.filter((t) => !t.sub || t.sub.status !== "active");
+        } else if (input.audience === "limit_reached") {
+          targets = allSimCounts.filter((t) => (!t.sub || t.sub.status !== "active") && t.freeUsed >= 5);
+        }
+        const html = buildConversionEmailHtml(input.message);
+        const results = await Promise.allSettled(
+          targets.map((t) => sendCampaignEmail(t.user.email!, input.subject, html))
+        );
+        const sent = results.filter((r) => r.status === "fulfilled").length;
+        const failed = results.filter((r) => r.status === "rejected").length;
+        return { sent, failed, total: targets.length };
+      }),
+
     getStats: adminProcedure.query(async () => {
       const [allUsers, allSalons, allSubs] = await Promise.all([
         getAllUsers(), getAllSalons(), getAllSubscriptions(),

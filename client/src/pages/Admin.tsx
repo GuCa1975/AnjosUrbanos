@@ -6,7 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import {
   Scissors, Users, CreditCard, TrendingUp, ArrowLeft,
-  Loader2, CheckCircle2, XCircle, AlertCircle, Euro, Zap, Activity
+  Loader2, CheckCircle2, XCircle, AlertCircle, Euro, Zap, Activity, Mail
 } from "lucide-react";
 import { useEffect } from "react";
 
@@ -88,7 +88,18 @@ export default function Admin() {
               <span className="font-bold text-sm tracking-widest uppercase text-foreground">Painel de Administração</span>
             </div>
           </div>
-          <Badge className="bg-primary/10 text-primary border-primary/30 uppercase text-xs tracking-wider">Admin</Badge>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setLocation("/admin/email")}
+              className="uppercase text-xs tracking-wider border-primary/30 text-primary hover:bg-primary/10"
+            >
+              <Mail className="h-3.5 w-3.5 mr-1.5" />
+              Campanhas
+            </Button>
+            <Badge className="bg-primary/10 text-primary border-primary/30 uppercase text-xs tracking-wider">Admin</Badge>
+          </div>
         </div>
       </header>
 
