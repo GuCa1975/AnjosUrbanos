@@ -19,10 +19,10 @@ export async function getDb() {
 
 // ─── Users ───────────────────────────────────────────────────────────────────
 
-export async function upsertUser(user: InsertUser): Promise<void> {
+export async function upsertUser(user: InsertUser): Promise<{ isNew: boolean }> {
   if (!user.openId) throw new Error("User openId is required for upsert");
   const db = await getDb();
-  if (!db) { console.warn("[Database] Cannot upsert user: database not available"); return; }
+  if (!db) { console.warn("[Database] Cannot upsert user: database not available"); return { isNew: false }; }
 
   const values: InsertUser = { openId: user.openId };
   const updateSet: Record<string, unknown> = {};
@@ -45,7 +45,10 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   if (!values.lastSignedIn) values.lastSignedIn = new Date();
   if (Object.keys(updateSet).length === 0) updateSet.lastSignedIn = new Date();
 
-  await db.insert(users).values(values).onDuplicateKeyUpdate({ set: updateSet });
+  const result = await db.insert(users).values(values).onDuplicateKeyUpdate({ set: updateSet });
+  // MySQL: affectedRows === 1 = INSERT (novo utilizador), 2 = UPDATE (existente)
+  const isNew = (result as any)?.[0]?.affectedRows === 1;
+  return { isNew };
 }
 
 export async function getUserByOpenId(openId: string) {

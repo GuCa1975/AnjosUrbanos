@@ -184,9 +184,17 @@ export const appRouter = router({
       .input(z.object({
         subject: z.string().min(1),
         message: z.string().min(1),
-        audience: z.enum(["all", "free_only", "limit_reached"]),
+        audience: z.enum(["all", "free_only", "limit_reached", "test"]),
+        testEmail: z.string().email().optional(),
       }))
       .mutation(async ({ input }) => {
+        const html = buildConversionEmailHtml(input.message);
+        // Modo de teste: envia apenas para o email indicado
+        if (input.audience === "test") {
+          if (!input.testEmail) throw new TRPCError({ code: "BAD_REQUEST", message: "Email de teste não fornecido" });
+          await sendCampaignEmail(input.testEmail, `[TESTE] ${input.subject}`, html);
+          return { sent: 1, failed: 0, total: 1 };
+        }
         const allUsers = await getAllUsers();
         const allSubs = await getAllSubscriptions();
         const allSimCounts = await Promise.all(
@@ -200,7 +208,6 @@ export const appRouter = router({
         } else if (input.audience === "limit_reached") {
           targets = allSimCounts.filter((t) => (!t.sub || t.sub.status !== "active") && t.freeUsed >= 5);
         }
-        const html = buildConversionEmailHtml(input.message);
         const results = await Promise.allSettled(
           targets.map((t) => sendCampaignEmail(t.user.email!, input.subject, html))
         );
