@@ -3,9 +3,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Header from './components/Header';
 import CameraCapture from './components/CameraCapture';
 import Editor from './components/Editor';
+import ColorAnalysisScreen from './components/ColorAnalysisScreen';
 import { useLang } from './LangContext';
 
-type AppState = 'select' | 'camera-client' | 'edit';
+type AppState = 'select' | 'camera-client' | 'edit' | 'color-analysis';
 
 interface ImageData {
   base64: string;
@@ -98,10 +99,10 @@ const App: React.FC = () => {
                   }}>1</div>
                   <div>
                     <p style={{ color: '#F5F5F5', fontSize: '14px', fontWeight: 600, margin: 0 }}>
-                      {t.refTitle || 'Foto de Referência'} <span style={{ color: '#888', fontWeight: 400, fontSize: '12px' }}>({t.optional || 'opcional'})</span>
+                      {'Foto de Referência'} <span style={{ color: '#888', fontWeight: 400, fontSize: '12px' }}>({'opcional'})</span>
                     </p>
                     <p style={{ color: '#888', fontSize: '12px', margin: 0 }}>
-                      {t.refSubtitle || 'O estilo/cabelo que a cliente quer'}
+                      {'O estilo/cabelo que a cliente quer'}
                     </p>
                   </div>
                 </div>
@@ -114,7 +115,7 @@ const App: React.FC = () => {
                       style={{ width: '70px', height: '70px', objectFit: 'cover', borderRadius: '8px', border: '2px solid #39FF14' }}
                     />
                     <div style={{ flex: 1 }}>
-                      <p style={{ color: '#39FF14', fontSize: '13px', margin: '0 0 8px' }}>{t.refLoaded || '✓ Referência carregada'}</p>
+                      <p style={{ color: '#39FF14', fontSize: '13px', margin: '0 0 8px' }}>{'✓ Referência carregada'}</p>
                       <button
                         onClick={() => refInputRef.current?.click()}
                         style={{
@@ -122,7 +123,7 @@ const App: React.FC = () => {
                           borderRadius: '8px', color: '#888', fontSize: '12px',
                           padding: '6px 12px', cursor: 'pointer',
                         }}
-                      >{t.changePhoto || 'Trocar foto'}</button>
+                      >{'Trocar foto'}</button>
                     </div>
                   </div>
                 ) : (
@@ -138,7 +139,7 @@ const App: React.FC = () => {
                     }}
                   >
                     <span style={{ fontSize: '20px' }}>🖼️</span>
-                    {t.uploadRef || 'Carregar foto de referência'}
+                    {'Carregar foto de referência'}
                   </button>
                 )}
                 <input
@@ -168,10 +169,10 @@ const App: React.FC = () => {
                   }}>2</div>
                   <div>
                     <p style={{ color: '#F5F5F5', fontSize: '14px', fontWeight: 600, margin: 0 }}>
-                      {t.clientPhoto || 'Foto da Cliente'}
+                      {'Foto da Cliente'}
                     </p>
                     <p style={{ color: '#888', fontSize: '12px', margin: 0 }}>
-                      {t.clientPhotoSub || 'Tira foto ou carrega da galeria'}
+                      {'Tira foto ou carrega da galeria'}
                     </p>
                   </div>
                 </div>
@@ -220,6 +221,46 @@ const App: React.FC = () => {
                 />
               </div>
 
+              {/* Análise de Cor de Cabelo */}
+              <div style={{
+                background: 'rgba(196,122,43,0.06)',
+                border: '1px solid rgba(196,122,43,0.25)',
+                borderRadius: '14px',
+                padding: '16px',
+                marginBottom: '12px',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                  <div style={{
+                    width: '28px', height: '28px', borderRadius: '50%',
+                    background: 'rgba(196,122,43,0.15)',
+                    border: '2px solid rgba(196,122,43,0.5)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '14px', flexShrink: 0,
+                  }}>🎨</div>
+                  <div>
+                    <p style={{ color: '#F5F5F5', fontSize: '14px', fontWeight: 600, margin: 0 }}>
+                      Análise de Cor de Cabelo
+                    </p>
+                    <p style={{ color: '#888', fontSize: '12px', margin: 0 }}>
+                      Método das 4 Estações · IA por Gemini
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setAppState('color-analysis')}
+                  style={{
+                    width: '100%', padding: '12px',
+                    background: 'rgba(196,122,43,0.12)',
+                    border: '1px solid rgba(196,122,43,0.4)',
+                    borderRadius: '10px', color: '#C47A2B',
+                    fontSize: '14px', fontWeight: 700, cursor: 'pointer',
+                    textTransform: 'uppercase', letterSpacing: '0.5px',
+                  }}
+                >
+                  🍂 Descobrir a Cor Ideal
+                </button>
+              </div>
+
               {/* Parceiro Oficial */}
               <div style={{ textAlign: 'center', marginTop: '8px' }}>
                 <p style={{ fontSize: '11px', color: '#888888', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px' }}>
@@ -257,9 +298,14 @@ const App: React.FC = () => {
               key="editor"
               imageBase64={clientImage.base64}
               imageMimeType={clientImage.mimeType}
-              referenceImageBase64={referenceImage?.base64}
-              referenceImageMimeType={referenceImage?.mimeType}
               onReset={handleReset}
+            />
+          )}
+
+          {appState === 'color-analysis' && (
+            <ColorAnalysisScreen
+              key="color-analysis"
+              onBack={() => setAppState('select')}
             />
           )}
 
