@@ -193,6 +193,7 @@ export default function Dashboard() {
         <Card className="mb-6 border border-primary/30 bg-card overflow-hidden relative">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none" />
           <CardContent className="p-8 relative">
+            {/* Linha 1: Assistente de Penteados */}
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div className="flex items-start gap-4">
                 <div className="w-14 h-14 rounded-sm bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
@@ -243,6 +244,35 @@ export default function Dashboard() {
                 {(!isAdmin && !hasSubscription && !canSimulate) ? "Limite Atingido" : "Abrir Ferramenta IA"}
               </Button>
             </div>
+
+            {/* Divisor */}
+            <div className="my-6 border-t border-border/30" />
+
+            {/* Linha 2: Análise de Cor de Cabelo */}
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="flex items-start gap-4">
+                <div className="w-14 h-14 rounded-sm bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shrink-0">
+                  <Palette className="h-7 w-7 text-purple-400" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-black text-foreground mb-1 uppercase tracking-tight">
+                    Análise de Cor de Cabelo
+                  </h2>
+                  <p className="text-muted-foreground text-sm max-w-md">
+                    Descubra a cor ideal para cada cliente com o Método Sazonal de 12 Estações. Análise por IA com paleta personalizada, técnicas e cores a evitar.
+                  </p>
+                </div>
+              </div>
+              <Button
+                size="lg"
+                variant="outline"
+                className="shrink-0 font-bold uppercase tracking-wider border-purple-500/40 text-purple-400 hover:bg-purple-500/10 hover:border-purple-500/60"
+                onClick={() => setLocation('/color-analysis')}
+              >
+                <Palette className="h-4 w-4 mr-2" />
+                Analisar Cor
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
@@ -271,37 +301,6 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         )}
-
-        {/* Card: Análise de Cor de Cabelo */}
-        <Card className="mb-6 border border-white/10 bg-card overflow-hidden relative cursor-pointer hover:border-primary/40 transition-colors" onClick={() => setLocation('/color-analysis')}>
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-purple-500/5 via-transparent to-transparent pointer-events-none" />
-          <CardContent className="p-6 relative">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-sm bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shrink-0">
-                  <Palette className="h-6 w-6 text-purple-400" />
-                </div>
-                <div>
-                  <h2 className="text-sm font-black text-foreground mb-1 uppercase tracking-tight">
-                    Análise de Cor de Cabelo
-                  </h2>
-                  <p className="text-muted-foreground text-xs max-w-md">
-                    Descubra a cor ideal para cada cliente com o Método Sazonal de 12 Estações. Análise por IA com paleta personalizada, técnicas e cores a evitar.
-                  </p>
-                </div>
-              </div>
-              <Button
-                size="sm"
-                variant="outline"
-                className="shrink-0 border-purple-500/30 text-purple-400 hover:bg-purple-500/10 hover:border-purple-500/50 uppercase text-xs tracking-wider"
-                onClick={(e) => { e.stopPropagation(); setLocation('/color-analysis'); }}
-              >
-                <Palette className="h-3.5 w-3.5 mr-1.5" />
-                Analisar Cor
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Status Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
