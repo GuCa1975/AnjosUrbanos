@@ -56,4 +56,6 @@
 - [x] Criar endpoint /api/upload-temp para upload de imagens via multer + S3
 - [x] Integrar botão de acesso à análise de cor no Dashboard
 - [x] Adicionar rota /color-analysis no App.tsx
+- [x] Redesenhar página /color-analysis com layout fiel à imagem de referência (4 estações)
+- [x] Corrigir texto no Dashboard de 12 Estações para 4 Estações
 - [ ] Testar análise completa com foto real em produção

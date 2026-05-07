@@ -259,7 +259,7 @@ export default function Dashboard() {
                     Análise de Cor de Cabelo
                   </h2>
                   <p className="text-muted-foreground text-sm max-w-md">
-                    Descubra a cor ideal para cada cliente com o Método Sazonal de 12 Estações. Análise por IA com paleta personalizada, técnicas e cores a evitar.
+                    Descubra a cor ideal para cada cliente com o Método das 4 Estações (Primavera, Verão, Outono, Inverno). Análise por IA com paleta personalizada, técnicas e cores a evitar.
                   </p>
                 </div>
               </div>

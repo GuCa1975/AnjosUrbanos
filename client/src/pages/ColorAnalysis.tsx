@@ -2,86 +2,31 @@ import { useRef, useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
-import {
-  Upload, Camera, Loader2, ArrowLeft,
-  Sparkles, Leaf, Palette, AlertTriangle, Scissors, Eye
-} from "lucide-react";
+import { Camera, Loader2, ArrowLeft } from "lucide-react";
 
-// ─── Local types (mirror server/routers/colorAnalysis.ts) ────────────────────
-interface HairColor {
-  name: string;
-  description: string;
-  whyItWorks: string;
-  hex: string;
-}
-
-interface AvoidColor {
-  name: string;
-  hex: string;
-  reason: string;
-}
-
-interface Technique {
-  name: string;
-  reason: string;
-}
-
-interface FinalPalette {
-  basePrincipal: string;
-  reflexo: string;
-  iluminacao: string;
-  profundidade: string;
-}
-
-interface SalonFormula {
-  alturaIdeal: string;
-  reflexoIdeal: string;
-  temperatura: string;
-  contraste: string;
-  manutencao: string;
-  retoque: string;
-}
-
+interface HairColor { name: string; description: string; whyItWorks: string; hex: string; }
+interface AvoidColor { name: string; hex: string; reason: string; }
+interface Technique { name: string; reason: string; }
+interface FinalPalette { basePrincipal: string; reflexo: string; iluminacao: string; profundidade: string; }
+interface SalonFormula { alturaIdeal: string; reflexoIdeal: string; temperatura: string; contraste: string; manutencao: string; retoque: string; }
 interface ColorAnalysisResult {
-  subtom: string;
-  profundidade: string;
-  intensidade: string;
-  contraste: string;
-  baseNatural: string;
-  classificacaoSazonal: string;
-  explicacaoSazonal: string;
-  coresRecomendadas: HairColor[];
-  tecnicasRecomendadas: Technique[];
-  coresAEvitar: AvoidColor[];
-  formulaSalao: SalonFormula;
-  resultadoVisual: string;
-  paletaFinal: FinalPalette;
+  subtom: string; profundidade: string; intensidade: string; contraste: string; baseNatural: string;
+  classificacaoSazonal: string; explicacaoSazonal: string; resumoAnaliseTecnica: string;
+  coresRecomendadas: HairColor[]; tecnicasRecomendadas: Technique[]; coresAEvitar: AvoidColor[];
+  formulaSalao: SalonFormula; resultadoVisual: string; paletaFinal: FinalPalette;
 }
 
-// ─── Upload helper ────────────────────────────────────────────────────────────
-async function uploadImageToStorage(file: File): Promise<string> {
-  const formData = new FormData();
-  formData.append("file", file);
-  const res = await fetch("/api/upload-temp", { method: "POST", body: formData });
-  if (!res.ok) throw new Error("Erro ao carregar imagem");
-  const data = await res.json() as { url: string };
-  return data.url;
-}
+const SEASON_BADGE: Record<string, { bg: string; text: string; icon: string }> = {
+  Primavera: { bg: "#C47A2B", text: "#fff", icon: "🌸" },
+  "Verão":   { bg: "#4A6FA5", text: "#fff", icon: "☀️" },
+  Outono:    { bg: "#8B4513", text: "#fff", icon: "🍂" },
+  Inverno:   { bg: "#2C3E6B", text: "#fff", icon: "❄️" },
+};
 
-// ─── Season badge colors ──────────────────────────────────────────────────────
-function getSeasonStyle(season: string): { bg: string; text: string } {
-  const s = season.toLowerCase();
-  if (s.includes("primavera")) return { bg: "#f9e4b7", text: "#7a4f1e" };
-  if (s.includes("ver")) return { bg: "#d4eaf7", text: "#1a4f6e" };
-  if (s.includes("outono")) return { bg: "#f0d9c0", text: "#6b3a1f" };
-  if (s.includes("inverno")) return { bg: "#dde4f0", text: "#1e2d5a" };
-  return { bg: "#f0ece6", text: "#3d2b1f" };
-}
+const TECH_ICONS = ["✂️","🎨","💧","✨","🌿"];
 
-// ─── Main component ───────────────────────────────────────────────────────────
 export default function ColorAnalysis() {
   const { user, loading } = useAuth();
   const [, setLocation] = useLocation();
@@ -97,392 +42,288 @@ export default function ColorAnalysis() {
       setResult(data as ColorAnalysisResult);
       setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
     },
-    onError: (err) => {
-      toast.error("Erro na análise: " + err.message);
-    },
+    onError: (err) => { toast.error("Erro na análise: " + err.message); },
   });
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#00ff41]" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    setLocation("/");
-    return null;
-  }
+  if (loading) return (
+    <div className="min-h-screen bg-[#F9F5F0] flex items-center justify-center">
+      <Loader2 className="h-8 w-8 animate-spin text-[#C47A2B]" />
+    </div>
+  );
+  if (!user) { setLocation("/"); return null; }
 
   const handleFileSelect = async (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      toast.error("Por favor seleciona uma imagem.");
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("Imagem demasiado grande. Máximo 10MB.");
-      return;
-    }
-    const localUrl = URL.createObjectURL(file);
-    setPreviewUrl(localUrl);
+    if (!file.type.startsWith("image/")) { toast.error("Por favor selecciona uma imagem."); return; }
+    if (file.size > 10 * 1024 * 1024) { toast.error("Imagem demasiado grande. Máximo 10MB."); return; }
+    setPreviewUrl(URL.createObjectURL(file));
     setResult(null);
     setIsUploading(true);
     try {
-      const url = await uploadImageToStorage(file);
-      setUploadedUrl(url);
-      toast.success("Foto carregada com sucesso!");
-    } catch {
-      toast.error("Erro ao carregar a foto. Tenta novamente.");
-      setPreviewUrl(null);
-    } finally {
-      setIsUploading(false);
-    }
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload-temp", { method: "POST", body: formData, credentials: "include" });
+      if (!res.ok) throw new Error();
+      const data = await res.json() as { url: string };
+      setUploadedUrl(data.url);
+      toast.success("Foto carregada!");
+    } catch { toast.error("Erro ao carregar a foto."); setPreviewUrl(null); }
+    finally { setIsUploading(false); }
   };
 
-  const handleAnalyze = () => {
-    if (!uploadedUrl) {
-      toast.error("Carrega uma foto primeiro.");
-      return;
-    }
-    analyzeMutation.mutate({ imageUrl: uploadedUrl });
-  };
-
-  const seasonStyle = result ? getSeasonStyle(result.classificacaoSazonal) : null;
+  const season = result?.classificacaoSazonal ?? "Outono";
+  const sb = SEASON_BADGE[season] ?? SEASON_BADGE["Outono"];
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div className="min-h-screen bg-[#F9F5F0]" style={{ fontFamily: "'Georgia', serif", color: "#2C1A0E" }}>
       {/* Header */}
-      <div className="border-b border-white/10 px-4 py-4 flex items-center gap-4">
-        <button
-          onClick={() => setLocation("/dashboard")}
-          className="text-white/60 hover:text-white transition-colors flex items-center gap-2 text-sm"
-        >
-          <ArrowLeft className="w-4 h-4" /> Voltar
-        </button>
-        <div className="flex items-center gap-2">
-          <Palette className="w-5 h-5 text-[#00ff41]" />
-          <span className="font-semibold text-sm tracking-wide">A COR IDEAL PARA SI</span>
+      <header className="bg-white border-b border-[#E8DDD4] sticky top-0 z-50">
+        <div className="max-w-3xl mx-auto px-4 h-14 flex items-center gap-3">
+          <Button variant="ghost" size="sm" onClick={() => setLocation("/dashboard")} className="text-[#8B6347] hover:text-[#2C1A0E]" style={{fontFamily:"sans-serif"}}>
+            <ArrowLeft className="h-4 w-4 mr-1" /> Voltar
+          </Button>
+          <span className="font-bold text-sm uppercase tracking-widest text-[#2C1A0E]" style={{fontFamily:"sans-serif"}}>Análise de Cor de Cabelo</span>
         </div>
-        <span className="ml-auto text-xs text-white/40">Método Sazonal · 12 Estações</span>
-      </div>
+      </header>
 
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-3xl mx-auto px-4 py-8">
 
-        {/* Upload section */}
-        <Card className="bg-[#111] border-white/10">
-          <CardContent className="p-6 space-y-5">
-            <div className="text-center space-y-1">
-              <h1 className="text-xl font-bold tracking-tight">Análise de Cor de Cabelo</h1>
-              <p className="text-white/50 text-sm">Carrega uma foto do rosto do cliente para obter a análise sazonal completa</p>
-            </div>
-
-            {/* Drop zone */}
+        {/* Upload card — só visível antes do resultado */}
+        {!result && (
+          <div className="bg-white rounded-2xl border border-[#E8DDD4] shadow-sm p-8 mb-6">
+            <h1 className="text-2xl font-black text-center uppercase tracking-tight mb-2">A Cor de Cabelo Ideal Para Si</h1>
+            <p className="text-center text-[#8B6347] text-sm mb-8" style={{fontFamily:"sans-serif"}}>
+              Carregue uma foto do rosto do cliente · Método das 4 Estações
+            </p>
             <div
+              className="border-2 border-dashed border-[#D4B896] rounded-xl p-10 flex flex-col items-center gap-4 cursor-pointer hover:bg-[#FDF8F3] transition-colors"
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-white/20 rounded-xl p-6 text-center cursor-pointer hover:border-[#00ff41]/50 hover:bg-white/5 transition-all group"
             >
               {previewUrl ? (
-                <div className="flex flex-col items-center gap-3">
-                  <img
-                    src={previewUrl}
-                    alt="Preview"
-                    className="w-40 h-40 object-cover rounded-xl border border-white/20 shadow-lg"
-                  />
-                  {isUploading ? (
-                    <div className="flex items-center gap-2 text-white/50 text-sm">
-                      <Loader2 className="w-4 h-4 animate-spin" /> A carregar...
-                    </div>
-                  ) : (
-                    <span className="text-xs text-white/40 group-hover:text-white/60">Clica para trocar a foto</span>
-                  )}
-                </div>
+                <img src={previewUrl} alt="Preview" className="w-44 h-44 object-cover rounded-xl border-2 border-[#D4B896]" />
               ) : (
-                <div className="flex flex-col items-center gap-3 py-4">
-                  <div className="w-14 h-14 rounded-full bg-[#00ff41]/10 flex items-center justify-center group-hover:bg-[#00ff41]/20 transition-colors">
-                    <Upload className="w-6 h-6 text-[#00ff41]" />
+                <>
+                  <div className="w-16 h-16 rounded-full bg-[#F4E8D8] flex items-center justify-center">
+                    <Camera className="h-8 w-8 text-[#C47A2B]" />
                   </div>
-                  <div>
-                    <p className="text-sm font-medium">Carregar foto do cliente</p>
-                    <p className="text-xs text-white/40 mt-1">JPG, PNG, WEBP · Máx. 10MB</p>
-                  </div>
-                </div>
+                  <p className="text-[#8B6347] text-sm text-center" style={{fontFamily:"sans-serif"}}>
+                    Clique para seleccionar uma foto<br/>
+                    <span className="text-xs text-[#B8967A]">JPG, PNG ou WEBP · máx. 10MB</span>
+                  </p>
+                </>
               )}
+              {isUploading && <Loader2 className="h-5 w-5 animate-spin text-[#C47A2B]" />}
             </div>
-
             <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              capture="user"
-              className="hidden"
+              ref={fileInputRef} type="file" accept="image/*" className="hidden"
               onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
             />
-
-            {/* Camera / Gallery buttons */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="flex gap-3 mt-6 justify-center">
+              {previewUrl && !isUploading && (
+                <Button variant="outline" onClick={() => { setPreviewUrl(null); setUploadedUrl(null); if(fileInputRef.current) fileInputRef.current.value=""; }} className="border-[#D4B896] text-[#8B6347]" style={{fontFamily:"sans-serif"}}>
+                  Trocar foto
+                </Button>
+              )}
               <Button
-                variant="outline"
-                className="border-white/20 text-white/70 hover:text-white hover:border-white/40 bg-transparent"
-                onClick={() => {
-                  if (fileInputRef.current) {
-                    fileInputRef.current.removeAttribute("capture");
-                    fileInputRef.current.click();
-                    setTimeout(() => fileInputRef.current?.setAttribute("capture", "user"), 500);
-                  }
-                }}
+                onClick={() => { if(!uploadedUrl){ toast.error("Carregue uma foto primeiro."); return; } analyzeMutation.mutate({imageUrl:uploadedUrl}); }}
+                disabled={!uploadedUrl || isUploading || analyzeMutation.isPending}
+                className="bg-[#C47A2B] hover:bg-[#A8621E] text-white font-bold uppercase tracking-wider px-8"
+                style={{fontFamily:"sans-serif"}}
               >
-                <Upload className="w-4 h-4 mr-2" /> Galeria
-              </Button>
-              <Button
-                variant="outline"
-                className="border-white/20 text-white/70 hover:text-white hover:border-white/40 bg-transparent"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Camera className="w-4 h-4 mr-2" /> Câmara
+                {analyzeMutation.isPending
+                  ? <><Loader2 className="h-4 w-4 animate-spin mr-2"/>A analisar...</>
+                  : "Analisar Cor"}
               </Button>
             </div>
-
-            <Button
-              className="w-full bg-[#00ff41] hover:bg-[#00cc33] text-black font-bold py-3 text-sm tracking-wide"
-              disabled={!uploadedUrl || isUploading || analyzeMutation.isPending}
-              onClick={handleAnalyze}
-            >
-              {analyzeMutation.isPending ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> A analisar...</>
-              ) : (
-                <><Sparkles className="w-4 h-4 mr-2" /> ANALISAR COR IDEAL</>
-              )}
-            </Button>
-
             {analyzeMutation.isPending && (
-              <p className="text-center text-xs text-white/40 animate-pulse">
-                A IA está a analisar o subtom, contraste e base natural... pode demorar alguns segundos.
+              <p className="text-center text-xs text-[#8B6347] mt-4 animate-pulse" style={{fontFamily:"sans-serif"}}>
+                A IA está a analisar as características da imagem... pode demorar até 30 segundos.
               </p>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        )}
 
-        {/* ─── RESULT ─────────────────────────────────────────────────────── */}
+        {/* ═══════════════════════════════════════════════════════════════
+            RELATÓRIO VISUAL — layout fiel à imagem de referência
+        ═══════════════════════════════════════════════════════════════ */}
         {result && (
-          <div ref={resultRef} className="space-y-5">
+          <div ref={resultRef} className="bg-white rounded-2xl border border-[#E8DDD4] shadow-sm overflow-hidden">
 
-            {/* TOP CARD — foto + classificação */}
-            <Card className="bg-[#111] border-white/10 overflow-hidden">
-              <CardContent className="p-0">
-                {/* Header cream strip */}
-                <div className="px-6 pt-6 pb-4 text-center" style={{ background: seasonStyle?.bg ?? "#f0ece6" }}>
-                  <h2 className="text-lg font-bold tracking-widest uppercase" style={{ color: seasonStyle?.text ?? "#3d2b1f", fontFamily: "Georgia, serif" }}>
-                    A COR DE CABELO IDEAL PARA SI
-                  </h2>
-                </div>
+            {/* Título com folhas */}
+            <div className="bg-[#F9F5F0] border-b border-[#E8DDD4] px-8 py-5 text-center relative">
+              <span className="absolute left-4 top-3 text-3xl opacity-50 select-none">🍂</span>
+              <span className="absolute right-4 top-3 text-3xl opacity-50 select-none" style={{transform:"scaleX(-1)"}}>🍂</span>
+              <h1 className="text-xl md:text-2xl font-black uppercase tracking-tight">A Cor de Cabelo Ideal Para Si</h1>
+            </div>
 
-                <div className="p-6 grid grid-cols-2 gap-6">
-                  {/* Foto */}
+            <div className="p-6 md:p-8">
+
+              {/* ── Bloco topo: foto + análise técnica ── */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+
+                {/* Coluna esquerda: foto + classificação */}
+                <div>
                   {previewUrl && (
-                    <div className="flex flex-col items-center gap-3">
-                      <img
-                        src={previewUrl}
-                        alt="Cliente"
-                        className="w-full max-w-[160px] aspect-square object-cover rounded-xl border-2 shadow-lg"
-                        style={{ borderColor: seasonStyle?.bg ?? "#f0ece6" }}
-                      />
-                      <div className="text-center">
-                        <p className="text-xs text-white/40 uppercase tracking-widest mb-1">Classificação Sazonal</p>
-                        <div
-                          className="px-3 py-1.5 rounded-full text-sm font-bold"
-                          style={{ background: seasonStyle?.bg, color: seasonStyle?.text }}
-                        >
-                          {result.classificacaoSazonal}
-                        </div>
-                      </div>
+                    <div className="rounded-xl overflow-hidden border-2 border-[#D4B896] mb-4">
+                      <img src={previewUrl} alt="Cliente" className="w-full object-cover max-h-64"/>
                     </div>
                   )}
+                  <div className="text-center">
+                    <p className="text-xs uppercase tracking-widest text-[#8B6347] mb-2 font-semibold" style={{fontFamily:"sans-serif"}}>Classificação Sazonal</p>
+                    <div className="inline-block px-6 py-2 rounded-lg font-black text-xl uppercase tracking-wide" style={{backgroundColor: sb.bg, color: sb.text}}>
+                      {sb.icon} {season}
+                    </div>
+                    <p className="text-sm text-[#5C3A1E] mt-3 leading-relaxed" style={{fontFamily:"sans-serif"}}>{result.explicacaoSazonal}</p>
+                  </div>
+                </div>
 
-                  {/* Dados técnicos */}
-                  <div className="space-y-2.5">
+                {/* Coluna direita: características + resumo */}
+                <div className="flex flex-col gap-4">
+                  <div className="rounded-xl border border-[#E8DDD4] bg-[#FDF8F3] p-4">
                     {[
-                      { label: "Subtom", value: result.subtom },
-                      { label: "Contraste", value: result.contraste },
-                      { label: "Base natural", value: result.baseNatural },
-                      { label: "Intensidade", value: result.intensidade },
-                    ].map(({ label, value }) => (
-                      <div key={label} className="flex items-start gap-2">
-                        <Leaf className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" style={{ color: seasonStyle?.bg ?? "#c8a96e" }} />
+                      {icon:"🍂", label:"Classificação sazonal", value: season},
+                      {icon:"🌡️", label:"Subtom", value: result.subtom},
+                      {icon:"⚡", label:"Contraste", value: result.contraste},
+                      {icon:"💇", label:"Base natural", value: result.baseNatural},
+                      {icon:"✨", label:"Intensidade", value: result.intensidade},
+                    ].map(item => (
+                      <div key={item.label} className="flex items-start gap-2 py-1.5 border-b border-[#EDE3D8] last:border-0">
+                        <span className="text-sm">{item.icon}</span>
+                        <span className="text-xs text-[#8B6347] font-semibold min-w-[130px]" style={{fontFamily:"sans-serif"}}>{item.label}:</span>
+                        <span className="text-xs text-[#2C1A0E]" style={{fontFamily:"sans-serif"}}>{item.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="rounded-xl border border-[#E8DDD4] bg-white p-4">
+                    <p className="text-xs uppercase tracking-widest text-[#8B6347] font-bold mb-2" style={{fontFamily:"sans-serif"}}>Resumo da Análise Técnica</p>
+                    <p className="text-sm text-[#2C1A0E] leading-relaxed" style={{fontFamily:"sans-serif"}}>{result.resumoAnaliseTecnica}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Cores recomendadas (6 swatches) ── */}
+              <div className="mb-6">
+                <h2 className="text-center text-xs font-black uppercase tracking-widest mb-4 pb-2 border-b border-[#E8DDD4]" style={{fontFamily:"sans-serif"}}>
+                  Cores de Cabelo que Mais Valorizam
+                </h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {result.coresRecomendadas.slice(0,6).map((cor, i) => (
+                    <div key={i} className="rounded-xl border border-[#E8DDD4] overflow-hidden bg-[#FDF8F3]">
+                      <div className="relative">
+                        <div className="w-full h-20" style={{backgroundColor: cor.hex}}/>
+                        <span className="absolute top-2 left-2 w-6 h-6 rounded-full bg-white/90 flex items-center justify-center text-xs font-black text-[#2C1A0E]">{i+1}</span>
+                      </div>
+                      <div className="p-3">
+                        <p className="font-black text-xs text-[#2C1A0E] mb-1" style={{fontFamily:"sans-serif"}}>{cor.name}</p>
+                        <p className="text-[10px] text-[#8B6347] mb-1 leading-snug" style={{fontFamily:"sans-serif"}}>{cor.description}</p>
+                        <p className="text-[10px] text-[#5C3A1E] leading-snug italic" style={{fontFamily:"sans-serif"}}>{cor.whyItWorks}</p>
+                        <p className="text-[9px] font-mono text-[#B8967A] mt-1">{cor.hex}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── Técnicas + Cores a evitar ── */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <h2 className="text-xs font-black uppercase tracking-widest mb-3 pb-2 border-b border-[#E8DDD4]" style={{fontFamily:"sans-serif"}}>Técnicas Recomendadas</h2>
+                  <div className="space-y-2">
+                    {result.tecnicasRecomendadas.map((t, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <span className="text-base mt-0.5">{TECH_ICONS[i] ?? TECH_ICONS[0]}</span>
                         <div>
-                          <p className="text-xs text-white/40 leading-none">{label}</p>
-                          <p className="text-sm font-medium leading-tight">{value}</p>
+                          <span className="text-xs font-bold text-[#2C1A0E]" style={{fontFamily:"sans-serif"}}>{t.name}</span>
+                          <span className="text-xs text-[#8B6347]" style={{fontFamily:"sans-serif"}}> — {t.reason}</span>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-
-                {/* Explicação sazonal */}
-                <div className="mx-6 mb-6 p-4 rounded-xl bg-white/5 border border-white/10">
-                  <p className="text-xs font-semibold text-white/50 uppercase tracking-widest mb-1">Resumo da Análise Técnica</p>
-                  <p className="text-sm text-white/80 leading-relaxed">{result.explicacaoSazonal}</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* CORES RECOMENDADAS */}
-            <Card className="bg-[#111] border-white/10">
-              <CardContent className="p-6">
-                <h3 className="text-sm font-bold tracking-widest uppercase text-white/60 mb-4 flex items-center gap-2">
-                  <Palette className="w-4 h-4 text-[#00ff41]" />
-                  Cores de Cabelo que Mais Valorizam
-                </h3>
-                <div className="grid grid-cols-1 gap-3">
-                  {result.coresRecomendadas.map((cor: HairColor, i: number) => (
-                    <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
-                      <div className="flex flex-col items-center gap-1 flex-shrink-0">
-                        <div
-                          className="w-10 h-10 rounded-full border-2 border-white/20 shadow"
-                          style={{ backgroundColor: cor.hex }}
-                        />
-                        <span className="text-[10px] text-white/30 font-mono">{cor.hex}</span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <span className="text-xs font-bold text-white/30">{i + 1}</span>
-                          <p className="text-sm font-semibold">{cor.name}</p>
+                <div>
+                  <h2 className="text-xs font-black uppercase tracking-widest mb-3 pb-2 border-b border-[#E8DDD4]" style={{fontFamily:"sans-serif"}}>Cores a Evitar</h2>
+                  <div className="space-y-2">
+                    {result.coresAEvitar.map((c, i) => (
+                      <div key={i} className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg border border-[#E8DDD4] shrink-0" style={{backgroundColor: c.hex}}/>
+                        <div>
+                          <p className="text-xs font-bold text-[#2C1A0E]" style={{fontFamily:"sans-serif"}}>{c.name}</p>
+                          <p className="text-[9px] font-mono text-[#B8967A]">{c.hex}</p>
+                          <p className="text-[10px] text-[#8B6347]" style={{fontFamily:"sans-serif"}}>{c.reason}</p>
                         </div>
-                        <p className="text-xs text-white/50 leading-snug">{cor.description}</p>
-                        <p className="text-xs text-[#00ff41]/70 leading-snug mt-1">{cor.whyItWorks}</p>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
 
-            {/* TÉCNICAS RECOMENDADAS */}
-            <Card className="bg-[#111] border-white/10">
-              <CardContent className="p-6">
-                <h3 className="text-sm font-bold tracking-widest uppercase text-white/60 mb-4 flex items-center gap-2">
-                  <Scissors className="w-4 h-4 text-[#00ff41]" />
-                  Técnicas Recomendadas
-                </h3>
-                <div className="space-y-2">
-                  {result.tecnicasRecomendadas.map((t: Technique, i: number) => (
-                    <div key={i} className="flex gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
-                      <div className="w-6 h-6 rounded-full bg-[#00ff41]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <Scissors className="w-3 h-3 text-[#00ff41]" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold">{t.name}</p>
-                        <p className="text-xs text-white/50 leading-snug">{t.reason}</p>
-                      </div>
-                    </div>
-                  ))}
+              {/* ── Fórmula salão + Resultado visual ── */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="rounded-xl border border-[#E8DDD4] bg-[#FDF8F3] p-4">
+                  <h2 className="text-xs font-black uppercase tracking-widest mb-3" style={{fontFamily:"sans-serif"}}>Melhor Resultado no Salão</h2>
+                  <ul className="space-y-1.5">
+                    {[
+                      {label:"Altura ideal", value: result.formulaSalao.alturaIdeal},
+                      {label:"Reflexo ideal", value: result.formulaSalao.reflexoIdeal},
+                      {label:"Temperatura", value: result.formulaSalao.temperatura},
+                      {label:"Contraste", value: result.formulaSalao.contraste},
+                      {label:"Manutenção", value: result.formulaSalao.manutencao},
+                      {label:"Retoque", value: result.formulaSalao.retoque},
+                    ].map(item => (
+                      <li key={item.label} className="flex gap-1.5 text-xs" style={{fontFamily:"sans-serif"}}>
+                        <span className="text-[#C47A2B]">•</span>
+                        <span className="font-semibold text-[#2C1A0E]">{item.label}:</span>
+                        <span className="text-[#5C3A1E]">{item.value}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* CORES A EVITAR */}
-            <Card className="bg-[#111] border-white/10">
-              <CardContent className="p-6">
-                <h3 className="text-sm font-bold tracking-widest uppercase text-white/60 mb-4 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-amber-400" />
-                  Cores a Evitar
-                </h3>
-                <div className="grid grid-cols-1 gap-2">
-                  {result.coresAEvitar.map((cor: AvoidColor, i: number) => (
-                    <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-amber-500/5 border border-amber-500/20">
-                      <div
-                        className="w-8 h-8 rounded-full border-2 border-white/20 flex-shrink-0"
-                        style={{ backgroundColor: cor.hex }}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold">{cor.name}</p>
-                        <p className="text-xs text-white/40 font-mono">{cor.hex}</p>
-                      </div>
-                      <p className="text-xs text-amber-400/80 text-right max-w-[40%] leading-snug">{cor.reason}</p>
-                    </div>
-                  ))}
+                <div className="rounded-xl border border-[#E8DDD4] bg-white p-4">
+                  <h2 className="text-xs font-black uppercase tracking-widest mb-3" style={{fontFamily:"sans-serif"}}>Resultado Visual Esperado</h2>
+                  <p className="text-sm text-[#2C1A0E] leading-relaxed" style={{fontFamily:"sans-serif"}}>{result.resultadoVisual}</p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
 
-            {/* MELHOR RESULTADO NO SALÃO */}
-            <Card className="bg-[#111] border-white/10">
-              <CardContent className="p-6">
-                <h3 className="text-sm font-bold tracking-widest uppercase text-white/60 mb-4 flex items-center gap-2">
-                  <Eye className="w-4 h-4 text-[#00ff41]" />
-                  Melhor Resultado no Salão
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
+              {/* ── Paleta final ── */}
+              <div className="rounded-xl border border-[#E8DDD4] overflow-hidden mb-6">
+                <div className="bg-[#F9F5F0] px-4 py-2 text-center border-b border-[#E8DDD4]">
+                  <h2 className="text-xs font-black uppercase tracking-widest" style={{fontFamily:"sans-serif"}}>Paleta Final para Cabelo</h2>
+                </div>
+                <div className="grid grid-cols-4">
                   {[
-                    { label: "Altura ideal", value: result.formulaSalao.alturaIdeal },
-                    { label: "Reflexo ideal", value: result.formulaSalao.reflexoIdeal },
-                    { label: "Temperatura", value: result.formulaSalao.temperatura },
-                    { label: "Contraste", value: result.formulaSalao.contraste },
-                    { label: "Manutenção", value: result.formulaSalao.manutencao },
-                    { label: "Retoque", value: result.formulaSalao.retoque },
-                  ].map(({ label, value }) => (
-                    <div key={label} className="p-3 rounded-xl bg-white/5 border border-white/10">
-                      <p className="text-xs text-white/40 mb-0.5">{label}</p>
-                      <p className="text-sm font-medium leading-snug">{value}</p>
+                    {label:"Base principal", hex: result.paletaFinal.basePrincipal},
+                    {label:"Reflexo", hex: result.paletaFinal.reflexo},
+                    {label:"Iluminação", hex: result.paletaFinal.iluminacao},
+                    {label:"Profundidade", hex: result.paletaFinal.profundidade},
+                  ].map(p => (
+                    <div key={p.label} className="flex flex-col items-center">
+                      <div className="w-full h-14" style={{backgroundColor: p.hex}}/>
+                      <div className="bg-white w-full text-center py-2 border-t border-[#E8DDD4]">
+                        <p className="text-[10px] text-[#8B6347]" style={{fontFamily:"sans-serif"}}>{p.label}</p>
+                        <p className="text-[9px] font-mono font-bold text-[#2C1A0E]">{p.hex}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
-
-                {/* Resultado visual esperado */}
-                <div className="mt-4 p-4 rounded-xl bg-[#00ff41]/5 border border-[#00ff41]/20">
-                  <p className="text-xs font-semibold text-[#00ff41]/60 uppercase tracking-widest mb-1">Resultado Visual Esperado</p>
-                  <p className="text-sm text-white/80 leading-relaxed">{result.resultadoVisual}</p>
+                <div className="bg-[#F9F5F0] px-4 py-2 text-center border-t border-[#E8DDD4]">
+                  <p className="text-[10px] text-[#8B6347]" style={{fontFamily:"sans-serif"}}>Combinação perfeita para uma cor de cabelo harmoniosa</p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
 
-            {/* PALETA FINAL */}
-            <Card className="bg-[#111] border-white/10">
-              <CardContent className="p-6">
-                <h3 className="text-sm font-bold tracking-widest uppercase text-white/60 mb-4 text-center">
-                  Paleta Final para Cabelo
-                </h3>
-                <div className="grid grid-cols-4 gap-3">
-                  {[
-                    { label: "Base Principal", hex: result.paletaFinal.basePrincipal },
-                    { label: "Reflexo", hex: result.paletaFinal.reflexo },
-                    { label: "Iluminação", hex: result.paletaFinal.iluminacao },
-                    { label: "Profundidade", hex: result.paletaFinal.profundidade },
-                  ].map(({ label, hex }) => (
-                    <div key={label} className="flex flex-col items-center gap-2">
-                      <div
-                        className="w-full aspect-square rounded-xl border border-white/20 shadow-md"
-                        style={{ backgroundColor: hex }}
-                      />
-                      <p className="text-[10px] text-white/50 text-center leading-tight">{label}</p>
-                      <p className="text-[10px] text-white/30 font-mono">{hex}</p>
-                    </div>
-                  ))}
-                </div>
-                <p className="text-center text-xs text-white/30 mt-4">
-                  Combinação perfeita para uma cor de cabelo harmoniosa
-                </p>
-              </CardContent>
-            </Card>
+              {/* Rodapé */}
+              <p className="text-[10px] text-center text-[#B8967A] leading-relaxed mb-6" style={{fontFamily:"sans-serif"}}>
+                Análise gerada com base nas características visuais da imagem. Para um diagnóstico técnico completo, consulte um profissional de coloração capilar.
+              </p>
 
-            {/* NOTA FINAL */}
-            <p className="text-center text-xs text-white/25 pb-4 leading-relaxed px-4">
-              Análise gerada com base nas características visuais da imagem. Para um diagnóstico técnico completo, consulte um profissional de coloração capilar.
-            </p>
-
-            {/* Nova análise */}
-            <Button
-              variant="outline"
-              className="w-full border-white/20 text-white/70 hover:text-white bg-transparent"
-              onClick={() => {
-                setResult(null);
-                setPreviewUrl(null);
-                setUploadedUrl(null);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-            >
-              <Sparkles className="w-4 h-4 mr-2" /> Nova Análise
-            </Button>
+              {/* Botões */}
+              <div className="flex gap-3 justify-center">
+                <Button variant="outline" onClick={() => { setResult(null); setPreviewUrl(null); setUploadedUrl(null); }} className="border-[#D4B896] text-[#8B6347] hover:bg-[#FDF8F3]" style={{fontFamily:"sans-serif"}}>
+                  Nova Análise
+                </Button>
+                <Button onClick={() => window.print()} className="bg-[#C47A2B] hover:bg-[#A8621E] text-white font-bold uppercase tracking-wider" style={{fontFamily:"sans-serif"}}>
+                  Imprimir / Guardar PDF
+                </Button>
+              </div>
+            </div>
           </div>
         )}
       </div>
