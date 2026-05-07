@@ -44,7 +44,7 @@ const translations: Record<Lang, Record<string, string>> = {
     expoVisit: "Visite-nos", expoVisitDesc: "Venha experimentar a tecnologia em primeira mão. A nossa equipa estará disponível para demonstrações personalizadas.",
     formacaoBadge: "Formação Profissional", formacaoTitle: "Formação de IA para Cabeleireiros",
     formacaoDesc: "Aprenda a dominar as ferramentas de Inteligência Artificial para transformar o seu negócio. Formação prática e intensiva.",
-    formacaoDate: "1 de Junho de 2026", formacaoLocal: "Porto (local a confirmar)", formacaoDuration: "1 dia · 9h00 às 18h00", formacaoSpots: "15 vagas disponíveis",
+    formacaoDate: "1 de Junho de 2026", formacaoLocal: "Associação de Cabeleireiros de Portugal, Porto", formacaoDuration: "1 dia · 9h00 às 18h00", formacaoSpots: "15 vagas disponíveis",
     formacaoProgram: "Programa da Formação",
     prog1: "Introdução à IA no sector da beleza", prog2: "Prática com a ferramenta Anjos Urbanos Virtual",
     prog3: "Estratégias de venda com simulação de penteados", prog4: "Marketing digital para cabeleireiros", prog5: "Casos práticos e simulações reais",
@@ -90,7 +90,7 @@ const translations: Record<Lang, Record<string, string>> = {
     expoVisit: "Visítenos", expoVisitDesc: "Venga a probar la tecnología de primera mano. Nuestro equipo estará disponible para demostraciones personalizadas.",
     formacaoBadge: "Formación Profesional", formacaoTitle: "Formación de IA para Peluqueros",
     formacaoDesc: "Aprenda a dominar las herramientas de Inteligencia Artificial para transformar su negocio. Formación práctica e intensiva.",
-    formacaoDate: "1 de Junio de 2026", formacaoLocal: "Oporto (lugar por confirmar)", formacaoDuration: "1 día · 9h00 a 18h00", formacaoSpots: "15 plazas disponibles",
+    formacaoDate: "1 de Junio de 2026", formacaoLocal: "Asociación de Peluqueros de Portugal, Oporto", formacaoDuration: "1 día · 9h00 a 18h00", formacaoSpots: "15 plazas disponibles",
     formacaoProgram: "Programa de Formación",
     prog1: "Introducción a la IA en el sector de la belleza", prog2: "Práctica con la herramienta Anjos Urbanos Virtual",
     prog3: "Estrategias de venta con simulación de peinados", prog4: "Marketing digital para peluqueros", prog5: "Casos prácticos y simulaciones reales",
@@ -136,7 +136,7 @@ const translations: Record<Lang, Record<string, string>> = {
     expoVisit: "Visit us", expoVisitDesc: "Come and experience the technology first-hand. Our team will be available for personalised demonstrations.",
     formacaoBadge: "Professional Training", formacaoTitle: "AI Training for Hairstylists",
     formacaoDesc: "Learn to master Artificial Intelligence tools to transform your business. Practical and intensive training.",
-    formacaoDate: "June 1, 2026", formacaoLocal: "Porto (venue to be confirmed)", formacaoDuration: "1 day · 9am to 6pm", formacaoSpots: "15 spots available",
+    formacaoDate: "June 1, 2026", formacaoLocal: "Portuguese Hairdressers Association, Porto", formacaoDuration: "1 day · 9am to 6pm", formacaoSpots: "15 spots available",
     formacaoProgram: "Training Programme",
     prog1: "Introduction to AI in the beauty sector", prog2: "Hands-on with Anjos Urbanos Virtual tool",
     prog3: "Sales strategies with hairstyle simulation", prog4: "Digital marketing for hairstylists", prog5: "Practical cases and real simulations",
@@ -159,7 +159,7 @@ function FormacaoForm({ lang, tr }: { lang: Lang; tr: Record<string, string> }) 
   const [enviado, setEnviado] = useState(false);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent('Inscrição Formação IA para Cabeleireiros — 18 Maio 2026');
+    const subject = encodeURIComponent('Inscrição Formação IA para Cabeleireiros — 1 Junho 2026');
     const body = encodeURIComponent(
       `Nome: ${formData.nome}\nTelefone: ${formData.telefone}\nEmail: ${formData.email}\n\nMensagem:\n${formData.mensagem || '(sem mensagem adicional)'}`
     );
@@ -453,68 +453,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ExpoCosmética 2026 */}
-      <section id="expocosmetica" className="py-20 bg-secondary/30">
-        <div className="container">
-          <div className="text-center mb-12">
-            <Badge variant="outline" className="mb-4 border-primary/40 text-primary bg-primary/5 uppercase tracking-widest text-xs">
-              <Calendar className="h-3 w-3 mr-1" />{tr.eventBadge}
-            </Badge>
-            <h2 className="text-2xl md:text-3xl font-black text-foreground mb-4 uppercase tracking-tight">
-              {tr.expoTitle} <span className="text-primary">ExpoCosmética 2026</span>
-            </h2>
-            <p className="text-muted-foreground text-base max-w-2xl mx-auto">{tr.expoDesc}</p>
-          </div>
-          <div className="max-w-4xl mx-auto">
-            <Card className="border border-primary/40 bg-card shadow-[0_0_40px_rgba(57,255,20,0.08)] relative overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary" />
-              <CardContent className="p-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                  <div>
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 rounded-sm bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
-                        <Sparkles className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-black text-foreground uppercase tracking-wide text-sm">{tr.expoStudio}</p>
-                        <p className="text-xs text-muted-foreground">{tr.expoLive}</p>
-                      </div>
-                    </div>
-                    <div className="space-y-3 mb-6">
-                      <div className="flex items-center gap-3 text-sm">
-                        <Calendar className="h-4 w-4 text-primary shrink-0" />
-                        <span className="text-foreground font-bold">{tr.expoDates}</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm">
-                        <MapPin className="h-4 w-4 text-primary shrink-0" />
-                        <span className="text-foreground">{tr.expoStand}</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm">
-                        <Sparkles className="h-4 w-4 text-primary shrink-0" />
-                        <span className="text-foreground">{tr.expoSim}</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm">
-                        <CheckCircle className="h-4 w-4 text-primary shrink-0" />
-                        <span className="text-foreground">{tr.expoFree}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-primary/5 border border-primary/20 rounded-sm p-6">
-                    <h3 className="font-black text-foreground uppercase tracking-wide text-sm mb-3">{tr.expoVisit}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{tr.expoVisitDesc}</p>
-                    <div className="mt-4 pt-4 border-t border-border/50">
-                      <Badge className="bg-primary/10 text-primary border-primary/30 hover:bg-primary/10 uppercase tracking-widest text-xs">
-                        <Tag className="h-3 w-3 mr-1" />ExpoCosmética 2026
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
       {/* Formação */}
       <section id="formacao" className="py-20">
         <div className="container">
@@ -581,18 +519,7 @@ export default function Home() {
                       </div>
                       <span className="text-xl font-black text-foreground">150€</span>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-primary/10 rounded-sm border border-primary/30">
-                      <div>
-                        <p className="text-sm font-bold text-primary">{tr.inscricaoFeira}</p>
-                        <p className="text-xs text-primary/70">{tr.descontoExpo}</p>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-xl font-black text-primary">100€</span>
-                        <p className="text-xs text-primary/70">{tr.sociosENaoSocios}</p>
-                      </div>
-                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-3 text-center">{tr.discountNote}</p>
                 </CardContent>
               </Card>
             </div>
