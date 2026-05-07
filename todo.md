@@ -50,3 +50,10 @@
 - [x] Adicionar campo de email de teste no painel de campanhas
 - [x] Criar email de boas-vindas automático no registo do utilizador
 - [ ] BUG: botão TESTAR no painel de campanhas envia 0 emails em vez de enviar para o email de teste
+- [x] Nova funcionalidade: Análise de Cor de Cabelo Ideal (Método Sazonal Expandido 12 estações)
+- [x] Criar endpoint tRPC colorAnalysis.analyze com LLM multimodal e schema JSON estruturado
+- [x] Criar página /color-analysis com upload de foto e resultado visual premium
+- [x] Criar endpoint /api/upload-temp para upload de imagens via multer + S3
+- [x] Integrar botão de acesso à análise de cor no Dashboard
+- [x] Adicionar rota /color-analysis no App.tsx
+- [ ] Testar análise completa com foto real em produção

@@ -24,6 +24,10 @@ import {
 } from "./db";
 import { SUBSCRIPTION_PRICE } from "./stripe/products";
 import { buildConversionEmailHtml, sendCampaignEmail } from "./email";
+import { colorAnalysisRouter } from "./routers/colorAnalysis";
+import { sdk } from "./_core/sdk";
+import { storagePut } from "./storage";
+import multer from "multer";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
   apiVersion: "2026-02-25.clover",
@@ -179,6 +183,8 @@ export const appRouter = router({
     }),
   }),
 
+  colorAnalysis: colorAnalysisRouter,
+
   admin: router({
     sendCampaign: adminProcedure
       .input(z.object({
@@ -249,6 +255,36 @@ export const appRouter = router({
 export type AppRouter = typeof appRouter;
 
 
+
+export function registerUploadTempEndpoint(app: import('express').Express) {
+  // Endpoint para upload temporário de imagens para análise de cor
+  // Requer sessão autenticada (cookie)
+  const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+
+  app.post('/api/upload-temp', upload.single('file'), async (req: any, res: any) => {
+    try {
+      // Verificar autenticação via sdk
+      let user: import('../drizzle/schema').User;
+      try {
+        user = await sdk.authenticateRequest(req);
+      } catch {
+        return res.status(401).json({ error: 'Não autenticado' });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ error: 'Nenhum ficheiro enviado' });
+      }
+
+      const ext = req.file.mimetype.split('/')[1] || 'jpg';
+      const key = `color-analysis/${user.id}-${Date.now()}.${ext}`;
+      const { url } = await storagePut(key, req.file.buffer, req.file.mimetype);
+      return res.json({ url });
+    } catch (err) {
+      console.error('[UploadTemp] Erro:', err);
+      return res.status(500).json({ error: 'Erro ao carregar imagem' });
+    }
+  });
+}
 
 export function registerSimulationEndpoint(app: import('express').Express) {
   // Endpoint público chamado pela app Netlify quando a IA gera uma imagem com sucesso

@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Subscribe from "./pages/Subscribe";
 import Admin from "./pages/Admin";
 import AdminEmail from "./pages/AdminEmail";
+import ColorAnalysis from "./pages/ColorAnalysis";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/subscribe" component={Subscribe} />
       <Route path="/admin" component={Admin} />
       <Route path="/admin/email" component={AdminEmail} />
+      <Route path="/color-analysis" component={ColorAnalysis} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

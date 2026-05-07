@@ -4,7 +4,7 @@ import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
-import { appRouter, registerStripeWebhook, registerSimulationEndpoint } from "../routers";
+import { appRouter, registerStripeWebhook, registerSimulationEndpoint, registerUploadTempEndpoint } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 
@@ -37,6 +37,8 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // Simulation record endpoint (called by Netlify app after each successful AI generation)
   registerSimulationEndpoint(app);
+  // Upload temporário de imagens para análise de cor
+  registerUploadTempEndpoint(app);
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
   // tRPC API
