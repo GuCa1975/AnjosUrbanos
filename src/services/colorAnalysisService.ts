@@ -111,7 +111,7 @@ Inclui EXACTAMENTE 6 cores recomendadas, 3-5 técnicas, e 4-5 cores a evitar. To
 
 export async function analyzeHairColor(imageBase64: string, imageMimeType: string): Promise<ColorAnalysisResult> {
   const response = await ai.models.generateContent({
-    model: 'gemini-2.0-flash',
+    model: 'gemini-2.5-flash',
     contents: [
       {
         role: 'user',
