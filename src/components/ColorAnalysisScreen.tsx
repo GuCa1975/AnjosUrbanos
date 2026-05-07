@@ -30,6 +30,7 @@ const ColorAnalysisScreen: React.FC<Props> = ({ onBack }) => {
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    if (!file) return;
     setError(null);
     setResult(null);
     const reader = new FileReader();
@@ -46,6 +47,7 @@ const ColorAnalysisScreen: React.FC<Props> = ({ onBack }) => {
   };
 
   const handleAnalyze = async () => {
+    if (!photoBase64) return;
     setScreenState("analyzing");
     setError(null);
     try {
