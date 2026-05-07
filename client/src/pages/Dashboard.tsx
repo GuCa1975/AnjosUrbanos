@@ -8,7 +8,7 @@ import { useLocation } from "wouter";
 import {
   Scissors, Sparkles, Settings, LogOut, ExternalLink,
   Loader2, AlertCircle, CreditCard, Calendar, CheckCircle2,
-  Zap, Lock, CheckCircle, ArrowRight, Palette
+  Zap, Lock, CheckCircle, ArrowRight
 } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
@@ -245,34 +245,7 @@ export default function Dashboard() {
               </Button>
             </div>
 
-            {/* Divisor */}
-            <div className="my-6 border-t border-border/30" />
 
-            {/* Linha 2: Análise de Cor de Cabelo */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-sm bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shrink-0">
-                  <Palette className="h-7 w-7 text-purple-400" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-black text-foreground mb-1 uppercase tracking-tight">
-                    Análise de Cor de Cabelo
-                  </h2>
-                  <p className="text-muted-foreground text-sm max-w-md">
-                    Descubra a cor ideal para cada cliente com o Método das 4 Estações (Primavera, Verão, Outono, Inverno). Análise por IA com paleta personalizada, técnicas e cores a evitar.
-                  </p>
-                </div>
-              </div>
-              <Button
-                size="lg"
-                variant="outline"
-                className="shrink-0 font-bold uppercase tracking-wider border-purple-500/40 text-purple-400 hover:bg-purple-500/10 hover:border-purple-500/60"
-                onClick={() => setLocation('/color-analysis')}
-              >
-                <Palette className="h-4 w-4 mr-2" />
-                Analisar Cor
-              </Button>
-            </div>
           </CardContent>
         </Card>
 
