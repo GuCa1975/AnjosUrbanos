@@ -23,7 +23,7 @@ import {
   updateSubscriptionByStripeId,
 } from "./db";
 import { SUBSCRIPTION_PRICE } from "./stripe/products";
-import { buildConversionEmailHtml, sendCampaignEmail } from "./email";
+import { buildConversionEmailHtml, buildColorAnalysisEmailHtml, sendCampaignEmail } from "./email";
 import { colorAnalysisRouter } from "./routers/colorAnalysis";
 import { sdk } from "./_core/sdk";
 import { storagePut } from "./storage";
@@ -192,9 +192,12 @@ export const appRouter = router({
         message: z.string().min(1),
         audience: z.enum(["all", "free_only", "limit_reached", "test"]),
         testEmail: z.string().email().optional(),
+        template: z.enum(["conversion", "color_analysis"]).default("conversion"),
       }))
       .mutation(async ({ input }) => {
-        const html = buildConversionEmailHtml(input.message);
+        const html = input.template === "color_analysis"
+          ? buildColorAnalysisEmailHtml(input.message)
+          : buildConversionEmailHtml(input.message);
         // Modo de teste: envia apenas para o email indicado
         if (input.audience === "test") {
           if (!input.testEmail) throw new TRPCError({ code: "BAD_REQUEST", message: "Email de teste não fornecido" });

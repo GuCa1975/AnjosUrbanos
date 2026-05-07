@@ -6,6 +6,7 @@ const FROM_EMAIL = "geral@anjosurbanosvirtual.com";
 const FROM_NAME = "Carlos Almeida | Anjos Urbanos Virtual";
 
 // Imagens da app no CDN
+const COLOR_ANALYSIS_EXAMPLE = "https://files.manuscdn.com/user_upload_by_module/session_file/310419663030627064/xBIPOPtePQjCVUYE.png";
 const APP_IMAGE_HORIZONTAL = "https://d2xsxph8kpxj0f.cloudfront.net/310419663030627064/fFjzT76BdEK7cS957mMQeL/press_mobile_horizontal_c206bb6f.webp";
 const APP_IMAGE_LAPTOP = "https://d2xsxph8kpxj0f.cloudfront.net/310419663030627064/fFjzT76BdEK7cS957mMQeL/press_image_anjos_urbanos_1b7f9fa5.webp";
 const APP_IMAGE_VERTICAL = "https://d2xsxph8kpxj0f.cloudfront.net/310419663030627064/fFjzT76BdEK7cS957mMQeL/press_mobile_vertical_e1c4ce35.webp";
@@ -213,6 +214,110 @@ export function buildWelcomeEmailHtml(name: string): string {
   </tr>
 
   ${benefitsStrip()}`;
+
+  return emailShell(body);
+}
+
+// ─── Template de Campanha: Nova Funcionalidade Análise de Cor ────────────────
+
+export function buildColorAnalysisEmailHtml(message: string): string {
+  const paragraphs = message
+    .split("\n")
+    .filter((line) => line.trim() !== "")
+    .map((line) => `<p style="margin:0 0 16px 0;line-height:1.7;color:#d1d5db;">${line}</p>`)
+    .join("");
+
+  const body = `
+  <!-- Headline de nova funcionalidade -->
+  <tr>
+    <td style="background:linear-gradient(180deg,#1a0d00 0%,#111111 100%);padding:28px 40px 24px 40px;text-align:center;border-bottom:1px solid #2e1a00;">
+      <p style="color:#d97706;font-size:11px;letter-spacing:4px;text-transform:uppercase;margin:0 0 10px 0;">✨ Nova Funcionalidade Exclusiva</p>
+      <h1 style="color:#ffffff;font-size:26px;font-weight:900;letter-spacing:-0.5px;margin:0 0 8px 0;line-height:1.2;">Descobre a Cor de Cabelo<br/>Ideal para cada cliente.</h1>
+      <p style="color:#9ca3af;font-size:13px;margin:0;">Análise profissional das 4 Estações com IA — disponível agora na subscrição.</p>
+    </td>
+  </tr>
+
+  <!-- Exemplo de relatório -->
+  <tr>
+    <td style="padding:24px 40px 8px 40px;text-align:center;">
+      <p style="color:#d97706;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 12px 0;font-weight:700;">Exemplo de relatório gerado pela IA</p>
+      <img src="${COLOR_ANALYSIS_EXAMPLE}"
+           alt="Exemplo de análise de cor de cabelo — Método das 4 Estações"
+           width="520"
+           style="display:block;width:100%;max-width:520px;height:auto;border:0;border-radius:8px;margin:0 auto;border:2px solid #2e1a00;" />
+    </td>
+  </tr>
+
+  <!-- Message body -->
+  <tr>
+    <td style="padding:28px 40px 20px 40px;">
+      ${paragraphs}
+    </td>
+  </tr>
+
+  <!-- O que inclui a subscrição -->
+  <tr>
+    <td style="padding:0 40px 28px 40px;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #2e1a00;border-radius:8px;overflow:hidden;">
+        <tr>
+          <td style="background-color:#1a0d00;padding:14px 20px;border-bottom:1px solid #2e1a00;">
+            <p style="color:#d97706;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0;font-weight:700;">O que inclui a subscrição</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:14px 20px;border-bottom:1px solid #1f1f1f;">
+            <p style="margin:0;color:#d1d5db;font-size:13px;"><span style="color:#d97706;font-weight:900;">🍂</span> <strong style="color:#ffffff;">Análise de Cor de Cabelo</strong> — classificação sazonal, paleta personalizada e fórmula de salão</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:14px 20px;border-bottom:1px solid #1f1f1f;">
+            <p style="margin:0;color:#d1d5db;font-size:13px;"><span style="color:#22c55e;font-weight:900;">✦</span> <strong style="color:#ffffff;">Simulações de Penteado Ilimitadas</strong> — mostra o resultado antes de começar</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:14px 20px;">
+            <p style="margin:0;color:#d1d5db;font-size:13px;"><span style="color:#22c55e;font-weight:900;">✦</span> <strong style="color:#ffffff;">Assistente de Penteados</strong> — sugestões personalizadas por tipo de rosto</p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- CTA -->
+  <tr>
+    <td style="padding:0 40px 36px 40px;text-align:center;">
+      <a href="https://anjosurbanosvirtual.com"
+         style="display:inline-block;background-color:#d97706;color:#ffffff;font-size:14px;font-weight:900;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:16px 40px;border-radius:6px;">
+        Ver Planos e Subscrever →
+      </a>
+      <p style="color:#4b5563;font-size:12px;margin:14px 0 0 0;">anjosurbanosvirtual.com</p>
+    </td>
+  </tr>
+
+  <!-- Benefits strip -->
+  <tr>
+    <td style="background-color:#0d1a0d;padding:20px 40px;border-top:1px solid #1a2e1a;border-bottom:1px solid #1a2e1a;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="text-align:center;padding:0 8px;">
+            <p style="color:#22c55e;font-size:16px;margin:0 0 4px 0;">✦</p>
+            <p style="color:#ffffff;font-size:11px;font-weight:700;margin:0 0 2px 0;text-transform:uppercase;letter-spacing:1px;">Método 4 Estações</p>
+            <p style="color:#6b7280;font-size:10px;margin:0;">análise profissional</p>
+          </td>
+          <td style="text-align:center;padding:0 8px;border-left:1px solid #1f1f1f;">
+            <p style="color:#22c55e;font-size:16px;margin:0 0 4px 0;">✦</p>
+            <p style="color:#ffffff;font-size:11px;font-weight:700;margin:0 0 2px 0;text-transform:uppercase;letter-spacing:1px;">Fórmula de Salão</p>
+            <p style="color:#6b7280;font-size:10px;margin:0;">pronta para aplicar</p>
+          </td>
+          <td style="text-align:center;padding:0 8px;border-left:1px solid #1f1f1f;">
+            <p style="color:#22c55e;font-size:16px;margin:0 0 4px 0;">✦</p>
+            <p style="color:#ffffff;font-size:11px;font-weight:700;margin:0 0 2px 0;text-transform:uppercase;letter-spacing:1px;">Parceiro Oficial</p>
+            <p style="color:#6b7280;font-size:10px;margin:0;">Alfaparf Milano</p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>`;
 
   return emailShell(body);
 }

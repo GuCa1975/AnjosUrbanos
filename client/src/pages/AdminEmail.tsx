@@ -31,6 +31,26 @@ const AUDIENCE_OPTIONS = [
 
 const DEFAULT_SUBJECT = "Já experimentaste — agora imagina usar isto todos os dias no teu salão";
 
+const COLOR_ANALYSIS_SUBJECT = "Nova funcionalidade: descobre a cor de cabelo ideal para cada cliente";
+
+const COLOR_ANALYSIS_MESSAGE = `Sou o Carlos.
+
+Acabámos de lançar uma nova funcionalidade na Anjos Urbanos Virtual que vai mudar a forma como trabalhas com a cor de cabelo.
+
+Chama-se Análise de Cor de Cabelo — e em segundos, a IA analisa o rosto do cliente, classifica-o segundo o Método das 4 Estações (Primavera, Verão, Outono ou Inverno) e gera um relatório completo com:
+
+🍂 Paleta de cores que mais valorizam
+🎨 Técnicas recomendadas (balayage, morena iluminada, gloss...)
+❌ Cores a evitar e porquê
+💼 Fórmula de salão pronta a aplicar
+
+Esta funcionalidade está disponível para subscritores.
+
+Se ainda não subscreveste, este é o momento certo — entra em anjosurbanosvirtual.com e vê os planos disponíveis.
+
+Um abraço,
+Carlos Almeida`;
+
 const DEFAULT_MESSAGE = `Sou o Carlos.
 
 Há uns dias experimentaste a Anjos Urbanos Virtual — e isso significa muito para mim, porque esta ferramenta nasceu de anos a trabalhar atrás de uma cadeira de cabeleireiro.
@@ -58,6 +78,7 @@ export default function AdminEmail() {
   const [result, setResult] = useState<{ sent: number; failed: number; total: number } | null>(null);
   const [testEmail, setTestEmail] = useState("");
   const [testSent, setTestSent] = useState(false);
+  const [template, setTemplate] = useState<"conversion" | "color_analysis">("conversion");
 
   const sendTestEmail = trpc.admin.sendCampaign.useMutation({
     onSuccess: () => {
@@ -105,7 +126,7 @@ export default function AdminEmail() {
       toast.error("Preenche o assunto e a mensagem antes de enviar o teste.");
       return;
     }
-    sendTestEmail.mutate({ subject, message, audience: "test", testEmail });
+    sendTestEmail.mutate({ subject, message, audience: "test", testEmail, template });
   };
 
   const handleSend = () => {
@@ -113,7 +134,7 @@ export default function AdminEmail() {
       toast.error("Preenche o assunto e a mensagem antes de enviar.");
       return;
     }
-    sendCampaign.mutate({ subject, message, audience });
+    sendCampaign.mutate({ subject, message, audience, template });
   };
 
   return (
@@ -157,6 +178,69 @@ export default function AdminEmail() {
             <span className="text-primary">geral@anjosurbanosvirtual.com</span>
           </p>
         </div>
+
+        {/* Template selector */}
+        <Card className="border-border/50 bg-card mb-6">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-xs uppercase tracking-wider font-bold text-muted-foreground flex items-center gap-2">
+              <Mail className="h-3.5 w-3.5" />
+              Template de Email
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-3">
+            <button
+              onClick={() => {
+                setTemplate("conversion");
+                setSubject(DEFAULT_SUBJECT);
+                setMessage(DEFAULT_MESSAGE);
+              }}
+              className={`w-full text-left p-4 rounded-lg border transition-all ${
+                template === "conversion"
+                  ? "border-primary bg-primary/5"
+                  : "border-border/50 bg-background hover:border-border"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                  template === "conversion" ? "border-primary" : "border-border"
+                }`}>
+                  {template === "conversion" && <div className="w-2 h-2 rounded-full bg-primary" />}
+                </div>
+                <div>
+                  <span className="font-bold text-sm text-foreground">Template Geral</span>
+                  <p className="text-xs text-muted-foreground mt-0.5">Email de conversão padrão com imagem da app</p>
+                </div>
+              </div>
+            </button>
+            <button
+              onClick={() => {
+                setTemplate("color_analysis");
+                setSubject(COLOR_ANALYSIS_SUBJECT);
+                setMessage(COLOR_ANALYSIS_MESSAGE);
+              }}
+              className={`w-full text-left p-4 rounded-lg border transition-all ${
+                template === "color_analysis"
+                  ? "border-amber-500 bg-amber-500/5"
+                  : "border-border/50 bg-background hover:border-border"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                  template === "color_analysis" ? "border-amber-500" : "border-border"
+                }`}>
+                  {template === "color_analysis" && <div className="w-2 h-2 rounded-full bg-amber-500" />}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm text-foreground">🍂 Nova Funcionalidade — Análise de Cor</span>
+                    <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Novo</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">Mostra o relatório de exemplo e convida a subscrever</p>
+                </div>
+              </div>
+            </button>
+          </CardContent>
+        </Card>
 
         {/* Audience selector */}
         <Card className="border-border/50 bg-card mb-6">
