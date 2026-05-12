@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { analyzeHairColor, type ColorAnalysisResult } from "../services/colorAnalysisService";
 import ColorAnalysisResultView from "./ColorAnalysisResult";
 import CameraCapture from "./CameraCapture";
+import { useLang } from "../LangContext";
 
 interface Props {
   onBack: () => void;
@@ -11,6 +12,7 @@ interface Props {
 type ScreenState = "select" | "camera" | "preview" | "analyzing";
 
 const ColorAnalysisScreen: React.FC<Props> = ({ onBack }) => {
+  const { t } = useLang();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [screenState, setScreenState] = useState<ScreenState>("select");
   const [photoBase64, setPhotoBase64] = useState<string | null>(null);
@@ -54,7 +56,7 @@ const ColorAnalysisScreen: React.FC<Props> = ({ onBack }) => {
       const res = await analyzeHairColor(photoBase64, photoMimeType);
       setResult(res);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Erro ao analisar. Tenta novamente.");
+      setError(err instanceof Error ? err.message : t.errorTransform);
       setScreenState("preview");
     }
   };
@@ -79,7 +81,7 @@ const ColorAnalysisScreen: React.FC<Props> = ({ onBack }) => {
     return (
       <motion.div key="color-camera" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ maxWidth: "500px", margin: "0 auto", padding: "16px" }}>
         <button onClick={() => setScreenState("select")} style={{ background: "transparent", border: "1px solid rgba(57,255,20,0.3)", borderRadius: "8px", color: "#39FF14", fontSize: "13px", padding: "8px 16px", cursor: "pointer", marginBottom: "16px", display: "flex", alignItems: "center", gap: "6px" }}>
-          ← Voltar
+          {t.cancel}
         </button>
         <CameraCapture onCapture={handleCameraCapture} onCancel={() => setScreenState("select")} />
       </motion.div>
@@ -90,12 +92,12 @@ const ColorAnalysisScreen: React.FC<Props> = ({ onBack }) => {
     return (
       <motion.div key="color-analyzing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ maxWidth: "480px", margin: "0 auto", padding: "40px 16px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
         {previewUrl && (
-          <img src={previewUrl} alt="A analisar" style={{ width: "120px", height: "120px", objectFit: "cover", borderRadius: "50%", border: "3px solid #C47A2B", opacity: 0.8 }} />
+          <img src={previewUrl} alt="Analyzing" style={{ width: "120px", height: "120px", objectFit: "cover", borderRadius: "50%", border: "3px solid #C47A2B", opacity: 0.8 }} />
         )}
         <div style={{ width: "48px", height: "48px", border: "3px solid rgba(196,122,43,0.3)", borderTopColor: "#C47A2B", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
         <div>
-          <p style={{ color: "#F5F5F5", fontSize: "16px", fontWeight: 700, margin: "0 0 8px" }}>A analisar a cor ideal...</p>
-          <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>A IA está a estudar as características da imagem.<br />Pode demorar até 30 segundos.</p>
+          <p style={{ color: "#F5F5F5", fontSize: "16px", fontWeight: 700, margin: "0 0 8px" }}>{t.colorAnalyzing}</p>
+          <p style={{ color: "#888", fontSize: "13px", margin: 0, whiteSpace: "pre-line" }}>{t.colorAnalyzingSubtitle}</p>
         </div>
       </motion.div>
     );
@@ -105,11 +107,11 @@ const ColorAnalysisScreen: React.FC<Props> = ({ onBack }) => {
     return (
       <motion.div key="color-preview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ maxWidth: "480px", margin: "0 auto", padding: "16px" }}>
         <button onClick={() => setScreenState("select")} style={{ background: "transparent", border: "1px solid rgba(57,255,20,0.3)", borderRadius: "8px", color: "#39FF14", fontSize: "13px", padding: "8px 16px", cursor: "pointer", marginBottom: "20px", display: "flex", alignItems: "center", gap: "6px" }}>
-          ← Tirar outra foto
+          {t.colorBackBtn}
         </button>
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
-          <h2 style={{ color: "#F5F5F5", fontSize: "18px", fontWeight: 700, letterSpacing: "1px", margin: "0 0 6px" }}>FOTO PRONTA</h2>
-          <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>Confirma a foto e clica em Analisar</p>
+          <h2 style={{ color: "#F5F5F5", fontSize: "18px", fontWeight: 700, letterSpacing: "1px", margin: "0 0 6px" }}>{t.colorPhotoReady}</h2>
+          <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>{t.colorPhotoConfirm}</p>
         </div>
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
           <img src={previewUrl} alt="Preview" style={{ width: "200px", height: "200px", objectFit: "cover", borderRadius: "14px", border: "2px solid #39FF14" }} />
@@ -120,7 +122,7 @@ const ColorAnalysisScreen: React.FC<Props> = ({ onBack }) => {
           </div>
         )}
         <button onClick={handleAnalyze} style={{ width: "100%", padding: "14px", background: "#C47A2B", border: "none", borderRadius: "10px", color: "#fff", fontSize: "15px", fontWeight: 700, cursor: "pointer", textTransform: "uppercase", letterSpacing: "1px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", transition: "background 0.2s" }}>
-          🎨 Analisar Cor Ideal
+          {t.colorAnalyzeBtn}
         </button>
       </motion.div>
     );
@@ -130,23 +132,23 @@ const ColorAnalysisScreen: React.FC<Props> = ({ onBack }) => {
     <AnimatePresence mode="wait">
       <motion.div key="color-select" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} style={{ maxWidth: "480px", margin: "0 auto", padding: "16px" }}>
         <button onClick={onBack} style={{ background: "transparent", border: "1px solid rgba(57,255,20,0.3)", borderRadius: "8px", color: "#39FF14", fontSize: "13px", padding: "8px 16px", cursor: "pointer", marginBottom: "20px", display: "flex", alignItems: "center", gap: "6px" }}>
-          ← Voltar
+          {t.cancel}
         </button>
         <div style={{ textAlign: "center", marginBottom: "32px" }}>
           <div style={{ fontSize: "40px", marginBottom: "10px" }}>🎨</div>
-          <h2 style={{ color: "#F5F5F5", fontSize: "20px", fontWeight: 700, letterSpacing: "1px", margin: "0 0 8px" }}>ANÁLISE DE COR DE CABELO</h2>
-          <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>Descobre a cor ideal com o Método das 4 Estações</p>
+          <h2 style={{ color: "#F5F5F5", fontSize: "20px", fontWeight: 700, letterSpacing: "1px", margin: "0 0 8px" }}>{t.colorScreenTitle}</h2>
+          <p style={{ color: "#888", fontSize: "13px", margin: 0 }}>{t.colorScreenSubtitle}</p>
         </div>
         <button onClick={() => setScreenState("camera")} style={{ width: "100%", padding: "20px", background: "rgba(57,255,20,0.06)", border: "1px solid rgba(57,255,20,0.4)", borderRadius: "14px", color: "#F5F5F5", fontSize: "16px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginBottom: "12px", transition: "background 0.2s" }}>
           <span style={{ fontSize: "28px" }}>📸</span>
-          <span>Tirar Selfie</span>
+          <span>{t.colorTakeSelfie}</span>
         </button>
         <button onClick={() => fileInputRef.current?.click()} style={{ width: "100%", padding: "20px", background: "rgba(196,122,43,0.06)", border: "1px solid rgba(196,122,43,0.4)", borderRadius: "14px", color: "#F5F5F5", fontSize: "16px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", transition: "background 0.2s" }}>
           <span style={{ fontSize: "28px" }}>🖼️</span>
-          <span>Carregar Foto</span>
+          <span>{t.colorUploadPhoto}</span>
         </button>
         <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" style={{ display: "none" }} onChange={handleFileSelect} />
-        <p style={{ color: "#555", fontSize: "12px", textAlign: "center", marginTop: "20px" }}>JPG, PNG ou WEBP · máx. 10MB</p>
+        <p style={{ color: "#555", fontSize: "12px", textAlign: "center", marginTop: "20px" }}>{t.colorFileHint}</p>
       </motion.div>
     </AnimatePresence>
   );

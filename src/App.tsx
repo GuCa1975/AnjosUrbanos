@@ -51,7 +51,6 @@ const App: React.FC = () => {
     setAppState('select');
   };
 
-  // Quando temos foto da cliente, vai para edição
   const goToEdit = (clientData: ImageData) => {
     setClientImage(clientData);
     setAppState('edit');
@@ -99,10 +98,10 @@ const App: React.FC = () => {
                   }}>1</div>
                   <div>
                     <p style={{ color: '#F5F5F5', fontSize: '14px', fontWeight: 600, margin: 0 }}>
-                      {'Foto de Referência'} <span style={{ color: '#888', fontWeight: 400, fontSize: '12px' }}>({'opcional'})</span>
+                      {t.refPhotoTitle} <span style={{ color: '#888', fontWeight: 400, fontSize: '12px' }}>({t.refPhotoOptional})</span>
                     </p>
                     <p style={{ color: '#888', fontSize: '12px', margin: 0 }}>
-                      {'O estilo/cabelo que a cliente quer'}
+                      {t.refPhotoSubtitle}
                     </p>
                   </div>
                 </div>
@@ -111,11 +110,11 @@ const App: React.FC = () => {
                   <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                     <img
                       src={`data:${referenceImage.mimeType};base64,${referenceImage.base64}`}
-                      alt="Referência"
+                      alt="Reference"
                       style={{ width: '70px', height: '70px', objectFit: 'cover', borderRadius: '8px', border: '2px solid #39FF14' }}
                     />
                     <div style={{ flex: 1 }}>
-                      <p style={{ color: '#39FF14', fontSize: '13px', margin: '0 0 8px' }}>{'✓ Referência carregada'}</p>
+                      <p style={{ color: '#39FF14', fontSize: '13px', margin: '0 0 8px' }}>{t.refLoaded}</p>
                       <button
                         onClick={() => refInputRef.current?.click()}
                         style={{
@@ -123,7 +122,7 @@ const App: React.FC = () => {
                           borderRadius: '8px', color: '#888', fontSize: '12px',
                           padding: '6px 12px', cursor: 'pointer',
                         }}
-                      >{'Trocar foto'}</button>
+                      >{t.refChange}</button>
                     </div>
                   </div>
                 ) : (
@@ -139,7 +138,7 @@ const App: React.FC = () => {
                     }}
                   >
                     <span style={{ fontSize: '20px' }}>🖼️</span>
-                    {'Carregar foto de referência'}
+                    {t.refUploadBtn}
                   </button>
                 )}
                 <input
@@ -169,10 +168,10 @@ const App: React.FC = () => {
                   }}>2</div>
                   <div>
                     <p style={{ color: '#F5F5F5', fontSize: '14px', fontWeight: 600, margin: 0 }}>
-                      {'Foto da Cliente'}
+                      {t.clientPhotoTitle}
                     </p>
                     <p style={{ color: '#888', fontSize: '12px', margin: 0 }}>
-                      {'Tira foto ou carrega da galeria'}
+                      {t.clientPhotoSubtitle}
                     </p>
                   </div>
                 </div>
@@ -239,10 +238,10 @@ const App: React.FC = () => {
                   }}>🎨</div>
                   <div>
                     <p style={{ color: '#F5F5F5', fontSize: '14px', fontWeight: 600, margin: 0 }}>
-                      Análise de Cor de Cabelo
+                      {t.colorAnalysisTitle}
                     </p>
                     <p style={{ color: '#888', fontSize: '12px', margin: 0 }}>
-                      Método das 4 Estações · IA por Gemini
+                      {t.colorAnalysisSubtitle}
                     </p>
                   </div>
                 </div>
@@ -257,7 +256,7 @@ const App: React.FC = () => {
                     textTransform: 'uppercase', letterSpacing: '0.5px',
                   }}
                 >
-                  🍂 Descobrir a Cor Ideal
+                  {t.colorAnalysisBtn}
                 </button>
               </div>
 
@@ -281,7 +280,6 @@ const App: React.FC = () => {
                   </span>
                 </div>
               </div>
-
             </motion.div>
           )}
 
@@ -311,17 +309,6 @@ const App: React.FC = () => {
 
         </AnimatePresence>
       </main>
-
-      <footer style={{
-        textAlign: 'center',
-        padding: '16px',
-        borderTop: '1px solid rgba(57, 255, 20, 0.1)',
-        marginTop: '16px',
-      }}>
-        <p style={{ fontSize: '12px', color: '#888888', letterSpacing: '1px' }}>
-          {t.footer}
-        </p>
-      </footer>
     </div>
   );
 };

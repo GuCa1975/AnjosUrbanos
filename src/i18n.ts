@@ -49,6 +49,30 @@ export interface Translations {
   footer: string;
   // Idioma actual (para uso interno)
   lang: string;
+  // App.tsx — passos
+  refPhotoTitle: string;
+  refPhotoOptional: string;
+  refPhotoSubtitle: string;
+  refLoaded: string;
+  refChange: string;
+  refUploadBtn: string;
+  clientPhotoTitle: string;
+  clientPhotoSubtitle: string;
+  colorAnalysisTitle: string;
+  colorAnalysisSubtitle: string;
+  colorAnalysisBtn: string;
+  // ColorAnalysisScreen
+  colorScreenTitle: string;
+  colorScreenSubtitle: string;
+  colorTakeSelfie: string;
+  colorUploadPhoto: string;
+  colorFileHint: string;
+  colorPhotoReady: string;
+  colorPhotoConfirm: string;
+  colorAnalyzeBtn: string;
+  colorBackBtn: string;
+  colorAnalyzing: string;
+  colorAnalyzingSubtitle: string;
 }
 
 // Cortes modernos — lista partilhada (nomes profissionais universais)
@@ -201,6 +225,28 @@ export const translations: Record<Lang, Translations> = {
     selectColor: 'Seleciona uma cor...',
     footer: '✦ Anjos Urbanos Virtual · Powered by Google Gemini AI ✦',
     lang: 'pt',
+    refPhotoTitle: 'Foto de Referência',
+    refPhotoOptional: 'opcional',
+    refPhotoSubtitle: 'O estilo/cabelo que a cliente quer',
+    refLoaded: '✓ Referência carregada',
+    refChange: 'Trocar foto',
+    refUploadBtn: 'Carregar foto de referência',
+    clientPhotoTitle: 'Foto da Cliente',
+    clientPhotoSubtitle: 'Tira foto ou carrega da galeria',
+    colorAnalysisTitle: 'Análise de Cor de Cabelo',
+    colorAnalysisSubtitle: 'Método das 4 Estações · IA por Gemini',
+    colorAnalysisBtn: '🍂 Descobrir a Cor Ideal',
+    colorScreenTitle: 'ANÁLISE DE COR DE CABELO',
+    colorScreenSubtitle: 'Descobre a cor ideal com o Método das 4 Estações',
+    colorTakeSelfie: 'Tirar Selfie',
+    colorUploadPhoto: 'Carregar Foto',
+    colorFileHint: 'JPG, PNG ou WEBP · máx. 10MB',
+    colorPhotoReady: 'FOTO PRONTA',
+    colorPhotoConfirm: 'Confirma a foto e clica em Analisar',
+    colorAnalyzeBtn: '🎨 Analisar Cor Ideal',
+    colorBackBtn: '← Tirar outra foto',
+    colorAnalyzing: 'A analisar a cor ideal...',
+    colorAnalyzingSubtitle: 'A IA está a estudar as características da imagem.\nPode demorar até 30 segundos.',
   },
 
   bs: {
@@ -244,7 +290,30 @@ export const translations: Record<Lang, Translations> = {
     selectColor: 'Odaberi boju...',
     footer: '✦ Anjos Urbanos Virtual · Pokrenuto od Google Gemini AI ✦',
     lang: 'bs',
+    refPhotoTitle: 'Referentna Fotografija',
+    refPhotoOptional: 'opcionalno',
+    refPhotoSubtitle: 'Stil/kosa koji klijent želi',
+    refLoaded: '✓ Referenca učitana',
+    refChange: 'Promijeni fotografiju',
+    refUploadBtn: 'Učitaj referentnu fotografiju',
+    clientPhotoTitle: 'Fotografija Klijenta',
+    clientPhotoSubtitle: 'Uslikaj ili učitaj iz galerije',
+    colorAnalysisTitle: 'Analiza Boje Kose',
+    colorAnalysisSubtitle: 'Metoda 4 Godišnja Doba · AI od Gemini',
+    colorAnalysisBtn: '🍂 Otkrij Idealnu Boju',
+    colorScreenTitle: 'ANALIZA BOJE KOSE',
+    colorScreenSubtitle: 'Otkrij idealnu boju Metodom 4 Godišnja Doba',
+    colorTakeSelfie: 'Uslikaj Selfie',
+    colorUploadPhoto: 'Učitaj Fotografiju',
+    colorFileHint: 'JPG, PNG ili WEBP · maks. 10MB',
+    colorPhotoReady: 'FOTOGRAFIJA SPREMNA',
+    colorPhotoConfirm: 'Potvrdi fotografiju i klikni Analiziraj',
+    colorAnalyzeBtn: '🎨 Analiziraj Idealnu Boju',
+    colorBackBtn: '← Uslikaj drugu fotografiju',
+    colorAnalyzing: 'Analiza idealne boje...',
+    colorAnalyzingSubtitle: 'AI analizira karakteristike slike.\nMože potrajati do 30 sekundi.',
   },
+
   en: {
     studioVirtual: 'Virtual Studio',
     poweredBy: 'Powered by',
@@ -286,5 +355,27 @@ export const translations: Record<Lang, Translations> = {
     selectColor: 'Select a colour...',
     footer: '✦ Anjos Urbanos Virtual · Powered by Google Gemini AI ✦',
     lang: 'en',
+    refPhotoTitle: 'Reference Photo',
+    refPhotoOptional: 'optional',
+    refPhotoSubtitle: 'The style/hair the client wants',
+    refLoaded: '✓ Reference loaded',
+    refChange: 'Change photo',
+    refUploadBtn: 'Upload reference photo',
+    clientPhotoTitle: 'Client Photo',
+    clientPhotoSubtitle: 'Take photo or upload from gallery',
+    colorAnalysisTitle: 'Hair Colour Analysis',
+    colorAnalysisSubtitle: '4 Seasons Method · AI by Gemini',
+    colorAnalysisBtn: '🍂 Discover Ideal Colour',
+    colorScreenTitle: 'HAIR COLOUR ANALYSIS',
+    colorScreenSubtitle: 'Discover your ideal colour with the 4 Seasons Method',
+    colorTakeSelfie: 'Take Selfie',
+    colorUploadPhoto: 'Upload Photo',
+    colorFileHint: 'JPG, PNG or WEBP · max. 10MB',
+    colorPhotoReady: 'PHOTO READY',
+    colorPhotoConfirm: 'Confirm the photo and click Analyse',
+    colorAnalyzeBtn: '🎨 Analyse Ideal Colour',
+    colorBackBtn: '← Take another photo',
+    colorAnalyzing: 'Analysing ideal colour...',
+    colorAnalyzingSubtitle: 'AI is studying the image characteristics.\nThis may take up to 30 seconds.',
   },
 };
