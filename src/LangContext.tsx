@@ -17,7 +17,10 @@ export const LangProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [lang, setLang] = useState<Lang>(() => {
     // Detectar idioma do browser automaticamente
     const browserLang = navigator.language?.toLowerCase();
-    if (browserLang && !browserLang.startsWith('pt')) return 'en';
+    if (browserLang) {
+      if (browserLang.startsWith('bs') || browserLang.startsWith('hr') || browserLang.startsWith('sr')) return 'bs';
+      if (!browserLang.startsWith('pt')) return 'en';
+    }
     return 'pt';
   });
 

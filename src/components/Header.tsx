@@ -2,6 +2,12 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useLang } from '../LangContext';
 
+const LANG_LABELS: Record<string, string> = {
+  pt: 'PT',
+  en: 'EN',
+  bs: 'BS',
+};
+
 const Header: React.FC = () => {
   const { lang, t, setLang } = useLang();
 
@@ -96,7 +102,7 @@ const Header: React.FC = () => {
           </span>
         </div>
 
-        {/* Selector PT / EN */}
+        {/* Selector PT / EN / BS */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -106,7 +112,7 @@ const Header: React.FC = () => {
           overflow: 'hidden',
           flexShrink: 0,
         }}>
-          {(['pt', 'en'] as const).map(l => (
+          {(['pt', 'en', 'bs'] as const).map(l => (
             <button
               key={l}
               onClick={() => setLang(l)}
@@ -125,7 +131,7 @@ const Header: React.FC = () => {
                 fontFamily: 'Barlow, sans-serif',
               }}
             >
-              {l}
+              {LANG_LABELS[l]}
             </button>
           ))}
         </div>
