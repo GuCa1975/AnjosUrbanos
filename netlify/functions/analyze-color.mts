@@ -1,22 +1,55 @@
 import type { Handler } from "@netlify/functions";
 import { GoogleGenAI } from "@google/genai";
 
-const SYSTEM_PROMPT = `Você é um especialista em colorimetria capilar e análise de cor pessoal, com profundo conhecimento do Método das 4 Estações (Primavera, Verão, Outono, Inverno). Analisa imagens de rostos humanos e fornece recomendações profissionais de cor de cabelo em português de Portugal. Responde SEMPRE em JSON válido, sem texto adicional fora do JSON.`;
+const SYSTEM_PROMPT = `És um especialista certificado em colorimetria capilar e análise de cor pessoal, com 20 anos de experiência no Método das 4 Estações (Primavera, Verão, Outono, Inverno). A tua missão é analisar fotografias de rostos humanos com máxima precisão científica e devolver recomendações profissionais de cor de cabelo em português de Portugal.
 
-const USER_PROMPT = `Analisa esta fotografia de rosto e realiza uma análise profissional completa de cor de cabelo usando o Método das 4 Estações.
+REGRAS ABSOLUTAS:
+1. Analisa OBJECTIVAMENTE o que vês na imagem — nunca assumas nem inventes características.
+2. A classificação sazonal DEVE ser determinada pela combinação real de subtom + profundidade + contraste observados.
+3. As 4 estações têm probabilidade IGUAL de ocorrência — não há estação padrão nem preferida.
+4. Responde SEMPRE em JSON válido, sem texto adicional fora do JSON.`;
 
-Avalia as seguintes dimensões:
-1. SUBTOM DA PELE: Quente/dourado/amarelado | Frio/rosado/azulado | Neutro, com tendência quente | Neutro, com tendência fria
-2. PROFUNDIDADE: Clara | Média | Escura
-3. INTENSIDADE: Viva e contrastante | Suave e harmónica
-4. CONTRASTE: Alto | Médio | Baixo
-5. BASE NATURAL DO CABELO: Loiro claro | Loiro escuro | Castanho claro | Castanho médio | Castanho escuro | Preto | Ruivo natural | Grisalho | Base artificial ou indefinida
+const USER_PROMPT = `Analisa esta fotografia de rosto com máxima precisão e realiza uma análise profissional completa de cor de cabelo usando o Método das 4 Estações.
 
-Classifica numa das 4 estações:
-- PRIMAVERA: pele quente, clara a média, subtom dourado/pêssego, olhos claros ou verdes/castanho-mel, cabelo loiro ou castanho dourado
-- VERÃO: pele fria, clara a média, subtom rosado/bege frio, olhos azuis/cinza/castanho frio, cabelo loiro cinza ou castanho acinzentado
-- OUTONO: pele quente, média a escura, subtom dourado/cobre/terracota, olhos castanhos/verdes/âmbar, cabelo castanho quente ou ruivo
-- INVERNO: pele fria, média a escura, subtom azulado/olivado/bege frio, olhos escuros ou azul intenso, cabelo preto ou castanho escuro frio
+PASSO 1 — OBSERVAÇÃO OBJECTIVA (analisa cada dimensão independentemente):
+
+A) SUBTOM DA PELE: Observa o tom geral da pele, a forma como reage à luz, e as veias visíveis.
+   - Quente: amarelado, dourado, pêssego, terracota, cobre
+   - Frio: rosado, bege frio, azulado, olivado frio
+   - Neutro-quente: misto com tendência quente
+   - Neutro-frio: misto com tendência fria
+
+B) PROFUNDIDADE: Avalia a luminosidade geral do rosto.
+   - Clara: pele muito clara, cabelo loiro ou castanho claro
+   - Média: pele média, cabelo castanho médio
+   - Escura: pele morena/escura, cabelo castanho escuro ou preto
+
+C) CONTRASTE: Compara a diferença entre a cor da pele, olhos e cabelo.
+   - Alto: diferença marcada (ex: pele clara + cabelo/olhos muito escuros)
+   - Médio: diferença moderada e harmónica
+   - Baixo: pouca diferença, tons próximos entre si
+
+D) COR DOS OLHOS:
+   - Azul, cinza, verde-azulado = tendência fria
+   - Verde, castanho-mel, âmbar = pode ser quente ou neutro
+   - Castanho médio/escuro, preto = neutro a frio
+
+E) BASE NATURAL DO CABELO: Tom mais natural visível.
+
+PASSO 2 — CLASSIFICAÇÃO SAZONAL (usa esta tabela com rigor absoluto):
+
+| Estação   | Subtom pele      | Profundidade     | Contraste     | Características distintivas |
+|-----------|------------------|------------------|---------------|------------------------------|
+| PRIMAVERA | Quente           | Clara a média    | Baixo a médio | Pele pêssego/dourado clara, olhos claros/verdes/mel, cabelo loiro dourado ou castanho claro quente |
+| VERÃO     | Frio             | Clara a média    | Baixo a médio | Pele rosada/bege fria, olhos azuis/cinza/castanho frio, cabelo loiro acinzentado ou castanho frio |
+| OUTONO    | Quente           | Média a escura   | Médio         | Pele dourada/cobre/terracota MÉDIA A ESCURA, olhos castanhos/verdes/âmbar intensos, cabelo castanho quente/ruivo |
+| INVERNO   | Frio             | Média a escura   | Alto          | Pele olivada/bege fria/escura, olhos escuros ou azul intenso, cabelo preto ou castanho escuro frio |
+
+ATENÇÃO CRÍTICA:
+- Pele CLARA com subtom FRIO → VERÃO (NUNCA Outono)
+- Pele CLARA com subtom QUENTE → PRIMAVERA (NUNCA Outono)
+- OUTONO requer obrigatoriamente pele MÉDIA A ESCURA com subtom quente
+- INVERNO requer obrigatoriamente contraste ALTO com subtom frio
 
 Responde EXCLUSIVAMENTE com este JSON (sem markdown, sem texto extra):
 {
@@ -112,11 +145,15 @@ export const handler: Handler = async (event) => {
     const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
+      config: {
+        systemInstruction: SYSTEM_PROMPT,
+        temperature: 0.2,
+      },
       contents: [
         {
           role: "user",
           parts: [
-            { text: SYSTEM_PROMPT + "\n\n" + USER_PROMPT },
+            { text: USER_PROMPT },
             { inlineData: { mimeType: imageMimeType, data: imageBase64 } },
           ],
         },
