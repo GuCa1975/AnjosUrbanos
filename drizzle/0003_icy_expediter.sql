@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `isPartner` boolean DEFAULT false NOT NULL;

@@ -84,11 +84,13 @@ export const appRouter = router({
   subscription: router({
     get: protectedProcedure.query(async ({ ctx }) => {
       if (ctx.user.role === "admin") return { status: "active", isAdmin: true };
+      if (ctx.user.isPartner) return { status: "active", isPartner: true };
       const sub = await getSubscriptionByUserId(ctx.user.id);
       return sub || null;
     }),
     hasAccess: protectedProcedure.query(async ({ ctx }) => {
       if (ctx.user.role === "admin") return true;
+      if (ctx.user.isPartner) return true;
       const sub = await getActiveSubscriptionByUserId(ctx.user.id);
       return !!sub;
     }),
@@ -160,7 +162,7 @@ export const appRouter = router({
 
   simulation: router({
     getStatus: protectedProcedure.query(async ({ ctx }) => {
-      if (ctx.user.role === 'admin') return { canSimulate: true, freeUsed: 0, freeLimit: 5, hasSubscription: true };
+      if (ctx.user.role === 'admin' || ctx.user.isPartner) return { canSimulate: true, freeUsed: 0, freeLimit: 5, hasSubscription: true };
       const [sub, freeUsed] = await Promise.all([
         getActiveSubscriptionByUserId(ctx.user.id),
         getFreeSimulationsCount(ctx.user.id),
@@ -172,7 +174,7 @@ export const appRouter = router({
     recordUsage: protectedProcedure.mutation(async ({ ctx }) => {
       // Apenas abre a ferramenta — NÃO conta geração aqui
       // A contagem real é feita pelo endpoint /api/simulation/record quando a IA gera uma imagem
-      if (ctx.user.role === 'admin') return { freeUsed: 0, freeLimit: 5, hasSubscription: true };
+      if (ctx.user.role === 'admin' || ctx.user.isPartner) return { freeUsed: 0, freeLimit: 5, hasSubscription: true };
       const sub = await getActiveSubscriptionByUserId(ctx.user.id);
       if (sub) return { freeUsed: 0, freeLimit: 5, hasSubscription: true };
       const freeUsed = await getFreeSimulationsCount(ctx.user.id);
@@ -308,7 +310,10 @@ export function registerSimulationEndpoint(app: import('express').Express) {
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
-      // Se tem subscrição activa, não conta para o limite gratuito
+      // Se é parceiro ou tem subscrição activa, não conta para o limite gratuito
+      if (user.isPartner) {
+        return res.json({ ok: true, counted: false, reason: 'is_partner' });
+      }
       const sub = await getActiveSubscriptionByUserId(user.id);
       if (sub) {
         return res.json({ ok: true, counted: false, reason: 'has_subscription' });

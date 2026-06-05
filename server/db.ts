@@ -3,6 +3,11 @@ import { drizzle } from "drizzle-orm/mysql2";
 import { InsertSalon, InsertSubscription, InsertUser, salons, subscriptions, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
+// Lista de emails com acesso ilimitado (parceiros)
+const PARTNER_EMAILS = [
+  "elisabetta.filocamo@alfaparfmilano.com",
+];
+
 let _db: ReturnType<typeof drizzle> | null = null;
 
 export async function getDb() {
@@ -41,6 +46,13 @@ export async function upsertUser(user: InsertUser): Promise<{ isNew: boolean }> 
   if (user.lastSignedIn !== undefined) { values.lastSignedIn = user.lastSignedIn; updateSet.lastSignedIn = user.lastSignedIn; }
   if (user.role !== undefined) { values.role = user.role; updateSet.role = user.role; }
   else if (user.openId === ENV.ownerOpenId) { values.role = 'admin'; updateSet.role = 'admin'; }
+
+  // Verificar se o email é de um parceiro com acesso ilimitado
+  const emailLower = (user.email ?? "").toLowerCase();
+  if (emailLower && PARTNER_EMAILS.includes(emailLower)) {
+    values.isPartner = true;
+    updateSet.isPartner = true;
+  }
 
   if (!values.lastSignedIn) values.lastSignedIn = new Date();
   if (Object.keys(updateSet).length === 0) updateSet.lastSignedIn = new Date();

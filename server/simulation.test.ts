@@ -37,7 +37,7 @@ import * as db from "./db";
 
 type AuthenticatedUser = NonNullable<TrpcContext["user"]>;
 
-function createUserContext(role: "user" | "admin" = "user", id = 1): TrpcContext {
+function createUserContext(role: "user" | "admin" = "user", id = 1, isPartner = false): TrpcContext {
   const user: AuthenticatedUser = {
     id,
     openId: "test-user",
@@ -49,6 +49,7 @@ function createUserContext(role: "user" | "admin" = "user", id = 1): TrpcContext
     updatedAt: new Date(),
     lastSignedIn: new Date(),
     freeSimulations: 0,
+    isPartner,
   };
 
   return {
@@ -74,6 +75,17 @@ describe("simulation.getStatus", () => {
     expect(db.getFreeSimulationsCount).not.toHaveBeenCalled();
   });
 
+  it("returns canSimulate=true for partner without checking DB", async () => {
+    const ctx = createUserContext("user", 1, true);
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.simulation.getStatus();
+    expect(result.canSimulate).toBe(true);
+    expect(result.hasSubscription).toBe(true);
+    expect(db.getActiveSubscriptionByUserId).not.toHaveBeenCalled();
+    expect(db.getFreeSimulationsCount).not.toHaveBeenCalled();
+  });
+
   it("returns canSimulate=true for user with 0 free simulations used", async () => {
     vi.mocked(db.getActiveSubscriptionByUserId).mockResolvedValue(undefined);
     vi.mocked(db.getFreeSimulationsCount).mockResolvedValue(0);
@@ -84,7 +96,7 @@ describe("simulation.getStatus", () => {
     const result = await caller.simulation.getStatus();
     expect(result.canSimulate).toBe(true);
     expect(result.freeUsed).toBe(0);
-    expect(result.freeLimit).toBe(2);
+    expect(result.freeLimit).toBe(5);
     expect(result.hasSubscription).toBe(false);
   });
 
@@ -100,16 +112,16 @@ describe("simulation.getStatus", () => {
     expect(result.freeUsed).toBe(1);
   });
 
-  it("returns canSimulate=false for user who used all free simulations", async () => {
+  it("returns canSimulate=false for user who used all 5 free simulations", async () => {
     vi.mocked(db.getActiveSubscriptionByUserId).mockResolvedValue(undefined);
-    vi.mocked(db.getFreeSimulationsCount).mockResolvedValue(2);
+    vi.mocked(db.getFreeSimulationsCount).mockResolvedValue(5);
 
     const ctx = createUserContext("user");
     const caller = appRouter.createCaller(ctx);
 
     const result = await caller.simulation.getStatus();
     expect(result.canSimulate).toBe(false);
-    expect(result.freeUsed).toBe(2);
+    expect(result.freeUsed).toBe(5);
   });
 
   it("returns canSimulate=true for user with active subscription regardless of free count", async () => {
@@ -152,35 +164,44 @@ describe("simulation.recordUsage", () => {
     expect(db.incrementFreeSimulations).not.toHaveBeenCalled();
   });
 
-  it("increments free simulation count for user with 0 used", async () => {
+  it("returns success for partner without incrementing DB", async () => {
+    const ctx = createUserContext("user", 1, true);
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.simulation.recordUsage();
+    expect(result.hasSubscription).toBe(true);
+    expect(db.incrementFreeSimulations).not.toHaveBeenCalled();
+  });
+
+  it("returns current free count for user with 0 used (no increment — counting done by /api/simulation/record)", async () => {
     vi.mocked(db.getActiveSubscriptionByUserId).mockResolvedValue(undefined);
     vi.mocked(db.getFreeSimulationsCount).mockResolvedValue(0);
-    vi.mocked(db.incrementFreeSimulations).mockResolvedValue(1);
 
     const ctx = createUserContext("user");
     const caller = appRouter.createCaller(ctx);
 
     const result = await caller.simulation.recordUsage();
-    expect(db.incrementFreeSimulations).toHaveBeenCalledWith(1);
+    // recordUsage only checks access, does NOT increment (counting is done by /api/simulation/record)
+    expect(db.incrementFreeSimulations).not.toHaveBeenCalled();
+    expect(result.freeUsed).toBe(0);
+    expect(result.hasSubscription).toBe(false);
+  });
+
+  it("returns current free count for user with 1 used (no increment)", async () => {
+    vi.mocked(db.getActiveSubscriptionByUserId).mockResolvedValue(undefined);
+    vi.mocked(db.getFreeSimulationsCount).mockResolvedValue(1);
+
+    const ctx = createUserContext("user");
+    const caller = appRouter.createCaller(ctx);
+
+    const result = await caller.simulation.recordUsage();
+    expect(db.incrementFreeSimulations).not.toHaveBeenCalled();
     expect(result.freeUsed).toBe(1);
   });
 
-  it("increments free simulation count for user with 1 used", async () => {
+  it("throws FORBIDDEN when user has used all 5 free simulations", async () => {
     vi.mocked(db.getActiveSubscriptionByUserId).mockResolvedValue(undefined);
-    vi.mocked(db.getFreeSimulationsCount).mockResolvedValue(1);
-    vi.mocked(db.incrementFreeSimulations).mockResolvedValue(2);
-
-    const ctx = createUserContext("user");
-    const caller = appRouter.createCaller(ctx);
-
-    const result = await caller.simulation.recordUsage();
-    expect(db.incrementFreeSimulations).toHaveBeenCalledWith(1);
-    expect(result.freeUsed).toBe(2);
-  });
-
-  it("throws FORBIDDEN when user has used all free simulations", async () => {
-    vi.mocked(db.getActiveSubscriptionByUserId).mockResolvedValue(undefined);
-    vi.mocked(db.getFreeSimulationsCount).mockResolvedValue(2);
+    vi.mocked(db.getFreeSimulationsCount).mockResolvedValue(5);
 
     const ctx = createUserContext("user");
     const caller = appRouter.createCaller(ctx);
