@@ -6,6 +6,7 @@ import { ENV } from './_core/env';
 // Lista de emails com acesso ilimitado (parceiros)
 const PARTNER_EMAILS = [
   "elisabetta.filocamo@alfaparfmilano.com",
+  "mangelo@alfaparf.pt",
 ];
 
 let _db: ReturnType<typeof drizzle> | null = null;
