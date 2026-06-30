@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
-type Lang = "pt" | "es" | "en";
+type Lang = "pt" | "es" | "en" | "it";
 
 const translations: Record<Lang, Record<string, string>> = {
   pt: {
@@ -152,6 +152,52 @@ const translations: Record<Lang, Record<string, string>> = {
     ctaTitle: "Ready to transform your salon?", ctaDesc: "Try for free — 5 simulations without a card, then 7 days free on subscribe.",
     ctaBtn: "Try for Free Now", ctaNote: "No card required for the first 5 simulations", rights: "All rights reserved.",
   },
+  it: {
+    dashboard: "Dashboard", activateSubscription: "Attiva Abbonamento", login: "Accedi", startNow: "Inizia Ora",
+    heroSubtitle: "Powered by Gemini AI", heroTitle1: "More Than", heroTitle2: "Hairstyle",
+    heroDesc: "Mostra ai tuoi clienti il risultato finale prima di qualsiasi taglio o colorazione. Aumenta la fiducia e migliora l'esperienza del tuo salone.",
+    tryNow: "Prova Ora", seePrices: "Vedi Prezzi",
+    badge5sims: "5 simulazioni gratuite", badge7days: "7 giorni gratis con l'abbonamento", badgeNoCard: "Senza carta per provare",
+    featuresTitle: "Tutto ciò di cui il tuo salone ha bisogno",
+    featuresDesc: "Una piattaforma completa sviluppata appositamente per parrucchieri professionisti.",
+    feat1Title: "Simulazione Acconciature con IA", feat1Desc: "Mostra ai clienti come apparirebbero con diverse acconciature prima di qualsiasi taglio. Tecnologia all'avanguardia al servizio del tuo salone.",
+    feat2Title: "Accesso Sicuro ed Esclusivo", feat2Desc: "Ogni salone ha il proprio accesso privato. I tuoi dati e quelli dei tuoi clienti sono sempre protetti.",
+    feat3Title: "Pannello di Gestione", feat3Desc: "Gestisci il tuo abbonamento, consulta lo storico e controlla tutto da un pannello intuitivo.",
+    feat4Title: "Strumento Professionale", feat4Desc: "Sviluppato specificamente per parrucchieri professionisti. Semplice da usare, potente nei risultati.",
+    pricingTitle: "Prezzo semplice e trasparente", pricingDesc: "Un unico piano con tutto incluso. Senza sorprese.",
+    planBadge: "Piano Professionale", perMonth: "/mese", perSalon: "per salone · fatturazione mensile", trialBadge: "7 giorni gratis",
+    pricingItem1: "7 giorni gratuiti per provare", pricingItem2: "Simulazione acconciature con IA illimitata",
+    pricingItem3: "Assistente virtuale per clienti", pricingItem4: "Pannello di gestione del salone",
+    pricingItem5: "Supporto via email", pricingItem6: "Aggiornamenti inclusi",
+    startTrial: "Inizia con 7 giorni gratis", trialNote: "7 giorni gratis · poi 29€/mese · cancella quando vuoi", questions: "Hai domande?",
+    testimonialsTitle: "Cosa dicono i nostri clienti",
+    test1Text: "I miei clienti adorano vedere il risultato prima di decidere. Le vendite di servizi premium sono aumentate del 40%.", test1Name: "Maria Santos", test1Salon: "Salão Elegance, Lisbona",
+    test2Text: "Uno strumento indispensabile. Risparmio tempo nelle consulenze e i clienti escono sempre soddisfatti.", test2Name: "João Ferreira", test2Salon: "Hair Studio Porto",
+    test3Text: "Facile da usare e i risultati sono impressionanti. Lo consiglio a tutti i colleghi.", test3Name: "Ana Costa", test3Salon: "Beleza & Arte, Braga",
+    eventBadge: "Evento dal Vivo", expoTitle: "Vieni a trovarci alla",
+    expoDesc: "Prova l'app dal vivo, parla con il nostro team e scopri come l'Intelligenza Artificiale può trasformare il tuo salone. Ingresso gratuito allo stand.",
+    expoStudio: "Anjos Urbanos® Studio Virtuale", expoLive: "Dimostrazione dal vivo · Ingresso gratuito",
+    expoDates: "12 e 13 Aprile 2026", expoStand: "Stand dell'Associazione Parrucchieri del Portogallo",
+    expoSim: "Simulazione dal vivo con il tuo telefono", expoFree: "Ingresso gratuito per professionisti",
+    expoVisit: "Vieni a trovarci", expoVisitDesc: "Vieni a provare la tecnologia in prima persona. Il nostro team sarà disponibile per dimostrazioni personalizzate.",
+    formacaoBadge: "Formazione Professionale", formacaoTitle: "Formazione IA per Parrucchieri",
+    formacaoDesc: "Impara a padroneggiare gli strumenti di Intelligenza Artificiale per trasformare il tuo business. Formazione pratica e intensiva.",
+    formacaoDate: "1 Giugno 2026", formacaoLocal: "Associazione Parrucchieri del Portogallo, Porto", formacaoDuration: "1 giorno · 9:00 alle 18:00", formacaoSpots: "15 posti disponibili",
+    formacaoProgram: "Programma della Formazione",
+    prog1: "Introduzione all'IA nel settore della bellezza", prog2: "Pratica con lo strumento Anjos Urbanos Virtual",
+    prog3: "Strategie di vendita con simulazione acconciature", prog4: "Marketing digitale per parrucchieri", prog5: "Casi pratici e simulazioni reali",
+    formacaoPrices: "Prezzi", socios: "Soci dell'Associazione", naoSocios: "Non Soci", precoNormal: "Prezzo normale",
+    inscricaoFeira: "Iscrizione alla Fiera", descontoExpo: "Sconto esclusivo ExpoCosmética", sociosENaoSocios: "soci e non soci",
+    discountNote: "* Sconto fiera valido solo per iscrizioni effettuate il 12 e 13 Aprile all'ExpoCosmética",
+    vagasLimitadas: "Posti Limitati · 15 Luoghi", formTitle: "Richiedi Informazioni / Iscrizione", formDesc: "Compila il modulo e ti contatteremo a breve",
+    formNome: "Nome Completo *", formTelefone: "Telefono *", formEmail: "Email *", formMensagem: "Messaggio (opzionale)",
+    formMensagemPlaceholder: "Domande, tipo di iscrizione (socio/non socio/fiera)...", formSubmit: "Invia Richiesta di Iscrizione",
+    formSentTo: "La tua richiesta sarà inviata a", formSentTitle: "Richiesta Inviata!",
+    formSentDesc: "Il tuo client email è stato aperto con i dati compilati. Invia l'email per completare l'iscrizione.",
+    formSentNote: "Sarai contattato dall'Associazione Parrucchieri del Portogallo a breve.", formSendAnother: "Invia un'altra richiesta",
+    ctaTitle: "Pronto a trasformare il tuo salone?", ctaDesc: "Prova gratis — 5 simulazioni senza carta, poi 7 giorni gratis con l'abbonamento.",
+    ctaBtn: "Prova Gratis Ora", ctaNote: "Nessuna carta necessaria per le prime 5 simulazioni", rights: "Tutti i diritti riservati.",
+  },
 };
 
 function FormacaoForm({ lang, tr }: { lang: Lang; tr: Record<string, string> }) {
@@ -179,9 +225,9 @@ function FormacaoForm({ lang, tr }: { lang: Lang; tr: Record<string, string> }) 
       </div>
     );
   }
-  const phonePlaceholder = lang === "en" ? "+44 7XX XXX XXXX" : lang === "es" ? "+34 6XX XXX XXX" : "+351 9XX XXX XXX";
-  const namePlaceholder = lang === "en" ? "Your full name" : lang === "es" ? "Su nombre completo" : "O seu nome";
-  const emailPlaceholder = lang === "en" ? "your@email.com" : lang === "es" ? "su@email.com" : "o.seu@email.com";
+  const phonePlaceholder = lang === "en" ? "+44 7XX XXX XXXX" : lang === "es" ? "+34 6XX XXX XXX" : lang === "it" ? "+39 3XX XXX XXXX" : "+351 9XX XXX XXX";
+  const namePlaceholder = lang === "en" ? "Your full name" : lang === "es" ? "Su nombre completo" : lang === "it" ? "Il tuo nome completo" : "O seu nome";
+  const emailPlaceholder = lang === "en" ? "your@email.com" : lang === "es" ? "su@email.com" : lang === "it" ? "tua@email.com" : "o.seu@email.com";
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-1.5">
@@ -297,6 +343,8 @@ export default function Home() {
               <LangBtn l="es" label="ES" />
               <span className="text-border text-xs px-0.5">|</span>
               <LangBtn l="en" label="EN" />
+              <span className="text-border text-xs px-0.5">|</span>
+              <LangBtn l="it" label="IT" />
             </div>
             {loading ? null : isAuthenticated ? (
               <Button onClick={() => setLocation(hasAccessQuery.data ? "/dashboard" : "/subscribe")} size="sm">
