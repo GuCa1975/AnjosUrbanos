@@ -44,7 +44,7 @@ const translations: Record<Lang, Record<string, string>> = {
     expoVisit: "Visite-nos", expoVisitDesc: "Venha experimentar a tecnologia em primeira mão. A nossa equipa estará disponível para demonstrações personalizadas.",
     formacaoBadge: "Formação Profissional", formacaoTitle: "Formação de IA para Cabeleireiros",
     formacaoDesc: "Aprenda a dominar as ferramentas de Inteligência Artificial para transformar o seu negócio. Formação prática e intensiva.",
-    formacaoDate: "1 de Junho de 2026", formacaoLocal: "Associação de Cabeleireiros de Portugal, Porto", formacaoDuration: "1 dia · 9h00 às 18h00", formacaoSpots: "15 vagas disponíveis",
+    formacaoDate: "27 de Julho de 2026", formacaoLocal: "Associação de Cabeleireiros de Portugal, Porto", formacaoDuration: "1 dia · 10h00 às 17h00", formacaoSpots: "15 vagas disponíveis", formacaoContacto: "Contacto: 919 963 344",
     formacaoProgram: "Programa da Formação",
     prog1: "Introdução à IA no sector da beleza", prog2: "Prática com a ferramenta Anjos Urbanos Virtual",
     prog3: "Estratégias de venda com simulação de penteados", prog4: "Marketing digital para cabeleireiros", prog5: "Casos práticos e simulações reais",
@@ -90,7 +90,7 @@ const translations: Record<Lang, Record<string, string>> = {
     expoVisit: "Visítenos", expoVisitDesc: "Venga a probar la tecnología de primera mano. Nuestro equipo estará disponible para demostraciones personalizadas.",
     formacaoBadge: "Formación Profesional", formacaoTitle: "Formación de IA para Peluqueros",
     formacaoDesc: "Aprenda a dominar las herramientas de Inteligencia Artificial para transformar su negocio. Formación práctica e intensiva.",
-    formacaoDate: "1 de Junio de 2026", formacaoLocal: "Asociación de Peluqueros de Portugal, Oporto", formacaoDuration: "1 día · 9h00 a 18h00", formacaoSpots: "15 plazas disponibles",
+    formacaoDate: "27 de Julio de 2026", formacaoLocal: "Asociación de Peluqueros de Portugal, Oporto", formacaoDuration: "1 día · 10h00 a 17h00", formacaoSpots: "15 plazas disponibles", formacaoContacto: "Contacto: 919 963 344",
     formacaoProgram: "Programa de Formación",
     prog1: "Introducción a la IA en el sector de la belleza", prog2: "Práctica con la herramienta Anjos Urbanos Virtual",
     prog3: "Estrategias de venta con simulación de peinados", prog4: "Marketing digital para peluqueros", prog5: "Casos prácticos y simulaciones reales",
@@ -136,7 +136,7 @@ const translations: Record<Lang, Record<string, string>> = {
     expoVisit: "Visit us", expoVisitDesc: "Come and experience the technology first-hand. Our team will be available for personalised demonstrations.",
     formacaoBadge: "Professional Training", formacaoTitle: "AI Training for Hairstylists",
     formacaoDesc: "Learn to master Artificial Intelligence tools to transform your business. Practical and intensive training.",
-    formacaoDate: "June 1, 2026", formacaoLocal: "Portuguese Hairdressers Association, Porto", formacaoDuration: "1 day · 9am to 6pm", formacaoSpots: "15 spots available",
+    formacaoDate: "July 27, 2026", formacaoLocal: "Portuguese Hairdressers Association, Porto", formacaoDuration: "1 day · 10am to 5pm", formacaoSpots: "15 spots available", formacaoContacto: "Contact: 919 963 344",
     formacaoProgram: "Training Programme",
     prog1: "Introduction to AI in the beauty sector", prog2: "Hands-on with Anjos Urbanos Virtual tool",
     prog3: "Sales strategies with hairstyle simulation", prog4: "Digital marketing for hairstylists", prog5: "Practical cases and real simulations",
@@ -182,7 +182,7 @@ const translations: Record<Lang, Record<string, string>> = {
     expoVisit: "Vieni a trovarci", expoVisitDesc: "Vieni a provare la tecnologia in prima persona. Il nostro team sarà disponibile per dimostrazioni personalizzate.",
     formacaoBadge: "Formazione Professionale", formacaoTitle: "Formazione IA per Parrucchieri",
     formacaoDesc: "Impara a padroneggiare gli strumenti di Intelligenza Artificiale per trasformare il tuo business. Formazione pratica e intensiva.",
-    formacaoDate: "1 Giugno 2026", formacaoLocal: "Associazione Parrucchieri del Portogallo, Porto", formacaoDuration: "1 giorno · 9:00 alle 18:00", formacaoSpots: "15 posti disponibili",
+    formacaoDate: "27 Luglio 2026", formacaoLocal: "Associazione Parrucchieri del Portogallo, Porto", formacaoDuration: "1 giorno · 10:00 alle 17:00", formacaoSpots: "15 posti disponibili", formacaoContacto: "Contatto: 919 963 344",
     formacaoProgram: "Programma della Formazione",
     prog1: "Introduzione all'IA nel settore della bellezza", prog2: "Pratica con lo strumento Anjos Urbanos Virtual",
     prog3: "Strategie di vendita con simulazione acconciature", prog4: "Marketing digitale per parrucchieri", prog5: "Casi pratici e simulazioni reali",
@@ -532,6 +532,10 @@ export default function Home() {
                     <div className="flex items-center gap-3 text-sm">
                       <Users className="h-4 w-4 text-primary shrink-0" />
                       <span className="text-foreground">{tr.formacaoSpots}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm">
+                      <Phone className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-foreground font-bold">{tr.formacaoContacto}</span>
                     </div>
                   </div>
                   <div className="border-t border-border/50 pt-4">
